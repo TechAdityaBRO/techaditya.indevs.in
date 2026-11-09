@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aditya Kumar Sethi — Developer & Founder</title>
+<meta name="description" content="Portfolio of Aditya Kumar Sethi. Founder of BRO GANG, Creator of PGlove Browser and Bro Gang AI CLI.">
+<meta name="theme-color" content="#0a0a0f">
+<meta property="og:title" content="Aditya Kumar Sethi — Developer & Founder">
+<meta property="og:description" content="Founder of BRO GANG. Creator of PGlove Browser and Bro Gang AI CLI.">
+<meta property="og:image" content="https://github.com/TechAdityaBRO.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* ===== THEME TOKENS ===== */
+    :root {
+        --accent: #6d8dff;
+        --bg: #0a0a0f;
+        --surface: #13131a;
+        --surface-hover: #1a1a24;
+        --text: #e0e0e8;
+        --text-muted: #8a8a9e;
+        --border: rgba(255, 255, 255, 0.07);
+    }
+
+    /* ===== RESET & BASE ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', system-ui, sans-serif;
+        overflow-x: hidden;
+        position: relative;
+        -webkit-font-smoothing: antialiased;
+        cursor: auto; 
+    }
+
+    /* ===== SCROLL PROGRESS BAR ===== */
+    #scroll-progress {
+        position: fixed;
+        top: 0; left: 0;
+        height: 2px;
+        background: var(--accent);
+        width: 0%;
+        z-index: 1000;
+        transition: width 0.1s ease;
+    }
+
+    /* ===== BACKGROUND ===== */
+    .bg-gradient {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background: radial-gradient(circle at 50% 0%, rgba(109, 141, 255, 0.05) 0%, transparent 50%);
+    }
+
+    /* ===== MAIN LAYOUT ===== */
+    .app-container {
+        position: relative;
+        z-index: 2;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 6rem 2rem 4rem 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 5rem;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+        position: fixed;
+        top: 0; left: 0; width: 100%;
+        padding: 1rem 2rem;
+        background: rgba(10, 10, 15, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .nav-logo {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #fff;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .nav-logo i { color: var(--accent); }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 400;
+        transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ===== HERO SECTION ===== */
+    .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        padding-top: 2rem;
+    }
+    .avatar-wrapper {
+        position: relative;
+        width: 90px; height: 90px;
+        margin-bottom: 1.5rem;
+    }
+    .avatar {
+        position: relative;
+        width: 100%; height: 100%;
+        border-radius: 12px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .hero h1 {
+        font-family: 'Inter', sans-serif;
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: #fff;
+        margin-bottom: 0.5rem;
+    }
+    
+    .role-text {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .role-text span {
+        color: var(--text);
+        font-weight: 500;
+    }
+
+    .hero .bio {
+        font-size: 1rem;
+        color: var(--text-muted);
+        max-width: 550px;
+        margin-bottom: 2rem;
+        line-height: 1.7;
+    }
+    
+    .hero-cta { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+    .btn-primary {
+        background: #fff;
+        color: var(--bg);
+    }
+    .btn-primary:hover { background: #e0e0e0; transform: translateY(-2px); }
+    .btn-secondary {
+        background: var(--surface);
+        color: var(--text);
+        border-color: var(--border);
+    }
+    .btn-secondary:hover { background: var(--surface-hover); border-color: var(--text-muted); transform: translateY(-2px); }
+
+    /* ===== STATS SECTION ===== */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
+        margin-top: 2.5rem;
+        width: 100%;
+    }
+    .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem;
+        text-align: left;
+    }
+    .stat-number {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 2rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 0.2rem;
+        display: block;
+    }
+    .stat-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        letter-spacing: 0.5px;
+    }
+
+    /* ===== SECTION HEADERS ===== */
+    .section-header { margin-bottom: 1.5rem; text-align: left; }
+    .section-header h2 {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 0.3rem;
+    }
+    .section-header h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    /* ===== PROJECTS GRID ===== */
+    .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+    .project-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        color: var(--text);
+        display: flex;
+        flex-direction: column;
+    }
+    .project-card:hover {
+        border-color: var(--accent);
+        background: var(--surface-hover);
+        transform: translateY(-2px);
+    }
+    
+    .project-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 0.8rem;
+    }
+    .project-icon {
+        width: 36px; height: 36px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        color: #fff;
+    }
+    .project-card h4 { font-size: 1.05rem; font-weight: 600; color: #fff; }
+    .project-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; flex-grow: 1; }
+    
+    .project-link {
+        margin-top: 1.2rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .project-card:hover .project-link i { transform: translateX(3px); }
+    .project-link i { transition: transform 0.2s; }
+
+    /* ===== PINNED REPOS ===== */
+    .pinned-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+    .pinned-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.2rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+    }
+    .pinned-card:hover { border-color: var(--text-muted); background: var(--surface-hover); }
+    .pinned-title {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        color: var(--accent);
+        font-weight: 500;
+        margin-bottom: 0.4rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .pinned-desc {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+    }
+
+    /* ===== TIMELINE ===== */
+    .timeline {
+        position: relative;
+        max-width: 700px;
+        padding-left: 1.5rem;
+        border-left: 1px solid var(--border);
+    }
+    .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -1.85rem; top: 0.3rem;
+        width: 10px; height: 10px;
+        border-radius: 50%;
+        background: var(--surface);
+        border: 2px solid var(--accent);
+    }
+    .timeline-date {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+        color: var(--accent);
+        margin-bottom: 0.2rem;
+    }
+    .timeline-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 0.3rem;
+    }
+    .timeline-desc {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+
+    /* ===== TECH STACK ===== */
+    .tech-grid { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .tech-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.4rem 0.8rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        transition: all 0.2s;
+    }
+    .tech-badge:hover { border-color: var(--text-muted); color: #fff; }
+    .tech-badge i { font-size: 0.9rem; color: var(--accent); }
+
+    /* ===== FOOTER & SOCIALS ===== */
+    .footer {
+        padding: 2rem 0 0 0;
+        border-top: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .social-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+    }
+    .social-btn {
+        width: 38px; height: 38px; border-radius: 8px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--text-muted); text-decoration: none; font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+    .social-btn:hover { background: var(--surface-hover); color: #fff; border-color: var(--text-muted); }
+    
+    /* SVG Icon Sizing */
+    .social-btn svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+    }
+
+    .commit-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        background: rgba(109, 141, 255, 0.05);
+        border: 1px solid rgba(109, 141, 255, 0.2);
+        border-radius: 6px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        align-self: flex-start;
+    }
+    .commit-badge:hover { border-color: var(--accent); color: var(--accent); }
+    .commit-badge .dot { width: 5px; height: 5px; border-radius: 50%; background: #22c55e; }
+    .commit-badge code { color: var(--accent); }
+
+    .footer-text { font-size: 0.7rem; color: #4a4a5e; }
+
+    /* ===== SCROLL ANIMATIONS ===== */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+        .navbar { padding: 1rem; }
+        .nav-links { display: none; }
+        .app-container { padding: 5rem 1.2rem 3rem 1.2rem; gap: 3rem; }
+        .hero h1 { font-size: 2rem; }
+        .section-header h3 { font-size: 1.3rem; }
+        .stats-grid { grid-template-columns: 1fr 1fr; }
+        .social-btn { width: 34px; height: 34px; font-size: 0.85rem; }
+        .social-btn svg { width: 14px; height: 14px; }
+    }
+</style>
+</head>
+<body>
+
+    <!-- Scroll Progress -->
+    <div id="scroll-progress"></div>
+
+    <!-- Subtle Background -->
+    <div class="bg-gradient"></div>
+
+    <!-- Navbar (Updated to techaditya.indevs.in) -->
+    <nav class="navbar">
+        <a href="#" class="nav-logo"><i class="fas fa-code"></i> techaditya.indevs.in</a>
+        <div class="nav-links">
+            <a href="#work">Work</a>
+            <a href="#repos">Repos</a>
+            <a href="#journey">Journey</a>
+            <a href="#stack">Stack</a>
+            <a href="https://github.com/TechAdityaBRO" target="_blank">GitHub</a>
+        </div>
+    </nav>
+
+    <div class="app-container">
+
+        <!-- HERO -->
+        <section class="hero reveal">
+            <div class="avatar-wrapper">
+                <div class="avatar">
+                    <img src="https://github.com/TechAdityaBRO.png" alt="Aditya Kumar Sethi" onerror="this.style.display='none'; this.parentElement.innerText='A';">
+                </div>
+            </div>
+            <h1>Aditya Kumar Sethi</h1>
+            
+            <div class="role-text">
+                <span>Developer & Founder</span> · Building from India 🇮🇳
+            </div>
+
+            <p class="bio">A teen developing tech for India. I build experimental browsers, AI tools, and open-source software. Currently focused on PGlove, Bro Gang AI CLI, and Nexa Search.</p>
+            
+            <div class="hero-cta">
+                <a href="#work" class="btn btn-primary">View Work</a>
+                <a href="https://github.com/TechAdityaBRO" target="_blank" class="btn btn-secondary"><i class="fab fa-github"></i> GitHub</a>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid reveal">
+                <div class="stat-card">
+                    <span class="stat-number" data-target="38">0</span>
+                    <span class="stat-label">BRO GANG Members</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="liveContributions" data-target="290">0</span>
+                    <span class="stat-label">GitHub Contributions</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" data-target="8">0</span>
+                    <span class="stat-label">Live Projects</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROJECTS -->
+        <section id="work" class="reveal">
+            <div class="section-header">
+                <h2>01 — Selected Projects</h2>
+                <h3>Things I've Built</h3>
+            </div>
+            <div class="projects-grid">
+                
+                <a href="https://brogang.techaditya.workers.dev" target="_blank" class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon"><i class="fas fa-crown"></i></div>
+                        <h4>BRO GANG</h4>
+                    </div>
+                    <p>A community of 38 friends founded in 2022. Gaming, tech, and culture. Features an AI chatbot powered by Cloudflare Workers.</p>
+                    <span class="project-link">Visit Site <i class="fas fa-arrow-right"></i></span>
+                </a>
+
+                <a href="https://brogangaicli.pages.dev/" target="_blank" class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon"><i class="fas fa-terminal"></i></div>
+                        <h4>Bro Gang AI CLI</h4>
+                    </div>
+                    <p>A free forever AI coding agent for your terminal. No API keys, no signup. Powered by Llama 3.3 70B on Cloudflare Workers.</p>
+                    <span class="project-link">Explore CLI <i class="fas fa-arrow-right"></i></span>
+                </a>
+
+                <a href="https://pglove.jo3.org" target="_blank" class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon"><i class="fas fa-window-maximize"></i></div>
+                        <h4>PGlove Browser</h4>
+                    </div>
+                    <p>An experimental desktop browser built with Tauri 2 (Rust + WebView2). Stable v1.0.3 with a Pokémon theme extension.</p>
+                    <span class="project-link">View PGlove <i class="fas fa-arrow-right"></i></span>
+                </a>
+
+                <a href="https://nexasearch.pages.dev/" target="_blank" class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon"><i class="fas fa-search"></i></div>
+                        <h4>Nexa Search</h4>
+                    </div>
+                    <p>A privacy-first search engine. No ads in results, no tracking pixels, no sold browsing history. Just the signal.</p>
+                    <span class="project-link">Try Nexa <i class="fas fa-arrow-right"></i></span>
+                </a>
+
+                <a href="https://progroupai.created.app/" target="_blank" class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon"><i class="fas fa-robot"></i></div>
+                        <h4>Pro AI</h4>
+                    </div>
+                    <p>An AI assistant powered by Gemini 2.5 Pro. Chat, ask questions, and explore AI without any setup.</p>
+                    <span class="project-link">Chat with Pro AI <i class="fas fa-arrow-right"></i></span>
+                </a>
+
+                <a href="https://brogangsmp.site.je" target="_blank" class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon"><i class="fas fa-cubes"></i></div>
+                        <h4>BroGangMC Server</h4>
+                    </div>
+                    <p>Our official Minecraft SMP server. Java & Bedrock crossplay, running 24/7 with a 100-player capacity.</p>
+                    <span class="project-link">Join Server <i class="fas fa-arrow-right"></i></span>
+                </a>
+
+                <a href="https://discord.gg/nGEhMCVZeR" target="_blank" class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon"><i class="fas fa-gamepad"></i></div>
+                        <h4>BRO GANG Games</h4>
+                    </div>
+                    <p>Our competitive gaming division led by Kritikesh and Vipashchit. Join the squad on Discord.</p>
+                    <span class="project-link">Join Games <i class="fas fa-arrow-right"></i></span>
+                </a>
+
+                <a href="https://instacalcc.pages.dev/" target="_blank" class="project-card">
+                    <div class="project-header">
+                        <div class="project-icon"><i class="fas fa-calculator"></i></div>
+                        <h4>Postulate</h4>
+                    </div>
+                    <p>An advanced web calculator built by Rakesh Sarkar. Built for students, engineers, and anyone who needs it.</p>
+                    <span class="project-link">Try Postulate <i class="fas fa-arrow-right"></i></span>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- PINNED REPOSITORIES -->
+        <section id="repos" class="reveal">
+            <div class="section-header">
+                <h2>02 — Open Source</h2>
+                <h3>Pinned Repositories</h3>
+            </div>
+            <div class="pinned-grid">
+                <a href="https://github.com/TechAdityaBRO/CODEWEBSITE" target="_blank" class="pinned-card">
+                    <div class="pinned-title"><i class="fab fa-github"></i> CODEWEBSITE</div>
+                    <div class="pinned-desc">code.oops.wtf</div>
+                </a>
+                <a href="https://github.com/TechAdityaBRO/Fonts" target="_blank" class="pinned-card">
+                    <div class="pinned-title"><i class="fab fa-github"></i> Fonts</div>
+                    <div class="pinned-desc">Get several Fonts of Different Styles By Aditya</div>
+                </a>
+                <a href="https://github.com/TechAdityaBRO/PGlove" target="_blank" class="pinned-card">
+                    <div class="pinned-title"><i class="fab fa-github"></i> PGlove</div>
+                    <div class="pinned-desc">A Browser With A New Generation</div>
+                </a>
+                <a href="https://github.com/TechAdityaBRO/ticktacktoe" target="_blank" class="pinned-card">
+                    <div class="pinned-title"><i class="fab fa-github"></i> ticktacktoe</div>
+                    <div class="pinned-desc">ticktacktoe.site.je</div>
+                </a>
+                <a href="https://github.com/TechAdityaBRO/PGlove-Pokemon-Rust" target="_blank" class="pinned-card">
+                    <div class="pinned-title"><i class="fab fa-github"></i> PGlove-Pokemon-Rust</div>
+                    <div class="pinned-desc">Rust</div>
+                </a>
+                <a href="https://github.com/TechAdityaBRO/PGlove2" target="_blank" class="pinned-card">
+                    <div class="pinned-title"><i class="fab fa-github"></i> PGlove2</div>
+                    <div class="pinned-desc">Python</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- JOURNEY / TIMELINE -->
+        <section id="journey" class="reveal">
+            <div class="section-header">
+                <h2>03 — Journey</h2>
+                <h3>The Road So Far</h3>
+            </div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">2022</div>
+                    <div class="timeline-title">Founded BRO GANG</div>
+                    <div class="timeline-desc">Started a community with 3 friends. Now 38 members strong.</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2023 - 2024</div>
+                    <div class="timeline-title">Building Open Source</div>
+                    <div class="timeline-desc">Released multiple tools, games, and experiments on GitHub.</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2025</div>
+                    <div class="timeline-title">PGlove & Nexa Search</div>
+                    <div class="timeline-desc">Launched experimental browser and privacy-first search engine.</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2026</div>
+                    <div class="timeline-title">Bro Gang AI CLI</div>
+                    <div class="timeline-desc">Shipped a free, open-source AI coding agent for the terminal.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TECH STACK -->
+        <section id="stack" class="reveal">
+            <div class="section-header">
+                <h2>04 — Stack</h2>
+                <h3>Tools I Use</h3>
+            </div>
+            <div class="tech-grid">
+                <div class="tech-badge"><i class="fab fa-rust"></i> Rust / Tauri</div>
+                <div class="tech-badge"><i class="fab fa-js"></i> JavaScript / TS</div>
+                <div class="tech-badge"><i class="fab fa-python"></i> Python</div>
+                <div class="tech-badge"><i class="fab fa-golang"></i> Go</div>
+                <div class="tech-badge"><i class="fas fa-cloud"></i> Cloudflare Workers</div>
+                <div class="tech-badge"><i class="fas fa-fire"></i> Firebase</div>
+                <div class="tech-badge"><i class="fab fa-github"></i> Git / GitHub</div>
+                <div class="tech-badge"><i class="fas fa-brain"></i> AI / LLMs</div>
+                <div class="tech-badge"><i class="fab fa-html5"></i> HTML / CSS</div>
+                <div class="tech-badge"><i class="fas fa-gamepad"></i> Game Dev</div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer reveal">
+            <div class="section-header" style="margin-bottom: 0.5rem;">
+                <h2>05 — Connect</h2>
+            </div>
+            
+            <div class="social-grid">
+                <a href="https://github.com/TechAdityaBRO" target="_blank" class="social-btn" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://twitch.tv/progroup_24" target="_blank" class="social-btn" title="Twitch"><i class="fab fa-twitch"></i></a>
+                <a href="https://youtube.com/@ProGroup_24" target="_blank" class="social-btn" title="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="https://discord.gg/nGEhMCVZeR" target="_blank" class="social-btn" title="Discord"><i class="fab fa-discord"></i></a>
+                
+                <!-- CORRECTED MINECRAFT / XBOX PROFILE LINK -->
+                <a href="https://launch.minecraft.net/profile/ProGroup24" target="_blank" class="social-btn" title="Minecraft / Xbox">
+                    <!-- Official Xbox/Minecraft Icon (SVG) -->
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4.102 21.033A11.947 11.947 0 0 0 12 24c2.996 0 5.764-1.103 7.898-2.967-1.306-2.026-3.422-5.03-5.836-6.897a17.817 17.817 0 0 0-5.96 6.897zm15.796-1.832A11.954 11.954 0 0 0 24 12c0-2.52-.78-4.86-2.111-6.796-2.312 1.3-4.685 3.258-6.438 5.148 2.354 1.888 4.14 4.576 5.154 6.66a17.84 17.84 0 0 1 1.293 2.189zM2.111 5.204A11.954 11.954 0 0 0 0 12c0 2.52.78 4.86 2.111 6.796 2.312-1.3 4.685-3.258 6.438-5.148-2.354-1.888-4.14-4.576-5.154-6.66a17.84 17.84 0 0 1-1.284-2.784zM12 0C9.004 0 6.236 1.103 4.102 2.967c1.306 2.026 3.422 5.03 5.836 6.897a17.817 17.817 0 0 0 5.96-6.897A11.947 11.947 0 0 0 12 0z"/></svg>
+                </a>
+
+                <!-- CORRECTED TWITTER / X LOGO (Official SVG to prevent invisible icon) -->
+                <a href="https://x.com/ProGroupBroGang" target="_blank" class="social-btn" title="X (Twitter)">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+
+                <a href="https://www.instagram.com/progroup_24" target="_blank" class="social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/in/ProGroup" target="_blank" class="social-btn" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="https://bsky.app/profile/progroupco.bsky.social" target="_blank" class="social-btn" title="Bluesky"><i class="fas fa-cloud"></i></a>
+                <a href="https://www.reddit.com/r/ProCity/" target="_blank" class="social-btn" title="Reddit"><i class="fab fa-reddit"></i></a>
+                <a href="https://stackoverflow.com/users/aditya-kumar-sethi" target="_blank" class="social-btn" title="Stack Overflow"><i class="fab fa-stack-overflow"></i></a>
+                <a href="https://medium.com/@adityakumarsethi" target="_blank" class="social-btn" title="Medium"><i class="fab fa-medium"></i></a>
+                <a href="https://tiktok.com/@ProGroup_24" target="_blank" class="social-btn" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                <a href="https://codepen.io/TechAdityaBRO" target="_blank" class="social-btn" title="CodePen"><i class="fab fa-codepen"></i></a>
+                <a href="https://mastodon.social/@techadityabro" target="_blank" class="social-btn" title="Mastodon"><i class="fab fa-mastodon"></i></a>
+                <a href="https://in.pinterest.com/ProGroup_24/" target="_blank" class="social-btn" title="Pinterest"><i class="fab fa-pinterest"></i></a>
+                <a href="https://www.quora.com/profile/Aditya-Kumar-Sethi-9" target="_blank" class="social-btn" title="Quora"><i class="fab fa-quora"></i></a>
+                <a href="https://www.facebook.com/people/Pro-Groupco/61585955309649/" target="_blank" class="social-btn" title="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="https://techaditya.itch.io/" target="_blank" class="social-btn" title="Itch.io"><i class="fab fa-itch-io"></i></a>
+                <a href="mailto:chairmanaditya@brogang.jo3.org" class="social-btn" title="Email"><i class="fas fa-envelope"></i></a>
+            </div>
+
+            <a href="https://github.com/TechAdityaBRO/TechAdityaBRO/commits/main" target="_blank" class="commit-badge">
+                <span class="dot"></span>
+                <span>Latest commit:</span>
+                <code id="commitHash">loading...</code>
+            </a>
+
+            <div class="footer-text">
+                &copy; 2026 Aditya Kumar Sethi. Built with HTML/CSS & hosted on Cloudflare Pages.
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // ============================================================
+        // 1. SCROLL PROGRESS BAR
+        // ============================================================
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('scroll-progress').style.width = scrolled + '%';
+        });
+
+        // ============================================================
+        // 2. FETCH LIVE GITHUB CONTRIBUTIONS
+        // ============================================================
+        async function updateLiveContributions() {
+            const statEl = document.getElementById('liveContributions');
+            try {
+                const response = await fetch('https://github-contributions-api.jogruber.de/v4/TechAdityaBRO?y=last');
+                if (!response.ok) throw new Error('API failed');
+                const data = await response.json();
+                const total = data.total.lastYear;
+                if (total) {
+                    statEl.setAttribute('data-target', total);
+                }
+            } catch (error) {
+                console.log('Using fallback contribution count');
+            }
+        }
+        updateLiveContributions();
+
+        // ============================================================
+        // 3. ANIMATED STATS COUNTER
+        // ============================================================
+        const statNumbers = document.querySelectorAll('.stat-number');
+        let counted = false;
+
+        const countObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !counted) {
+                    counted = true;
+                    statNumbers.forEach(stat => {
+                        const target = parseInt(stat.getAttribute('data-target'));
+                        let count = 0;
+                        const duration = 1500;
+                        const increment = target / (duration / 16);
+
+                        const updateCount = () => {
+                            count += increment;
+                            if (count < target) {
+                                stat.innerText = Math.ceil(count) + "+";
+                                requestAnimationFrame(updateCount);
+                            } else {
+                                stat.innerText = target + "+";
+                            }
+                        };
+                        updateCount();
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        if (statNumbers.length > 0) {
+            countObserver.observe(statNumbers[0].parentElement.parentElement);
+        }
+
+        // ============================================================
+        // 4. GITHUB COMMIT FETCHER
+        // ============================================================
+        async function fetchLatestCommit() {
+            const commitEl = document.getElementById('commitHash');
+            try {
+                const response = await fetch('https://api.github.com/repos/TechAdityaBRO/TechAdityaBRO/commits/main');
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                if (data && data.sha) {
+                    commitEl.innerText = data.sha.substring(0, 7);
+                } else {
+                    commitEl.innerText = 'active';
+                }
+            } catch (error) {
+                commitEl.innerText = 'active';
+            }
+        }
+        fetchLatestCommit();
+
+        // ============================================================
+        // 5. SCROLL REVEAL (With fallback)
+        // ============================================================
+        const revealElements = document.querySelectorAll('.reveal');
+        
+        if (!('IntersectionObserver' in window)) {
+            revealElements.forEach(el => el.classList.add('visible'));
+        } else {
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            revealElements.forEach(el => revealObserver.observe(el));
+        }
+    </script>
+</body>
+</html>
