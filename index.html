@@ -64,18 +64,18 @@
     background-size: cover;
     background-position: center;
     opacity: 0;
-    transition: opacity 1.5s ease-in-out;
+    transition: opacity 2s ease-in-out; /* Smooth 2s crossfade */
     transform: scale(1.05);
     filter: blur(3px) saturate(1.2) brightness(0.5);
   }
   
   .anime-bg-layer.active {
-    opacity: 0.3;
+    opacity: 0.35;
   }
   
   .anime-overlay {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    background: linear-gradient(to bottom, rgba(10,10,15,0.5) 0%, rgba(10,10,15,0.95) 100%);
+    background: linear-gradient(to bottom, rgba(10,10,15,0.4) 0%, rgba(10,10,15,0.95) 100%);
   }
 
   /* ===== Custom Crosshair Cursor ===== */
@@ -156,9 +156,10 @@
     opacity: 0; transition: opacity 0.4s ease;
     mix-blend-mode: luminosity; 
   }
-  .card:nth-child(1)::after { background-image: url('https://api.waifu.pics/sfw/waifu'); } 
-  .card:nth-child(2)::after { background-image: url('https://api.waifu.pics/sfw/neko'); } 
-  .card:nth-child(3)::after { background-image: url('https://api.waifu.pics/sfw/shinobu'); } 
+  /* Use static high-quality images for hover */
+  .card:nth-child(1)::after { background-image: url('https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=800'); } 
+  .card:nth-child(2)::after { background-image: url('https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=800'); } 
+  .card:nth-child(3)::after { background-image: url('https://images.unsplash.com/photo-1542451313056-b7c8e626645f?q=80&w=800'); } 
 
   .card:hover { border-color: var(--accent); }
   .card:hover::after { opacity: 0.35; }
@@ -189,6 +190,16 @@
   /* Dark Web Quote */
   .cyber-quote { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-style: italic; color: var(--text); line-height: 1.5; flex-grow: 1; padding: 1rem 0; border-left: 3px solid var(--accent); padding-left: 1rem; background: rgba(255, 51, 102, 0.05); border-radius: 0 8px 8px 0; }
   .cyber-author { font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: var(--accent-2); text-align: right; }
+
+  /* Trending Media */
+  .anime-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 150px; overflow-y: auto; padding-right: 5px; }
+  .anime-list::-webkit-scrollbar { width: 4px; }
+  .anime-list::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 4px; }
+  .anime-item { display: flex; gap: 0.8rem; align-items: center; background: var(--bg-2); padding: 0.5rem; border-radius: 8px; border: 1px solid var(--line); }
+  .anime-item img { width: 35px; height: 50px; object-fit: cover; border-radius: 4px; }
+  .anime-item-info { font-size: 0.8rem; }
+  .anime-item-title { font-weight: 700; color: var(--text); line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .anime-item-score { color: var(--accent); font-family: 'JetBrains Mono', monospace; }
 
   .app-action { align-self: center; padding: .6rem 1.2rem; font-size: .8rem; font-family: 'JetBrains Mono', monospace; border-radius: 8px; border: 1px solid var(--line-2); background: var(--bg-2); color: var(--text-2); cursor: pointer; transition: all .2s; margin-top: auto; }
   .app-action:hover { border-color: var(--accent-2); color: var(--accent-2); box-shadow: 0 0 10px var(--glow-blue); }
@@ -333,7 +344,7 @@
         <button class="app-action" id="cyberBtn">Next Quote ↻</button>
       </div>
 
-      <!-- App 3: Top Anime Charts (Kept for variety, but renamed to avoid "anime quote" vibes) -->
+      <!-- App 3: Trending Media (Kept for variety, but renamed to avoid "anime quote" vibes) -->
       <div class="app-card reveal" data-d="2">
         <span class="app-title">Trending Media</span>
         <div class="anime-list" id="animeList">
@@ -392,7 +403,7 @@
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
-/* ===== Dynamic Anime Background Slideshow (Waifu.pics API) ===== */
+/* ===== Dynamic Anime Background Slideshow (Nekos.best API) ===== */
 const bgLayer1 = document.getElementById('bgLayer1');
 const bgLayer2 = document.getElementById('bgLayer2');
 let currentLayer = bgLayer1;
@@ -404,14 +415,17 @@ async function fetchAnimeBackground() {
   isFetchingBg = true;
   
   try {
-    const res = await fetch('https://api.waifu.pics/sfw/waifu');
+    // Nekos.best provides high-res anime backgrounds
+    const res = await fetch('https://nekos.best/api/v2/background?amount=1');
     if (!res.ok) throw new Error('API Error');
     const data = await res.json();
     
+    const imgUrl = data.results[0].url;
+    
     const img = new Image();
-    img.src = data.url;
+    img.src = imgUrl;
     img.onload = () => {
-      nextLayer.style.backgroundImage = `url('${data.url}')`;
+      nextLayer.style.backgroundImage = `url('${imgUrl}')`;
       nextLayer.classList.add('active');
       currentLayer.classList.remove('active');
       
@@ -425,12 +439,14 @@ async function fetchAnimeBackground() {
       isFetchingBg = false; 
     };
   } catch (e) {
+    console.error('Failed to fetch anime background:', e);
     isFetchingBg = false;
   }
 }
 
+// Initial fetch and set interval (every 8 seconds)
 fetchAnimeBackground();
-setInterval(fetchAnimeBackground, 10000);
+setInterval(fetchAnimeBackground, 8000);
 
 /* ===== Cursor & Scroll ===== */
 if (matchMedia('(pointer: fine)').matches) {
@@ -494,22 +510,23 @@ const ipTerminal = document.getElementById('ipTerminal');
 const ipScanBtn = document.getElementById('ipScanBtn');
 
 async function runIPScan() {
-  ipTerminal.innerHTML = '<span class="terminal-line">> Bypassing proxy...</span><span class="terminal-line">> Querying ipapi.co...</span><span class="terminal-cursor"></span>';
+  ipTerminal.innerHTML = '<span class="terminal-line">> Bypassing proxy...</span><span class="terminal-line">> Querying ip-api.com...</span><span class="terminal-cursor"></span>';
   try {
-    const res = await fetch('https://ipapi.co/json/');
+    const res = await fetch('http://ip-api.com/json/');
     if (!res.ok) throw new Error('Network error');
     const data = await res.json();
     
-    // Check for VPN/Proxy (simple heuristic based on org name)
-    const org = (data.org || '').toLowerCase();
-    const isProxy = org.includes('vpn') || org.includes('proxy') || org.includes('hosting') || org.includes('cloud') ? 'DETECTED ⚠️' : 'CLEAN ✅';
+    // Check for VPN/Proxy
+    const isProxy = data.proxy ? 'DETECTED ⚠️' : 'CLEAN ✅';
+    const isHosting = data.hosting ? 'Yes (Datacenter/VPS)' : 'No (Residential)';
 
     const lines = [
-      `> IP: <span>${data.ip}</span>`,
-      `> ISP: <span>${data.org || 'Unknown'}</span>`,
-      `> LOC: <span>${data.city || '?'}, ${data.region || '?'}, ${data.country_name || '?'}</span>`,
+      `> IP: <span>${data.query}</span>`,
+      `> ISP: <span>${data.isp || 'Unknown'}</span>`,
+      `> LOC: <span>${data.city || '?'}, ${data.regionName || '?'}, ${data.country || '?'}</span>`,
       `> TIMEZONE: <span>${data.timezone || '?'}</span>`,
       `> VPN/PROXY: <span>${isProxy}</span>`,
+      `> HOSTING: <span>${isHosting}</span>`,
       `> STATUS: <span>SECURE</span>`
     ];
     
@@ -527,7 +544,7 @@ async function runIPScan() {
     }, 250);
     
   } catch (e) {
-    ipTerminal.innerHTML = '<span class="terminal-line">> ERROR: Connection failed.</span><span class="terminal-cursor"></span>';
+    ipTerminal.innerHTML = '<span class="terminal-line">> ERROR: Connection failed. (Note: HTTPS sites require HTTPS API).</span><span class="terminal-cursor"></span>';
   }
 }
 ipScanBtn.addEventListener('click', runIPScan);
