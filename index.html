@@ -66,16 +66,16 @@
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
     transform: scale(1.05);
-    filter: blur(3px) saturate(1.2) brightness(0.6);
+    filter: blur(3px) saturate(1.2) brightness(0.5);
   }
   
   .anime-bg-layer.active {
-    opacity: 0.25; /* Dimmed so text is readable */
+    opacity: 0.3;
   }
   
   .anime-overlay {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    background: linear-gradient(to bottom, rgba(10,10,15,0.4) 0%, rgba(10,10,15,0.95) 100%);
+    background: linear-gradient(to bottom, rgba(10,10,15,0.5) 0%, rgba(10,10,15,0.95) 100%);
   }
 
   /* ===== Custom Crosshair Cursor ===== */
@@ -156,7 +156,6 @@
     opacity: 0; transition: opacity 0.4s ease;
     mix-blend-mode: luminosity; 
   }
-  /* We can use the same API for hover images, but for now keep them static or use another API */
   .card:nth-child(1)::after { background-image: url('https://api.waifu.pics/sfw/waifu'); } 
   .card:nth-child(2)::after { background-image: url('https://api.waifu.pics/sfw/neko'); } 
   .card:nth-child(3)::after { background-image: url('https://api.waifu.pics/sfw/shinobu'); } 
@@ -171,35 +170,25 @@
   .card-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1.5rem; }
   .tag { font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: var(--text-2); border: 1px solid var(--line-2); padding: .2rem .6rem; border-radius: 6px; background: rgba(0,0,0,0.6); }
 
-  /* ===== Mini Apps (Anime APIs) ===== */
+  /* ===== Mini Apps (OSINT & Dark Web) ===== */
   .apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
   .app-card { background: var(--surface); backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.8rem; display: flex; flex-direction: column; gap: 1rem; transition: transform .3s, border-color .3s; position: relative; overflow: hidden; }
   .app-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--accent-3); opacity: 0.3; }
   .app-card:hover { border-color: var(--accent-3); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(138,43,226,0.15); }
   .app-title { font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: 700; color: var(--accent-3); border-bottom: 1px solid var(--line); padding-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; letter-spacing: 0.1em; }
   
-  /* Anime Quote */
-  .anime-quote { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-style: italic; color: var(--text); line-height: 1.5; flex-grow: 1; padding: 1rem 0; }
-  .anime-char { font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: var(--accent-2); }
-  
-  /* Anime Top Charts */
-  .anime-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 200px; overflow-y: auto; padding-right: 5px; }
-  .anime-list::-webkit-scrollbar { width: 4px; }
-  .anime-list::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 4px; }
-  .anime-item { display: flex; gap: 0.8rem; align-items: center; background: var(--bg-2); padding: 0.5rem; border-radius: 8px; border: 1px solid var(--line); }
-  .anime-item img { width: 40px; height: 56px; object-fit: cover; border-radius: 4px; }
-  .anime-item-info { font-size: 0.8rem; }
-  .anime-item-title { font-weight: 700; color: var(--text); line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .anime-item-score { color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+  /* OSINT Terminal */
+  .terminal { background: #000; border: 1px solid var(--line-2); border-radius: 8px; padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #00ff41; height: 150px; overflow-y: auto; line-height: 1.5; }
+  .terminal::-webkit-scrollbar { width: 4px; }
+  .terminal::-webkit-scrollbar-thumb { background: #00ff41; border-radius: 4px; }
+  .terminal-line { display: block; margin-bottom: 2px; }
+  .terminal-line span { color: var(--accent-2); }
+  .terminal-cursor { display: inline-block; width: 8px; height: 15px; background: #00ff41; animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 2px; }
+  @keyframes blink { 50% { opacity: 0; } }
 
-  /* Anime Character Search */
-  .search-input { width: 100%; padding: 0.8rem; background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 8px; color: var(--text); font-family: 'Space Grotesk', sans-serif; outline: none; margin-bottom: 0.5rem; }
-  .search-input:focus { border-color: var(--accent-2); }
-  .char-result { display: none; text-align: center; }
-  .char-result img { width: 100px; height: 140px; object-fit: cover; border-radius: 8px; margin: 0 auto 0.5rem; border: 2px solid var(--accent-3); }
-  .char-name { font-weight: 700; color: var(--text); }
-  .char-anime { font-size: 0.8rem; color: var(--accent-2); font-family: 'JetBrains Mono', monospace; }
-  .char-about { font-size: 0.75rem; color: var(--text-2); margin-top: 0.5rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  /* Dark Web Quote */
+  .cyber-quote { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-style: italic; color: var(--text); line-height: 1.5; flex-grow: 1; padding: 1rem 0; border-left: 3px solid var(--accent); padding-left: 1rem; background: rgba(255, 51, 102, 0.05); border-radius: 0 8px 8px 0; }
+  .cyber-author { font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: var(--accent-2); text-align: right; }
 
   .app-action { align-self: center; padding: .6rem 1.2rem; font-size: .8rem; font-family: 'JetBrains Mono', monospace; border-radius: 8px; border: 1px solid var(--line-2); background: var(--bg-2); color: var(--text-2); cursor: pointer; transition: all .2s; margin-top: auto; }
   .app-action:hover { border-color: var(--accent-2); color: var(--accent-2); box-shadow: 0 0 10px var(--glow-blue); }
@@ -318,41 +307,39 @@
     </div>
   </section>
 
-  <!-- Mini Apps (Anime APIs) -->
+  <!-- Mini Apps (OSINT & Dark Web) -->
   <section class="section wrap" id="apps">
     <div class="section-head reveal">
-      <div><div class="section-num">02 — Playground</div><h2>Anime Tools</h2></div>
+      <div><div class="section-num">02 — Playground</div><h2>Cyber Tools</h2></div>
     </div>
     <div class="apps-grid">
       
-      <!-- App 1: Anime Quote -->
+      <!-- App 1: OSINT IP Scanner -->
       <div class="app-card reveal">
-        <span class="app-title">Anime Quote</span>
-        <div class="anime-quote" id="animeQuote">"Loading..."</div>
-        <div class="anime-char" id="animeChar">— fetching</div>
-        <button class="app-action" id="animeBtn">Next Quote ↻</button>
+        <span class="app-title">OSINT IP Scanner</span>
+        <div class="terminal" id="ipTerminal">
+          <span class="terminal-line">> Initializing connection...</span>
+          <span class="terminal-line">> Resolving IP...</span>
+          <span class="terminal-line">> Awaiting data<span class="terminal-cursor"></span></span>
+        </div>
+        <button class="app-action" id="ipScanBtn" style="margin-top: 0.5rem;">Run Scan ↻</button>
       </div>
 
-      <!-- App 2: Top Anime Charts (Jikan API) -->
+      <!-- App 2: Hacker Quote -->
       <div class="app-card reveal" data-d="1">
-        <span class="app-title">Top Anime Now</span>
+        <span class="app-title">Dark Web Quote</span>
+        <div class="cyber-quote" id="cyberQuote">"The quieter you become, the more you are able to hear."</div>
+        <div class="cyber-author" id="cyberAuthor">— Kali Linux</div>
+        <button class="app-action" id="cyberBtn">Next Quote ↻</button>
+      </div>
+
+      <!-- App 3: Top Anime Charts (Kept for variety, but renamed to avoid "anime quote" vibes) -->
+      <div class="app-card reveal" data-d="2">
+        <span class="app-title">Trending Media</span>
         <div class="anime-list" id="animeList">
-          <div style="font-size: 0.8rem; color: var(--text-3);">Loading charts...</div>
+          <div style="font-size: 0.8rem; color: var(--text-3);">Loading...</div>
         </div>
         <button class="app-action" id="animeListBtn">Refresh ↻</button>
-      </div>
-
-      <!-- App 3: Anime Character Search (Jikan API) -->
-      <div class="app-card reveal" data-d="2">
-        <span class="app-title">Character Search</span>
-        <input type="text" class="search-input" id="charInput" placeholder="e.g. Levi, Gojo, Naruto...">
-        <div class="char-result" id="charResult">
-          <img src="" alt="Character" id="charImg">
-          <div class="char-name" id="charName"></div>
-          <div class="char-anime" id="charAnime"></div>
-          <div class="char-about" id="charAbout"></div>
-        </div>
-        <button class="app-action" id="charBtn">Search ↻</button>
       </div>
 
     </div>
@@ -417,21 +404,17 @@ async function fetchAnimeBackground() {
   isFetchingBg = true;
   
   try {
-    // Fetch a random SFW anime image
     const res = await fetch('https://api.waifu.pics/sfw/waifu');
+    if (!res.ok) throw new Error('API Error');
     const data = await res.json();
     
-    // Preload the image to ensure it's ready before fading
     const img = new Image();
     img.src = data.url;
     img.onload = () => {
       nextLayer.style.backgroundImage = `url('${data.url}')`;
-      
-      // Fade in the new layer, fade out the old one
       nextLayer.classList.add('active');
       currentLayer.classList.remove('active');
       
-      // Swap references for the next cycle
       const temp = currentLayer;
       currentLayer = nextLayer;
       nextLayer = temp;
@@ -439,15 +422,13 @@ async function fetchAnimeBackground() {
       isFetchingBg = false;
     };
     img.onerror = () => {
-      isFetchingBg = false; // Retry next cycle
+      isFetchingBg = false; 
     };
   } catch (e) {
-    console.error('Failed to fetch anime background:', e);
     isFetchingBg = false;
   }
 }
 
-// Initial fetch and set interval (every 10 seconds)
 fetchAnimeBackground();
 setInterval(fetchAnimeBackground, 10000);
 
@@ -506,35 +487,81 @@ document.querySelectorAll('.tilt').forEach(card => {
   });
 });
 
-/* ===== Mini Apps ===== */
+/* ===== Mini Apps (OSINT & Dark Web) ===== */
 
-// 1. Anime Quote (AnimeChan API)
-const animeQuote = document.getElementById('animeQuote');
-const animeChar = document.getElementById('animeChar');
-const animeBtn = document.getElementById('animeBtn');
+// 1. OSINT IP Scanner
+const ipTerminal = document.getElementById('ipTerminal');
+const ipScanBtn = document.getElementById('ipScanBtn');
 
-async function fetchAnimeQuote() {
-  animeQuote.textContent = 'Fetching...';
-  animeChar.textContent = '— wait';
+async function runIPScan() {
+  ipTerminal.innerHTML = '<span class="terminal-line">> Bypassing proxy...</span><span class="terminal-line">> Querying ipapi.co...</span><span class="terminal-cursor"></span>';
   try {
-    const res = await fetch('https://api.animechan.io/v1/quotes/random');
+    const res = await fetch('https://ipapi.co/json/');
+    if (!res.ok) throw new Error('Network error');
     const data = await res.json();
-    animeQuote.textContent = `"${data.data.content}"`;
-    animeChar.textContent = `— ${data.data.character.name} (${data.data.anime.name})`;
+    
+    // Check for VPN/Proxy (simple heuristic based on org name)
+    const org = (data.org || '').toLowerCase();
+    const isProxy = org.includes('vpn') || org.includes('proxy') || org.includes('hosting') || org.includes('cloud') ? 'DETECTED ⚠️' : 'CLEAN ✅';
+
+    const lines = [
+      `> IP: <span>${data.ip}</span>`,
+      `> ISP: <span>${data.org || 'Unknown'}</span>`,
+      `> LOC: <span>${data.city || '?'}, ${data.region || '?'}, ${data.country_name || '?'}</span>`,
+      `> TIMEZONE: <span>${data.timezone || '?'}</span>`,
+      `> VPN/PROXY: <span>${isProxy}</span>`,
+      `> STATUS: <span>SECURE</span>`
+    ];
+    
+    ipTerminal.innerHTML = '';
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i < lines.length) {
+        ipTerminal.innerHTML += `<span class="terminal-line">${lines[i]}</span>`;
+        ipTerminal.scrollTop = ipTerminal.scrollHeight;
+        i++;
+      } else {
+        ipTerminal.innerHTML += `<span class="terminal-line">> Scan complete.<span class="terminal-cursor"></span></span>`;
+        clearInterval(interval);
+      }
+    }, 250);
+    
   } catch (e) {
-    animeQuote.textContent = '"Power comes in response to a need, not a desire."';
-    animeChar.textContent = '— Goku (Dragon Ball Z)';
+    ipTerminal.innerHTML = '<span class="terminal-line">> ERROR: Connection failed.</span><span class="terminal-cursor"></span>';
   }
 }
-animeBtn.addEventListener('click', fetchAnimeQuote);
-fetchAnimeQuote();
+ipScanBtn.addEventListener('click', runIPScan);
+runIPScan(); // Initial run
 
-// 2. Top Anime Charts (Jikan API)
+// 2. Dark Web / Hacker Quote
+const cyberQuote = document.getElementById('cyberQuote');
+const cyberAuthor = document.getElementById('cyberAuthor');
+const cyberBtn = document.getElementById('cyberBtn');
+
+const darkQuotes = [
+  { q: "The quieter you become, the more you are able to hear.", a: "Kali Linux" },
+  { q: "There is no patch for human stupidity.", a: "Kevin Mitnick" },
+  { q: "Security is a process, not a product.", a: "Bruce Schneier" },
+  { q: "The only truly secure system is one that is powered off, cast in a block of concrete and sealed in a lead-lined room with armed guards.", a: "Gene Spafford" },
+  { q: "Hackers are breaking the systems for profit. Before, it was about intellectual curiosity.", a: "Kevin Mitnick" },
+  { q: "Amateurs hack systems, professionals hack people.", a: "Bruce Schneier" },
+  { q: "The internet is a dark place. You just have to know where to look.", a: "Unknown" },
+  { q: "Privacy is not something that I'm merely entitled to, it's an absolute prerequisite.", a: "Marlon Brando" }
+];
+
+function nextQuote() {
+  const q = darkQuotes[Math.floor(Math.random() * darkQuotes.length)];
+  cyberQuote.textContent = `"${q.q}"`;
+  cyberAuthor.textContent = `— ${q.a}`;
+}
+cyberBtn.addEventListener('click', nextQuote);
+
+// 3. Trending Media (Jikan API - replaced Anime Quote)
 const animeList = document.getElementById('animeList');
 const animeListBtn = document.getElementById('animeListBtn');
 
 async function fetchTopAnime() {
-  animeList.innerHTML = '<div style="font-size: 0.8rem; color: var(--text-3);">Loading charts...</div>';
+  animeList.innerHTML = '<div style="font-size: 0.8rem; color: var(--text-3);">Loading...</div>';
   try {
     const res = await fetch('https://api.jikan.moe/v4/top/anime?limit=5');
     const data = await res.json();
@@ -554,47 +581,6 @@ async function fetchTopAnime() {
 }
 animeListBtn.addEventListener('click', fetchTopAnime);
 fetchTopAnime();
-
-// 3. Anime Character Search (Jikan API)
-const charInput = document.getElementById('charInput');
-const charBtn = document.getElementById('charBtn');
-const charResult = document.getElementById('charResult');
-const charImg = document.getElementById('charImg');
-const charName = document.getElementById('charName');
-const charAnime = document.getElementById('charAnime');
-const charAbout = document.getElementById('charAbout');
-
-async function searchCharacter() {
-  const query = charInput.value.trim();
-  if (!query) return;
-  
-  charResult.style.display = 'none';
-  charBtn.textContent = 'Searching...';
-  
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/characters?q=${encodeURIComponent(query)}&limit=1`);
-    const data = await res.json();
-    
-    if (data.data && data.data.length > 0) {
-      const char = data.data[0];
-      charImg.src = char.images.jpg.image_url;
-      charName.textContent = char.name;
-      charAnime.textContent = char.anime && char.anime.length > 0 ? char.anime[0].anime.title : 'Unknown Anime';
-      charAbout.textContent = char.about || 'No description available.';
-      
-      charResult.style.display = 'block';
-    } else {
-      charName.textContent = 'Character not found';
-      charResult.style.display = 'block';
-    }
-  } catch (e) {
-    charName.textContent = 'Error searching.';
-    charResult.style.display = 'block';
-  }
-  charBtn.textContent = 'Search ↻';
-}
-charBtn.addEventListener('click', searchCharacter);
-charInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') searchCharacter(); });
 </script>
 </body>
 </html>
