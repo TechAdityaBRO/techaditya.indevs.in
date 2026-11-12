@@ -64,7 +64,7 @@
     background-size: cover;
     background-position: center;
     opacity: 0;
-    transition: opacity 2s ease-in-out; /* Smooth 2s crossfade */
+    transition: opacity 2s ease-in-out;
     transform: scale(1.05);
     filter: blur(3px) saturate(1.2) brightness(0.5);
   }
@@ -156,7 +156,7 @@
     opacity: 0; transition: opacity 0.4s ease;
     mix-blend-mode: luminosity; 
   }
-  /* Use static high-quality images for hover */
+  /* Static high-quality images for hover */
   .card:nth-child(1)::after { background-image: url('https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=800'); } 
   .card:nth-child(2)::after { background-image: url('https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=800'); } 
   .card:nth-child(3)::after { background-image: url('https://images.unsplash.com/photo-1542451313056-b7c8e626645f?q=80&w=800'); } 
@@ -325,7 +325,7 @@
     </div>
     <div class="apps-grid">
       
-      <!-- App 1: OSINT IP Scanner -->
+      <!-- App 1: OSINT IP Scanner (FIXED: Using IPPubblico HTTPS) -->
       <div class="app-card reveal">
         <span class="app-title">OSINT IP Scanner</span>
         <div class="terminal" id="ipTerminal">
@@ -336,7 +336,7 @@
         <button class="app-action" id="ipScanBtn" style="margin-top: 0.5rem;">Run Scan ↻</button>
       </div>
 
-      <!-- App 2: Hacker Quote -->
+      <!-- App 2: Hacker Quote (Static curated list) -->
       <div class="app-card reveal" data-d="1">
         <span class="app-title">Dark Web Quote</span>
         <div class="cyber-quote" id="cyberQuote">"The quieter you become, the more you are able to hear."</div>
@@ -344,7 +344,7 @@
         <button class="app-action" id="cyberBtn">Next Quote ↻</button>
       </div>
 
-      <!-- App 3: Trending Media (Kept for variety, but renamed to avoid "anime quote" vibes) -->
+      <!-- App 3: Trending Media (Jikan API) -->
       <div class="app-card reveal" data-d="2">
         <span class="app-title">Trending Media</span>
         <div class="anime-list" id="animeList">
@@ -403,7 +403,7 @@
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
-/* ===== Dynamic Anime Background Slideshow (Nekos.best API) ===== */
+/* ===== Dynamic Anime Background Slideshow (Nekos.life API) ===== */
 const bgLayer1 = document.getElementById('bgLayer1');
 const bgLayer2 = document.getElementById('bgLayer2');
 let currentLayer = bgLayer1;
@@ -415,12 +415,12 @@ async function fetchAnimeBackground() {
   isFetchingBg = true;
   
   try {
-    // Nekos.best provides high-res anime backgrounds
-    const res = await fetch('https://nekos.best/api/v2/background?amount=1');
+    // Nekos.life is a reliable, free, no-auth anime image API with CORS
+    const res = await fetch('https://nekos.life/api/v2/img/wallpaper');
     if (!res.ok) throw new Error('API Error');
     const data = await res.json();
     
-    const imgUrl = data.results[0].url;
+    const imgUrl = data.url;
     
     const img = new Image();
     img.src = imgUrl;
@@ -444,9 +444,9 @@ async function fetchAnimeBackground() {
   }
 }
 
-// Initial fetch and set interval (every 8 seconds)
+// Initial fetch and set interval (every 10 seconds)
 fetchAnimeBackground();
-setInterval(fetchAnimeBackground, 8000);
+setInterval(fetchAnimeBackground, 10000);
 
 /* ===== Cursor & Scroll ===== */
 if (matchMedia('(pointer: fine)').matches) {
@@ -505,28 +505,28 @@ document.querySelectorAll('.tilt').forEach(card => {
 
 /* ===== Mini Apps (OSINT & Dark Web) ===== */
 
-// 1. OSINT IP Scanner
+// 1. OSINT IP Scanner (FIXED: Using IPPubblico HTTPS)
 const ipTerminal = document.getElementById('ipTerminal');
 const ipScanBtn = document.getElementById('ipScanBtn');
 
 async function runIPScan() {
-  ipTerminal.innerHTML = '<span class="terminal-line">> Bypassing proxy...</span><span class="terminal-line">> Querying ip-api.com...</span><span class="terminal-cursor"></span>';
+  ipTerminal.innerHTML = '<span class="terminal-line">> Bypassing proxy...</span><span class="terminal-line">> Querying IPPubblico...</span><span class="terminal-cursor"></span>';
   try {
-    const res = await fetch('http://ip-api.com/json/');
+    // IPPubblico: HTTPS, CORS, no key required
+    const res = await fetch('https://ippubblico.org/?api=1');
     if (!res.ok) throw new Error('Network error');
     const data = await res.json();
     
-    // Check for VPN/Proxy
-    const isProxy = data.proxy ? 'DETECTED ⚠️' : 'CLEAN ✅';
-    const isHosting = data.hosting ? 'Yes (Datacenter/VPS)' : 'No (Residential)';
+    // Basic check for hosting/proxy based on ISP name
+    const isp = (data.isp || '').toLowerCase();
+    const isProxy = isp.includes('vpn') || isp.includes('hosting') || isp.includes('cloud') || isp.includes('server') ? 'DETECTED ⚠️' : 'CLEAN ✅';
 
     const lines = [
-      `> IP: <span>${data.query}</span>`,
+      `> IP: <span>${data.ip}</span>`,
       `> ISP: <span>${data.isp || 'Unknown'}</span>`,
-      `> LOC: <span>${data.city || '?'}, ${data.regionName || '?'}, ${data.country || '?'}</span>`,
+      `> LOC: <span>${data.city || '?'}, ${data.region || '?'}, ${data.country || '?'}</span>`,
       `> TIMEZONE: <span>${data.timezone || '?'}</span>`,
       `> VPN/PROXY: <span>${isProxy}</span>`,
-      `> HOSTING: <span>${isHosting}</span>`,
       `> STATUS: <span>SECURE</span>`
     ];
     
@@ -544,13 +544,13 @@ async function runIPScan() {
     }, 250);
     
   } catch (e) {
-    ipTerminal.innerHTML = '<span class="terminal-line">> ERROR: Connection failed. (Note: HTTPS sites require HTTPS API).</span><span class="terminal-cursor"></span>';
+    ipTerminal.innerHTML = '<span class="terminal-line">> ERROR: Connection failed.</span><span class="terminal-cursor"></span>';
   }
 }
 ipScanBtn.addEventListener('click', runIPScan);
 runIPScan(); // Initial run
 
-// 2. Dark Web / Hacker Quote
+// 2. Dark Web / Hacker Quote (Curated Static List)
 const cyberQuote = document.getElementById('cyberQuote');
 const cyberAuthor = document.getElementById('cyberAuthor');
 const cyberBtn = document.getElementById('cyberBtn');
@@ -573,7 +573,7 @@ function nextQuote() {
 }
 cyberBtn.addEventListener('click', nextQuote);
 
-// 3. Trending Media (Jikan API - replaced Anime Quote)
+// 3. Trending Media (Jikan API)
 const animeList = document.getElementById('animeList');
 const animeListBtn = document.getElementById('animeListBtn');
 
