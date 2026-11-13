@@ -325,7 +325,7 @@
     </div>
     <div class="apps-grid">
       
-      <!-- App 1: OSINT IP Scanner (FIXED: Using IPPubblico HTTPS) -->
+      <!-- App 1: OSINT IP Scanner (FIXED: IPPubblico HTTPS) -->
       <div class="app-card reveal">
         <span class="app-title">OSINT IP Scanner</span>
         <div class="terminal" id="ipTerminal">
@@ -524,7 +524,7 @@ async function runIPScan() {
     const lines = [
       `> IP: <span>${data.ip}</span>`,
       `> ISP: <span>${data.isp || 'Unknown'}</span>`,
-      `> LOC: <span>${data.city || '?'}, ${data.region || '?'}, ${data.country || '?'}</span>`,
+      `> LOC: <span>${data.geo?.city || '?'}, ${data.geo?.region || '?'}, ${data.geo?.country || '?'}</span>`,
       `> TIMEZONE: <span>${data.timezone || '?'}</span>`,
       `> VPN/PROXY: <span>${isProxy}</span>`,
       `> STATUS: <span>SECURE</span>`
