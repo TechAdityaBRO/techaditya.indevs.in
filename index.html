@@ -11,24 +11,24 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* ===== ANIME GREEN THEME ===== */
+  /* ===== BRIGHT ANIME GREEN THEME ===== */
   :root {
     --bg: #050a05;
     --bg-2: #0a120a;
-    --surface: rgba(15, 25, 15, 0.85);
+    --surface: rgba(10, 20, 10, 0.65); 
     --surface-2: #122012;
-    --text: #e8f5e8;
-    --text-2: #9ac29a;
-    --text-3: #5e7d5e;
-    --line: rgba(0, 255, 65, 0.1);
-    --line-2: rgba(0, 255, 65, 0.2);
+    --text: #ffffff;
+    --text-2: #b3d9b3; 
+    --text-3: #669966;
+    --line: rgba(0, 255, 65, 0.2);
+    --line-2: rgba(0, 255, 65, 0.3);
     
     --accent: #00ff41;      /* Matrix Green */
     --accent-2: #10b981;    /* Emerald Green */
     --accent-3: #064e3b;    /* Deep Forest */
     
-    --glow-green: rgba(0, 255, 65, 0.3);
-    --glow-emerald: rgba(16, 185, 129, 0.2);
+    --glow-green: rgba(0, 255, 65, 0.4);
+    --glow-emerald: rgba(16, 185, 129, 0.3);
     
     --radius: 12px; 
     --ease: cubic-bezier(.2,.8,.2,1); 
@@ -54,7 +54,7 @@
   button { font-family: inherit; cursor: none; border: none; background: none; color: inherit; @media (pointer: coarse) { cursor: pointer; } }
   img, iframe { max-width: 100%; display: block; }
 
-  /* ===== Anime Background (Green/Nature Theme) ===== */
+  /* ===== Bright Anime Background ===== */
   .anime-bg-container {
     position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden;
   }
@@ -64,18 +64,20 @@
     background-size: cover;
     background-position: center;
     opacity: 0;
-    transition: opacity 2s ease-in-out;
+    transition: opacity 1.5s ease-in-out;
     transform: scale(1.05);
-    filter: blur(2px) brightness(0.35) sepia(0.4) hue-rotate(80deg); /* Tints images green */
+    /* No dark filter, just a very slight blur to keep text readable */
+    filter: blur(1px) brightness(0.9); 
   }
   
   .anime-bg-layer.active {
-    opacity: 0.7;
+    opacity: 1; /* Fully visible */
   }
   
+  /* Subtle gradient to ensure text at the bottom is readable */
   .anime-overlay {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    background: linear-gradient(to bottom, rgba(5,10,5,0.3) 0%, rgba(5,10,5,0.95) 100%);
+    background: linear-gradient(to bottom, rgba(5,10,5,0) 0%, rgba(5,10,5,0.4) 50%, rgba(5,10,5,0.9) 100%);
   }
 
   /* ===== Custom Crosshair Cursor ===== */
@@ -92,18 +94,18 @@
   }
   .cursor-dot::before { top: 50%; left: -8px; right: -8px; height: 1px; }
   .cursor-dot::after { left: 50%; top: -8px; bottom: -8px; width: 1px; }
-  .cursor-dot.grow { width: 50px; height: 50px; background: rgba(0,255,65,0.1); border-color: var(--accent-2); }
+  .cursor-dot.grow { width: 50px; height: 50px; background: rgba(0,255,65,0.2); border-color: var(--accent-2); }
   .cursor-dot.grow::before, .cursor-dot.grow::after { opacity: 0; }
   .cursor-dot.click { transform: translate(-50%, -50%) scale(0.8); background: var(--accent); }
 
   /* ===== Nav ===== */
   #progress { position: fixed; top: 0; left: 0; height: 3px; width: 100%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); z-index: 200; transform-origin: 0 50%; transform: scaleX(0); }
-  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.2rem clamp(1.2rem, 4vw, 3rem); background: rgba(5, 10, 5, 0.7); backdrop-filter: blur(20px); border-bottom: 1px solid var(--line); transition: transform .4s var(--ease); }
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.2rem clamp(1.2rem, 4vw, 3rem); background: rgba(5, 10, 5, 0.5); backdrop-filter: blur(20px); border-bottom: 1px solid var(--line); transition: transform .4s var(--ease); }
   .nav.hidden { transform: translateY(-100%); }
-  .brand { display: flex; align-items: center; gap: .6rem; font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); }
+  .brand { display: flex; align-items: center; gap: .6rem; font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
   .brand-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); animation: pulse 2s infinite; }
   .nav-links { display: flex; align-items: center; gap: clamp(1rem, 2vw, 2rem); font-size: 0.85rem; font-weight: 500; }
-  .nav-links a { color: var(--text-2); position: relative; padding: .3rem 0; transition: color .25s; font-family: 'JetBrains Mono', monospace; }
+  .nav-links a { color: var(--text-2); position: relative; padding: .3rem 0; transition: color .25s; font-family: 'JetBrains Mono', monospace; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
   .nav-links a:hover { color: var(--accent); }
 
   /* ===== Layout ===== */
@@ -112,21 +114,21 @@
 
   /* ===== Hero ===== */
   .hero { padding: clamp(8rem, 20vh, 14rem) 0 clamp(5rem, 12vh, 8rem); }
-  .hero-eyebrow { display: inline-flex; align-items: center; gap: .5rem; font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; color: var(--accent); padding: .3rem .7rem; border: 1px solid var(--line-2); border-radius: 4px; background: var(--surface); margin-bottom: 2.5rem; backdrop-filter: blur(4px); }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: .5rem; font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; color: var(--accent); padding: .3rem .7rem; border: 1px solid var(--line-2); border-radius: 4px; background: var(--surface); margin-bottom: 2.5rem; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
   
-  .hero-title { font-family: 'Outfit', sans-serif; font-size: clamp(3.5rem, 11vw, 8rem); font-weight: 800; line-height: .95; letter-spacing: -.04em; max-width: 15ch; }
+  .hero-title { font-family: 'Outfit', sans-serif; font-size: clamp(3.5rem, 11vw, 8rem); font-weight: 800; line-height: .95; letter-spacing: -.04em; max-width: 15ch; text-shadow: 0 4px 20px rgba(0,0,0,0.8); }
   .hero-title .line { display: block; overflow: hidden; padding-bottom: 0.1em; margin-bottom: -0.1em; }
   .hero-title .word { display: inline-block; transform: translateY(110%); transition: transform 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
   .hero-title.in .word { transform: translateY(0); }
   .hero-title.in .line:nth-child(1) .word { transition-delay: 0.1s; }
   .hero-title.in .line:nth-child(2) .word { transition-delay: 0.2s; }
-  .hero-title .accent { color: transparent; -webkit-text-stroke: 1px var(--accent); text-shadow: 0 0 30px var(--glow-green); }
+  .hero-title .accent { color: transparent; -webkit-text-stroke: 1px var(--accent); text-shadow: 0 0 40px var(--glow-green); }
 
-  .hero-sub { margin-top: 2rem; max-width: 55ch; font-size: clamp(1rem, 1.8vw, 1.15rem); color: var(--text-2); line-height: 1.7; }
-  .hero-sub strong { color: var(--text); font-weight: 600; }
+  .hero-sub { margin-top: 2rem; max-width: 55ch; font-size: clamp(1rem, 1.8vw, 1.15rem); color: var(--text); line-height: 1.7; text-shadow: 0 2px 5px rgba(0,0,0,0.9); background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; backdrop-filter: blur(5px); }
+  .hero-sub strong { color: var(--accent); font-weight: 700; }
   .hero-actions { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 3rem; }
 
-  .btn { display: inline-flex; align-items: center; gap: .6rem; padding: .8rem 1.6rem; border-radius: 8px; font-size: .9rem; font-weight: 600; border: 1px solid var(--line-2); background: var(--surface); color: var(--text); transition: all .3s var(--ease); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; backdrop-filter: blur(4px); }
+  .btn { display: inline-flex; align-items: center; gap: .6rem; padding: .8rem 1.6rem; border-radius: 8px; font-size: .9rem; font-weight: 600; border: 1px solid var(--line-2); background: var(--surface); color: var(--text); transition: all .3s var(--ease); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
   .btn-primary { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 20px var(--glow-green); }
   .btn-primary:hover { background: #33ff66; transform: translateY(-2px); box-shadow: 0 10px 30px var(--glow-green); }
   .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); box-shadow: 0 0 15px var(--glow-green); }
@@ -136,8 +138,8 @@
   /* ===== Section Shell ===== */
   .section { padding: clamp(4rem, 10vh, 7rem) 0; border-top: 1px solid var(--line); }
   .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 3rem; flex-wrap: wrap; }
-  .section-num { font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--accent); letter-spacing: .15em; text-transform: uppercase; }
-  .section-head h2 { font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 700; letter-spacing: -.03em; }
+  .section-num { font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--accent); letter-spacing: .15em; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+  .section-head h2 { font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 700; letter-spacing: -.03em; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
   
   /* ===== Projects ===== */
   .projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
@@ -146,6 +148,7 @@
     display: flex; flex-direction: column; gap: 1rem; transition: all .3s var(--ease);
     overflow: hidden;
     backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
   }
   
   .card::after {
@@ -153,30 +156,29 @@
     background-size: cover; background-position: center;
     opacity: 0; transition: opacity 0.4s ease;
     mix-blend-mode: luminosity; 
-    filter: sepia(1) hue-rotate(80deg); /* Green tint hover images */
   }
   .card:nth-child(1)::after { background-image: url('https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=800'); } 
   .card:nth-child(2)::after { background-image: url('https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=800'); } 
   .card:nth-child(3)::after { background-image: url('https://images.unsplash.com/photo-1542451313056-b7c8e626645f?q=80&w=800'); } 
 
-  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
-  .card:hover::after { opacity: 0.4; }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,255,65,0.1); }
+  .card:hover::after { opacity: 0.2; }
   
   .card-content { position: relative; z-index: 1; display: flex; flex-direction: column; height: 100%; }
   .card-badge { font-family: 'JetBrains Mono', monospace; font-size: .65rem; text-transform: uppercase; letter-spacing: .05em; color: #000; background: var(--accent); padding: .2rem .5rem; border-radius: 4px; font-weight: 700; align-self: flex-start; }
-  .card h3 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 700; margin-top: 1rem; }
-  .card p { font-size: .9rem; color: var(--text-2); line-height: 1.6; flex-grow: 1; margin-top: 0.5rem; }
+  .card h3 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 700; margin-top: 1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+  .card p { font-size: .9rem; color: var(--text); line-height: 1.6; flex-grow: 1; margin-top: 0.5rem; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
   .card-tags { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: 1.5rem; }
-  .tag { font-family: 'JetBrains Mono', monospace; font-size: .65rem; color: var(--text-3); border: 1px solid var(--line-2); padding: .1rem .4rem; border-radius: 4px; background: rgba(0,0,0,0.5); }
+  .tag { font-family: 'JetBrains Mono', monospace; font-size: .65rem; color: var(--text-2); border: 1px solid var(--line-2); padding: .1rem .4rem; border-radius: 4px; background: rgba(0,0,0,0.6); }
 
   /* ===== OSINT Tools ===== */
   .apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
-  .app-card { background: var(--surface); backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; transition: all .3s var(--ease); }
-  .app-card:hover { border-color: var(--accent-2); transform: translateY(-2px); }
+  .app-card { background: var(--surface); backdrop-filter: blur(15px); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; transition: all .3s var(--ease); box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+  .app-card:hover { border-color: var(--accent-2); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15); }
   .app-title { font-family: 'JetBrains Mono', monospace; font-size: .9rem; font-weight: 700; color: var(--accent); border-bottom: 1px solid var(--line); padding-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; letter-spacing: 0.1em; }
   
   /* Terminal */
-  .terminal { background: #000; border: 1px solid var(--line-2); border-radius: 6px; padding: .8rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); height: 160px; overflow-y: auto; line-height: 1.6; }
+  .terminal { background: rgba(0, 0, 0, 0.85); border: 1px solid var(--line-2); border-radius: 6px; padding: .8rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); height: 160px; overflow-y: auto; line-height: 1.6; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); }
   .terminal::-webkit-scrollbar { width: 3px; }
   .terminal::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
   .terminal-line { display: block; margin-bottom: 2px; word-break: break-all; }
@@ -186,24 +188,24 @@
   @keyframes blink { 50% { opacity: 0; } }
 
   /* OSINT Input */
-  .osint-input { width: 100%; padding: 0.6rem; background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 6px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; outline: none; }
-  .osint-input:focus { border-color: var(--accent); }
-  .osint-btn { padding: 0.5rem 1rem; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; border-radius: 6px; border: 1px solid var(--line-2); background: var(--bg-2); color: var(--text-2); cursor: pointer; transition: all .2s; width: 100%; margin-top: 0.5rem; }
+  .osint-input { width: 100%; padding: 0.6rem; background: rgba(0,0,0,0.6); border: 1px solid var(--line-2); border-radius: 6px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; outline: none; }
+  .osint-input:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--glow-green); }
+  .osint-btn { padding: 0.5rem 1rem; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; border-radius: 6px; border: 1px solid var(--line-2); background: rgba(0,0,0,0.6); color: var(--text-2); cursor: pointer; transition: all .2s; width: 100%; margin-top: 0.5rem; }
   .osint-btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 10px var(--glow-green); }
 
   /* ===== GitHub Stats ===== */
   .gh-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
-  .gh-card { background: var(--surface); backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; display: flex; align-items: center; justify-content: center; transition: border-color .3s; }
+  .gh-card { background: var(--surface); backdrop-filter: blur(15px); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; display: flex; align-items: center; justify-content: center; transition: border-color .3s; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
   .gh-card:hover { border-color: var(--accent); }
   .gh-card img { width: 100%; height: auto; display: block; }
   .gh-wide { grid-column: 1 / -1; }
 
   /* ===== Native Dialog ===== */
-  dialog { background: var(--surface-2); color: var(--text); border: 1px solid var(--accent); border-radius: 16px; padding: 2rem; max-width: 450px; width: 90%; box-shadow: 0 0 50px var(--glow-green); opacity: 0; transform: scale(0.95); transition: opacity 0.3s, transform 0.3s; &::backdrop { background: rgba(5,10,5,0.9); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s; } &:open { opacity: 1; transform: scale(1); &::backdrop { opacity: 1; } } }
+  dialog { background: var(--surface-2); color: var(--text); border: 1px solid var(--accent); border-radius: 16px; padding: 2rem; max-width: 450px; width: 90%; box-shadow: 0 0 50px var(--glow-green); opacity: 0; transform: scale(0.95); transition: opacity 0.3s, transform 0.3s; &::backdrop { background: rgba(5,10,5,0.8); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s; } &:open { opacity: 1; transform: scale(1); &::backdrop { opacity: 1; } } }
   @starting-style { dialog[open] { opacity: 0; transform: scale(0.95); } dialog[open]::backdrop { opacity: 0; } }
 
   /* ===== Footer ===== */
-  .footer { border-top: 1px solid var(--line); padding: 2rem 0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--text-3); }
+  .footer { border-top: 1px solid var(--line); padding: 2rem 0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--text-3); text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
   .footer a { color: var(--accent); }
 
   /* ===== Animations ===== */
@@ -316,7 +318,7 @@
         <button class="osint-btn" id="ipScanBtn">Run Scan ↻</button>
       </div>
 
-      <!-- App 2: DNS Lookup (All Records) -->
+      <!-- App 2: DNS Lookup -->
       <div class="app-card reveal" data-d="1">
         <span class="app-title">DNS Lookup</span>
         <input type="text" class="osint-input" id="dnsInput" placeholder="e.g. github.com" value="github.com">
@@ -336,7 +338,7 @@
         <button class="osint-btn" id="whoisLookupBtn">Lookup</button>
       </div>
 
-      <!-- App 4: Username OSINT (Real WhatsMyName) -->
+      <!-- App 4: Username OSINT -->
       <div class="app-card reveal" data-d="3">
         <span class="app-title">Username OSINT</span>
         <input type="text" class="osint-input" id="usernameInput" placeholder="e.g. johndoe" value="TechAdityaBRO">
@@ -344,6 +346,36 @@
           <span class="terminal-line">> Ready<span class="terminal-cursor"></span></span>
         </div>
         <button class="osint-btn" id="usernameLookupBtn">Search (WhatsMyName)</button>
+      </div>
+
+      <!-- App 5: MAC Address Lookup (Fixed) -->
+      <div class="app-card reveal">
+        <span class="app-title">MAC Address Lookup</span>
+        <input type="text" class="osint-input" id="macInput" placeholder="e.g. 00:1A:2B" value="00:1A:2B">
+        <div class="terminal" id="macTerminal" style="height: 100px;">
+          <span class="terminal-line">> Ready<span class="terminal-cursor"></span></span>
+        </div>
+        <button class="osint-btn" id="macLookupBtn">Lookup Vendor</button>
+      </div>
+
+      <!-- App 6: URL Expander -->
+      <div class="app-card reveal" data-d="1">
+        <span class="app-title">URL Expander</span>
+        <input type="text" class="osint-input" id="urlInput" placeholder="Short URL" value="https://bit.ly/3x...">
+        <div class="terminal" id="urlTerminal" style="height: 100px;">
+          <span class="terminal-line">> Ready<span class="terminal-cursor"></span></span>
+        </div>
+        <button class="osint-btn" id="urlLookupBtn">Expand</button>
+      </div>
+
+      <!-- App 7: Email Breach Checker -->
+      <div class="app-card reveal" data-d="2">
+        <span class="app-title">Email Breach Checker</span>
+        <input type="email" class="osint-input" id="emailInput" placeholder="e.g. test@example.com" value="test@example.com">
+        <div class="terminal" id="emailTerminal" style="height: 100px;">
+          <span class="terminal-line">> Ready<span class="terminal-cursor"></span></span>
+        </div>
+        <button class="osint-btn" id="emailLookupBtn">Check Breaches</button>
       </div>
 
     </div>
@@ -377,9 +409,9 @@
 
   <!-- Contact -->
   <section class="section wrap" id="contact">
-    <div class="reveal" style="text-align: center; padding: 2rem 0;">
-      <h2 style="font-family: 'Outfit'; font-size: clamp(2.5rem, 6vw, 3.5rem); margin-bottom: 1.5rem; font-weight: 800; letter-spacing: -.03em;">Let's build something.</h2>
-      <p style="color: var(--text-2); margin-bottom: 2.5rem; max-width: 40ch; margin-inline: auto;">Open to collabs, weird ideas, and anything that ships. The fastest way to reach me is email or Discord.</p>
+    <div class="reveal" style="text-align: center; padding: 2rem 0; background: rgba(0,0,0,0.4); border-radius: 16px; backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+      <h2 style="font-family: 'Outfit'; font-size: clamp(2.5rem, 6vw, 3.5rem); margin-bottom: 1.5rem; font-weight: 800; letter-spacing: -.03em; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">Let's build something.</h2>
+      <p style="color: var(--text-2); margin-bottom: 2.5rem; max-width: 40ch; margin-inline: auto; text-shadow: 0 1px 3px rgba(0,0,0,0.8);">Open to collabs, weird ideas, and anything that ships. The fastest way to reach me is email or Discord.</p>
       <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
         <a href="mailto:chairmanaditya@brogang.jo3.org" class="btn btn-primary">Email me <span class="arrow">→</span></a>
         <a href="https://discord.gg/TSWg34Zets" target="_blank" rel="noopener" class="btn btn-ghost">Join Discord ↗</a>
@@ -403,7 +435,7 @@
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
-/* ===== Dynamic Anime Background (Nekos.best with Green Filter) ===== */
+/* ===== Dynamic Anime Background ===== */
 const bgLayer1 = document.getElementById('bgLayer1');
 const bgLayer2 = document.getElementById('bgLayer2');
 let currentLayer = bgLayer1;
@@ -415,7 +447,6 @@ async function fetchAnimeBackground() {
   isFetchingBg = true;
   
   try {
-    // Fetching from Nekos.best, using "nature" or similar tags to match the green theme
     const res = await fetch('https://nekos.best/api/v2/neko?amount=1');
     if (!res.ok) throw new Error('API Error');
     const data = await res.json();
@@ -443,7 +474,7 @@ async function fetchAnimeBackground() {
 }
 
 fetchAnimeBackground();
-setInterval(fetchAnimeBackground, 12000);
+setInterval(fetchAnimeBackground, 15000);
 
 /* ===== Cursor & Scroll ===== */
 if (matchMedia('(pointer: fine)').matches) {
@@ -485,7 +516,7 @@ document.querySelectorAll('.reveal, .hero-title').forEach(el => io.observe(el));
 
 /* ===== OSINT Tools ===== */
 
-// 1. IP Scanner (ipwho.is)
+// 1. IP Scanner
 const ipTerminal = document.getElementById('ipTerminal');
 const ipScanBtn = document.getElementById('ipScanBtn');
 
@@ -524,7 +555,7 @@ async function runIPScan() {
 ipScanBtn.addEventListener('click', runIPScan);
 runIPScan();
 
-// 2. DNS Lookup (Google DoH - All Records)
+// 2. DNS Lookup
 const dnsInput = document.getElementById('dnsInput');
 const dnsTerminal = document.getElementById('dnsTerminal');
 const dnsLookupBtn = document.getElementById('dnsLookupBtn');
@@ -571,7 +602,7 @@ async function runDNSLookup() {
 }
 dnsLookupBtn.addEventListener('click', runDNSLookup);
 
-// 3. WHOIS Lookup (RDAP - Modern replacement)
+// 3. WHOIS Lookup (RDAP)
 const whoisInput = document.getElementById('whoisInput');
 const whoisTerminal = document.getElementById('whoisTerminal');
 const whoisLookupBtn = document.getElementById('whoisLookupBtn');
@@ -620,7 +651,7 @@ async function runWhoisLookup() {
 }
 whoisLookupBtn.addEventListener('click', runWhoisLookup);
 
-// 4. Username OSINT (Real WhatsMyName)
+// 4. Username OSINT (WhatsMyName)
 const usernameInput = document.getElementById('usernameInput');
 const usernameTerminal = document.getElementById('usernameTerminal');
 const usernameLookupBtn = document.getElementById('usernameLookupBtn');
@@ -686,6 +717,92 @@ async function runUsernameLookup() {
   }
 }
 usernameLookupBtn.addEventListener('click', runUsernameLookup);
+
+// 5. MAC Address Lookup (maclookup.app via allorigins proxy to avoid CORS)
+const macInput = document.getElementById('macInput');
+const macTerminal = document.getElementById('macTerminal');
+const macLookupBtn = document.getElementById('macLookupBtn');
+
+async function runMacLookup() {
+  const mac = macInput.value.trim();
+  if (!mac) return;
+  macTerminal.innerHTML = `<span class="terminal-line">> Querying MAC vendor for ${mac}...</span><span class="terminal-cursor"></span>`;
+  
+  try {
+    // Using allorigins to proxy the request and bypass CORS
+    const targetUrl = encodeURIComponent(`https://api.macvendors.com/${mac}`);
+    const res = await fetch(`https://api.allorigins.win/get?url=${targetUrl}`);
+    const data = await res.json();
+    
+    macTerminal.innerHTML = '';
+    if (data.contents && data.contents !== '{"errors":{"detail":"Not Found"}}') {
+      macTerminal.innerHTML += `<span class="terminal-line">> Vendor: <span>${data.contents}</span></span>`;
+    } else {
+      macTerminal.innerHTML += `<span class="terminal-line">> Vendor: <span>Not found (private/randomized MAC)</span></span>`;
+    }
+    macTerminal.innerHTML += `<span class="terminal-line">> Done.<span class="terminal-cursor"></span></span>`;
+  } catch (e) {
+    macTerminal.innerHTML = '<span class="terminal-line">> ERROR: Lookup failed.</span><span class="terminal-cursor"></span>';
+  }
+}
+macLookupBtn.addEventListener('click', runMacLookup);
+
+// 6. URL Expander
+const urlInput = document.getElementById('urlInput');
+const urlTerminal = document.getElementById('urlTerminal');
+const urlLookupBtn = document.getElementById('urlLookupBtn');
+
+async function runUrlExpand() {
+  const url = urlInput.value.trim();
+  if (!url) return;
+  urlTerminal.innerHTML = `<span class="terminal-line">> Expanding ${url}...</span><span class="terminal-cursor"></span>`;
+  
+  try {
+    const res = await fetch(`https://unshorten.me/api/v2/unshorten?url=${encodeURIComponent(url)}`);
+    const data = await res.json();
+    
+    urlTerminal.innerHTML = '';
+    urlTerminal.innerHTML += `<span class="terminal-line">> Original: <a href="${data.success ? data.real_url : '#'}" target="_blank">${data.success ? data.real_url : 'Failed'}</a></span>`;
+    urlTerminal.innerHTML += `<span class="terminal-line">> Done.<span class="terminal-cursor"></span></span>`;
+  } catch (e) {
+    urlTerminal.innerHTML = '<span class="terminal-line">> ERROR: Expansion failed.</span><span class="terminal-cursor"></span>';
+  }
+}
+urlLookupBtn.addEventListener('click', runUrlExpand);
+
+// 7. Email Breach Checker (XposedOrNot API)
+const emailInput = document.getElementById('emailInput');
+const emailTerminal = document.getElementById('emailTerminal');
+const emailLookupBtn = document.getElementById('emailLookupBtn');
+
+async function runEmailBreachLookup() {
+  const email = emailInput.value.trim();
+  if (!email) return;
+  emailTerminal.innerHTML = `<span class="terminal-line">> Checking breaches for ${email}...</span><span class="terminal-cursor"></span>`;
+  
+  try {
+    const res = await fetch(`https://api.xposedornot.com/v1/check-email/${encodeURIComponent(email)}`);
+    if (res.status === 404) {
+      emailTerminal.innerHTML = '<span class="terminal-line">> No breaches found. (Clean ✅)</span><span class="terminal-cursor"></span>';
+      return;
+    }
+    const data = await res.json();
+    
+    emailTerminal.innerHTML = '';
+    if (data.breaches && data.breaches.length > 0) {
+      emailTerminal.innerHTML += `<span class="terminal-line">> Found in <span>${data.breaches.length}</span> breaches:</span>`;
+      data.breaches.slice(0, 3).forEach(b => {
+        emailTerminal.innerHTML += `<span class="terminal-line">  - <span>${b}</span></span>`;
+      });
+    } else {
+      emailTerminal.innerHTML += `<span class="terminal-line">> No breaches found. (Clean ✅)</span>`;
+    }
+    emailTerminal.innerHTML += `<span class="terminal-line">> Done.<span class="terminal-cursor"></span></span>`;
+  } catch (e) {
+    emailTerminal.innerHTML = '<span class="terminal-line">> ERROR: API failed.</span><span class="terminal-cursor"></span>';
+  }
+}
+emailLookupBtn.addEventListener('click', runEmailBreachLookup);
 </script>
 </body>
 </html>
