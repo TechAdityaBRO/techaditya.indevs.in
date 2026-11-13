@@ -11,26 +11,24 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* ===== ULTRA PREMIUM THEME ===== */
+  /* ===== ULTRA PREMIUM LIQUID GLASS THEME ===== */
   :root {
     --bg: #020503;
     --bg-2: #050a05;
     
-    /* Liquid Glass 2.0 */
-    --surface: rgba(10, 20, 10, 0.4); 
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-highlight: rgba(255, 255, 255, 0.2);
+    /* True Liquid Glass (Transparent, refractive) */
+    --surface: rgba(10, 20, 10, 0.25); 
+    --glass-border: rgba(0, 255, 65, 0.15);
+    --glass-highlight: rgba(255, 255, 255, 0.4);
     
     --text: #ffffff;
-    --text-2: #a3c2a3; 
+    --text-2: #b3d9b3; 
     --text-3: #5c7a5c;
     
     --accent: #00ff41;      
     --accent-2: #10b981;    
-    --accent-3: #064e3b;    
     
-    --glow-green: rgba(0, 255, 65, 0.4);
-    --glow-emerald: rgba(16, 185, 129, 0.3);
+    --glow-green: rgba(0, 255, 65, 0.5);
     
     --radius: 24px; 
     --ease: cubic-bezier(0.2, 0.8, 0.2, 1); 
@@ -56,17 +54,9 @@
   button { font-family: inherit; cursor: none; border: none; background: none; color: inherit; @media (pointer: coarse) { cursor: pointer; } }
   img, iframe { max-width: 100%; display: block; }
 
-  /* ===== Global Spotlight ===== */
-  .spotlight {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    pointer-events: none; z-index: 1;
-    background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 255, 65, 0.08), transparent 40%);
-    transition: background 0.1s linear;
-  }
-
-  /* ===== Parallax Anime Background ===== */
+  /* ===== Fixed Bright Anime Background ===== */
   .anime-bg-container {
-    position: fixed; inset: -10%; z-index: -2; pointer-events: none; overflow: hidden;
+    position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden;
   }
   
   .anime-bg-layer {
@@ -74,38 +64,25 @@
     background-size: cover;
     background-position: center;
     opacity: 0;
-    transition: opacity 1s ease-in-out;
-    transform: scale(1.05);
-    filter: blur(2px) brightness(0.6); 
-    /* Default image so screen is never empty */
-    background-image: url('https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=2000');
+    transition: opacity 1.5s ease-in-out;
+    transform: scale(1.02); 
+    filter: brightness(1) saturate(1.2); 
   }
   
   .anime-bg-layer.active { opacity: 1; }
   
   .anime-overlay {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    background: linear-gradient(to bottom, rgba(2,5,3,0.3) 0%, rgba(2,5,3,0.8) 60%, rgba(2,5,3,1) 100%);
+    background: linear-gradient(to bottom, rgba(2,5,3,0.1) 0%, rgba(2,5,3,0.6) 60%, rgba(2,5,3,0.95) 100%);
   }
 
-  /* Noise texture overlay */
-  .noise {
-    position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.05;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  /* ===== Global Spotlight ===== */
+  .spotlight {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none; z-index: 1;
+    background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 255, 65, 0.1), transparent 40%);
+    transition: background 0.1s linear;
   }
-
-  /* ===== Cinematic Preloader ===== */
-  #preloader {
-    position: fixed; inset: 0; z-index: 99999; background: #020503;
-    display: flex; justify-content: center; align-items: center; flex-direction: column;
-    transition: opacity 0.8s var(--ease), visibility 0.8s;
-  }
-  #preloader.hidden { opacity: 0; visibility: hidden; }
-  
-  .loader-logo { font-family: 'JetBrains Mono', monospace; font-size: 2rem; color: var(--accent); font-weight: 800; letter-spacing: 0.2em; margin-bottom: 1rem; text-shadow: 0 0 20px var(--glow-green); }
-  .loader-text { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-2); letter-spacing: 0.1em; margin-bottom: 2rem; }
-  .loader-bar { width: 250px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; border: 1px solid var(--glass-border); }
-  .loader-fill { height: 100%; width: 0%; background: var(--accent); box-shadow: 0 0 15px var(--accent); transition: width 0.3s ease; }
 
   /* ===== Custom Magnetic Cursor ===== */
   .cursor-dot {
@@ -123,7 +100,7 @@
 
   /* ===== Nav ===== */
   #progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; background: var(--accent); z-index: 2000; transform-origin: 0 50%; transform: scaleX(0); box-shadow: 0 0 15px var(--accent); }
-  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem clamp(1.5rem, 5vw, 4rem); background: linear-gradient(to bottom, rgba(2,5,3,0.9), transparent); border-bottom: 1px solid var(--glass-border); transition: transform .5s var(--ease); }
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem clamp(1.5rem, 5vw, 4rem); background: linear-gradient(to bottom, rgba(2,5,3,0.8), transparent); border-bottom: 1px solid var(--glass-border); transition: transform .5s var(--ease); }
   .nav.hidden { transform: translateY(-100%); }
   .brand { display: flex; align-items: center; gap: .8rem; font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
   .brand-dot { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 15px var(--accent); animation: pulse 2s infinite; }
@@ -137,25 +114,32 @@
   main { position: relative; z-index: 2; }
   .wrap { max-width: 1200px; margin: 0 auto; padding: 0 clamp(1.5rem, 5vw, 4rem); }
 
+  /* ===== WebGL Canvas for Hero ===== */
+  #webgl-canvas {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1; pointer-events: none; opacity: 0.6;
+  }
+
   /* ===== Hero ===== */
-  .hero { padding: clamp(10rem, 25vh, 16rem) 0 clamp(6rem, 15vh, 10rem); display: flex; flex-direction: column; align-items: center; text-align: center; }
-  .hero-eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: 'JetBrains Mono', monospace; font-size: .8rem; letter-spacing: .15em; text-transform: uppercase; color: var(--accent); padding: .5rem 1rem; border: 1px solid var(--glass-border); border-radius: 50px; background: var(--surface); margin-bottom: 3rem; backdrop-filter: blur(10px); box-shadow: 0 0 20px rgba(0,255,65,0.1); }
+  .hero { padding: clamp(10rem, 25vh, 16rem) 0 clamp(6rem, 15vh, 10rem); display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
   
-  .hero-title { font-family: 'Outfit', sans-serif; font-size: clamp(4rem, 12vw, 9rem); font-weight: 900; line-height: 0.9; letter-spacing: -0.05em; text-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: 'JetBrains Mono', monospace; font-size: .8rem; letter-spacing: .15em; text-transform: uppercase; color: var(--accent); padding: .5rem 1rem; border: 1px solid var(--glass-border); border-radius: 50px; background: rgba(0,0,0,0.4); margin-bottom: 3rem; backdrop-filter: blur(10px); box-shadow: 0 0 20px rgba(0,255,65,0.1); }
+  
+  .hero-title { font-family: 'Outfit', sans-serif; font-size: clamp(4rem, 12vw, 9rem); font-weight: 900; line-height: 0.9; letter-spacing: -0.05em; text-shadow: 0 10px 40px rgba(0,0,0,0.9); }
   .hero-title .line { display: block; overflow: hidden; padding-bottom: 0.1em; margin-bottom: -0.1em; }
   .hero-title .word { display: inline-block; transform: translateY(110%); transition: transform 1.2s var(--ease); }
   .hero-title.in .word { transform: translateY(0); }
   .hero-title.in .line:nth-child(1) .word { transition-delay: 0.1s; }
   .hero-title.in .line:nth-child(2) .word { transition-delay: 0.2s; }
-  .hero-title .accent { background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 30px var(--glow-green)); }
+  .hero-title .accent { background: linear-gradient(135deg, var(--accent), #a8ffcb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 40px var(--glow-green)); }
 
-  .hero-sub { margin-top: 2.5rem; max-width: 60ch; font-size: clamp(1.1rem, 1.8vw, 1.3rem); color: var(--text-2); line-height: 1.7; background: var(--surface); padding: 1.5rem 2rem; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid var(--glass-border); box-shadow: inset 0 1px 0 var(--glass-highlight); }
-  .hero-sub strong { color: var(--text); font-weight: 700; }
+  .hero-sub { margin-top: 2.5rem; max-width: 60ch; font-size: clamp(1.1rem, 1.8vw, 1.3rem); color: var(--text); line-height: 1.7; background: rgba(0,0,0,0.4); padding: 1.5rem 2rem; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid var(--glass-border); box-shadow: inset 0 1px 0 var(--glass-highlight); text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+  .hero-sub strong { color: var(--accent); font-weight: 700; }
   .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-top: 4rem; }
 
-  /* ===== Magnetic Buttons ===== */
-  .btn { display: inline-flex; align-items: center; gap: .8rem; padding: 1rem 2rem; border-radius: 12px; font-size: 1rem; font-weight: 700; border: 1px solid var(--glass-border); background: var(--surface); color: var(--text); transition: all .3s var(--ease); font-family: 'Outfit', sans-serif; letter-spacing: 0.02em; backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.5), inset 0 1px 0 var(--glass-highlight); position: relative; overflow: hidden; }
-  .btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transition: left 0.6s var(--ease); }
+  /* ===== Buttons with Wobble ===== */
+  .btn { display: inline-flex; align-items: center; gap: .8rem; padding: 1rem 2rem; border-radius: 12px; font-size: 1rem; font-weight: 700; border: 1px solid var(--glass-border); background: rgba(10, 20, 10, 0.4); color: var(--text); transition: all .3s var(--ease); font-family: 'Outfit', sans-serif; letter-spacing: 0.02em; backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.5), inset 0 1px 0 var(--glass-highlight); position: relative; overflow: hidden; }
+  .btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.6s var(--ease); }
   .btn:hover::before { left: 100%; }
   .btn-primary { background: var(--accent); color: var(--bg); border-color: var(--accent); box-shadow: 0 0 30px var(--glow-green); }
   .btn-primary:hover { box-shadow: 0 10px 50px var(--glow-green); }
@@ -163,33 +147,46 @@
   .btn .arrow { transition: transform .4s var(--ease); }
   .btn:hover .arrow { transform: translateX(6px); }
 
+  /* Wobble Animation */
+  @keyframes wobble {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(-2deg) scale(1.02); }
+    50% { transform: rotate(2deg) scale(1.02); }
+    75% { transform: rotate(-1deg) scale(1.01); }
+    100% { transform: rotate(0deg) scale(1); }
+  }
+  .wobble-hover:hover {
+    animation: wobble 0.5s ease-in-out;
+  }
+
   /* ===== Sections ===== */
   .section { padding: clamp(6rem, 15vh, 10rem) 0; }
   .section-head { margin-bottom: 4rem; position: relative; }
   .section-num { font-family: 'JetBrains Mono', monospace; font-size: .9rem; color: var(--accent); letter-spacing: .2em; text-transform: uppercase; margin-bottom: 0.5rem; display: block; }
   .section-head h2 { font-family: 'Outfit', sans-serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 
-  /* ===== Bento Grid for OSINT ===== */
+  /* ===== Bento Grid (Liquid Glass) ===== */
   .bento-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
   .bento-item { 
-    background: var(--surface); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: var(--radius); 
+    background: var(--surface); backdrop-filter: blur(20px); 
+    border: 1px solid var(--glass-border); 
+    border-radius: var(--radius); 
     padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; position: relative; overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 var(--glass-highlight);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 1px 0 var(--glass-highlight);
     transition: transform 0.1s ease, border-color 0.3s;
     transform-style: preserve-3d;
   }
   
-  /* Grid Spans */
   .span-12 { grid-column: span 12; }
   .span-6 { grid-column: span 6; }
   .span-4 { grid-column: span 4; }
   
-  .bento-item:hover { border-color: rgba(0, 255, 65, 0.4); }
+  .bento-item:hover { border-color: rgba(0, 255, 65, 0.5); }
   
-  /* Liquid overlay on hover */
+  /* Liquid animated inner glow */
   .bento-item::after {
     content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
-    background: radial-gradient(circle at var(--local-x, 50%) var(--local-y, 50%), rgba(0,255,65,0.15), transparent 50%);
+    background: radial-gradient(circle at var(--local-x, 50%) var(--local-y, 50%), rgba(0,255,65,0.15), transparent 60%);
     opacity: 0; transition: opacity 0.3s;
   }
   .bento-item:hover::after { opacity: 1; }
@@ -200,20 +197,20 @@
   
   /* Terminal */
   .terminal-wrapper { position: relative; border-radius: 12px; overflow: hidden; }
-  .terminal { background: #000; border: 1px solid var(--line-2); border-radius: 12px; padding: 1.2rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent); height: 180px; overflow-y: auto; line-height: 1.7; box-shadow: inset 0 0 20px rgba(0,0,0,1); position: relative; z-index: 1; }
+  .terminal { background: rgba(0, 0, 0, 0.85); border: 1px solid var(--line-2); border-radius: 12px; padding: 1.2rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent); height: 180px; overflow-y: auto; line-height: 1.7; box-shadow: inset 0 0 20px rgba(0,0,0,1); position: relative; z-index: 1; }
   .terminal::-webkit-scrollbar { width: 4px; }
-  .terminal::-webkit-scrollbar-thumb { background: var(--accent-3); border-radius: 4px; }
+  .terminal::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
   .terminal-line { display: block; margin-bottom: 4px; word-break: break-all; }
-  .terminal-line span { color: var(--accent-2); }
-  .terminal-line a { color: var(--accent-2); text-decoration: underline; }
+  .terminal-line span { color: #a8ffcb; }
+  .terminal-line a { color: #a8ffcb; text-decoration: underline; }
   
   /* OSINT Input & Buttons */
   .osint-input { width: 100%; padding: 0.8rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; outline: none; transition: all 0.3s; position: relative; z-index: 1; }
-  .osint-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0,255,65,0.2); background: rgba(0,0,0,0.8); }
-  .osint-btn { padding: 0.8rem 1.5rem; font-size: 0.85rem; font-weight: 700; font-family: 'Outfit', sans-serif; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0, 255, 65, 0.1); color: var(--accent); cursor: pointer; transition: all .3s; width: 100%; position: relative; z-index: 1; backdrop-filter: blur(5px); }
-  .osint-btn:hover { background: var(--accent); color: var(--bg); box-shadow: 0 0 20px var(--glow-green); }
+  .osint-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0,255,65,0.3); background: rgba(0,0,0,0.8); }
+  .osint-btn { padding: 0.8rem 1.5rem; font-size: 0.85rem; font-weight: 700; font-family: 'Outfit', sans-serif; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0, 255, 65, 0.1); color: var(--accent); cursor: pointer; transition: all .3s; width: 100%; position: relative; z-index: 1; }
+  .osint-btn:hover { background: var(--accent); color: var(--bg); box-shadow: 0 0 20px var(--glow-green); animation: wobble 0.5s ease-in-out; }
 
-  /* High-Visibility Skeleton Loading */
+  /* High-Visibility Skeleton */
   .skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(0,255,65,0.2), transparent); background-size: 200% 100%; animation: shimmer 1s infinite; z-index: 10; pointer-events: none; opacity: 0; transition: opacity 0.3s; border-radius: 12px; }
   .loading .skeleton { opacity: 1; }
   @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
@@ -221,7 +218,7 @@
   /* ===== Projects ===== */
   .projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
   .card { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 2.5rem; display: flex; flex-direction: column; gap: 1.5rem; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 var(--glass-highlight); transition: transform 0.1s ease, border-color 0.3s; transform-style: preserve-3d; }
-  .card:hover { border-color: var(--accent); }
+  .card:hover { border-color: var(--accent); animation: wobble 0.5s ease-in-out; }
   .card-badge { font-family: 'JetBrains Mono', monospace; font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: var(--bg); background: var(--accent); padding: .3rem .8rem; border-radius: 50px; font-weight: 700; align-self: flex-start; }
   .card h3 { font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 700; margin-top: 1rem; }
   .card p { font-size: 1rem; color: var(--text-2); line-height: 1.7; flex-grow: 1; }
@@ -263,25 +260,16 @@
 </head>
 <body>
 
-<!-- Cinematic Preloader -->
-<div id="preloader">
-  <div class="loader-logo">BRO GANG OSINT</div>
-  <div class="loader-text">INITIALIZING SECURE CONNECTION...</div>
-  <div class="loader-bar"><div class="loader-fill" id="loaderFill"></div></div>
-</div>
-
-<!-- Global Spotlight & Noise -->
+<!-- Global Spotlight -->
 <div class="spotlight" id="spotlight"></div>
-<div class="noise"></div>
 
 <!-- Custom Cursor -->
 <div class="cursor-dot" id="cursorDot"></div>
 <div class="cursor-outline" id="cursorOutline"></div>
 
-<!-- Parallax Anime Background Layers -->
+<!-- Fixed Bright Anime Background Layers -->
 <div class="anime-bg-container" id="bgContainer">
-  <!-- Added active class so the default image shows instantly -->
-  <div class="anime-bg-layer active" id="bgLayer1"></div>
+  <div class="anime-bg-layer active" id="bgLayer1" style="background-image: url('https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=2000');"></div>
   <div class="anime-bg-layer" id="bgLayer2"></div>
 </div>
 <div class="anime-overlay"></div>
@@ -299,8 +287,9 @@
 </nav>
 
 <main id="top">
-  <!-- Hero -->
+  <!-- Hero with WebGL Canvas -->
   <header class="hero wrap">
+    <canvas id="webgl-canvas"></canvas>
     <div class="hero-eyebrow reveal"><span class="brand-dot" style="width:6px;height:6px"></span> Available for collabs</div>
     <h1 class="hero-title">
       <span class="line"><span class="word">Developer</span></span>
@@ -311,38 +300,37 @@
       Currently running <strong>BRO GANG</strong>, a community I started in 2022.
     </p>
     <div class="hero-actions reveal" data-d="3">
-      <a href="#work" class="btn btn-primary magnetic">View work <span class="arrow">→</span></a>
-      <a href="https://github.com/TechAdityaBRO" target="_blank" rel="noopener" class="btn btn-ghost magnetic">GitHub ↗</a>
+      <a href="#work" class="btn btn-primary magnetic wobble-hover">View work <span class="arrow">→</span></a>
+      <a href="https://github.com/TechAdityaBRO" target="_blank" rel="noopener" class="btn btn-ghost magnetic wobble-hover">GitHub ↗</a>
     </div>
   </header>
 
-  <!-- Work (3D Cards) -->
+  <!-- Work -->
   <section class="section wrap" id="work">
     <div class="section-head reveal">
       <div class="section-num">01 — Selected work</div>
       <h2>Things I've built</h2>
     </div>
     <div class="projects">
-      <a class="card tilt reveal" href="https://pglove.jo3.org" target="_blank" rel="noopener">
+      <a class="card tilt reveal wobble-hover" href="https://pglove.jo3.org" target="_blank" rel="noopener">
         <span class="card-badge">Browser</span>
         <h3>PGlove</h3>
         <p>An experimental desktop browser built with Tauri 2 (Rust + WebView2). Lightweight, fast, and unapologetically different.</p>
         <div class="card-tags"><span class="tag">Rust</span><span class="tag">Tauri</span></div>
       </a>
-      <a class="card tilt reveal" data-d="1" href="https://brogangaicli.pages.dev/" target="_blank" rel="noopener">
+      <a class="card tilt reveal wobble-hover" data-d="1" href="https://brogangaicli.pages.dev/" target="_blank" rel="noopener">
         <span class="card-badge">CLI · AI</span>
         <h3>Bro Gang AI CLI</h3>
         <p>A free-forever AI coding agent for the terminal. No API keys, no signup — powered by Llama 3.3 70B on Cloudflare Workers.</p>
         <div class="card-tags"><span class="tag">TypeScript</span><span class="tag">Llama</span></div>
       </a>
-      <a class="card tilt reveal" data-d="2" href="https://nexasearch.pages.dev/" target="_blank" rel="noopener">
+      <a class="card tilt reveal wobble-hover" data-d="2" href="https://nexasearch.pages.dev/" target="_blank" rel="noopener">
         <span class="card-badge">Search</span>
         <h3>Nexa Search</h3>
         <p>A privacy-first search engine. No ads in results, no tracking pixels, no sold browsing history. Just the signal.</p>
         <div class="card-tags"><span class="tag">JavaScript</span><span class="tag">Privacy</span></div>
       </a>
-      <!-- Native Dialog Demo -->
-      <div class="card tilt reveal" onclick="document.getElementById('demo-dialog').showModal()" style="cursor: pointer;" data-d="3">
+      <div class="card tilt reveal wobble-hover" onclick="document.getElementById('demo-dialog').showModal()" style="cursor: pointer;" data-d="3">
         <span class="card-badge">Native HTML</span>
         <h3>Native Dialog</h3>
         <p>Click to open a native HTML <code>&lt;dialog&gt;</code> element. Built-in modal functionality without external libraries.</p>
@@ -351,7 +339,7 @@
     </div>
   </section>
 
-  <!-- OSINT Tools (Bento Grid) -->
+  <!-- OSINT Tools -->
   <section class="section wrap" id="apps">
     <div class="section-head reveal">
       <div class="section-num">02 — Playground</div>
@@ -360,132 +348,110 @@
     
     <div class="bento-grid">
       
-      <!-- App 1: IP Scanner (Large) -->
-      <div class="bento-item span-6 reveal tilt" id="app-ip">
-        <div class="app-header">
-          <span class="app-title">IP Scanner</span>
-        </div>
+      <!-- App 1: IP Scanner -->
+      <div class="bento-item span-6 reveal tilt wobble-hover" id="app-ip">
+        <div class="app-header"><span class="app-title">IP Scanner</span></div>
         <div class="terminal-wrapper">
-          <div class="terminal" id="ipTerminal">
-            <span class="terminal-line">> Awaiting scan...</span>
-          </div>
+          <div class="terminal" id="ipTerminal"><span class="terminal-line">> Awaiting scan...</span></div>
           <div class="skeleton"></div>
         </div>
         <button class="osint-btn magnetic" id="ipScanBtn">Run Scan ↻</button>
       </div>
 
-      <!-- App 2: DNS Lookup (Small) -->
-      <div class="bento-item span-6 reveal tilt" data-d="1" id="app-dns">
+      <!-- App 2: DNS Lookup -->
+      <div class="bento-item span-6 reveal tilt wobble-hover" data-d="1" id="app-dns">
         <div class="app-header"><span class="app-title">DNS Lookup</span></div>
         <input type="text" class="osint-input" id="dnsInput" placeholder="e.g. github.com" value="github.com">
         <div class="terminal-wrapper">
-          <div class="terminal" id="dnsTerminal" style="height: 100px;">
-            <span class="terminal-line">> Ready</span>
-          </div>
+          <div class="terminal" id="dnsTerminal" style="height: 100px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
         <button class="osint-btn magnetic" id="dnsLookupBtn">Lookup (A, MX, TXT, NS)</button>
       </div>
 
-      <!-- App 3: WHOIS (Small) -->
-      <div class="bento-item span-4 reveal tilt" data-d="2" id="app-whois">
+      <!-- App 3: WHOIS -->
+      <div class="bento-item span-4 reveal tilt wobble-hover" data-d="2" id="app-whois">
         <div class="app-header"><span class="app-title">WHOIS (RDAP)</span></div>
         <input type="text" class="osint-input" id="whoisInput" placeholder="e.g. google.com" value="google.com">
         <div class="terminal-wrapper">
-          <div class="terminal" id="whoisTerminal" style="height: 100px;">
-            <span class="terminal-line">> Ready</span>
-          </div>
+          <div class="terminal" id="whoisTerminal" style="height: 100px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
         <button class="osint-btn magnetic" id="whoisLookupBtn">Lookup</button>
       </div>
 
-      <!-- App 4: Username OSINT (Small) -->
-      <div class="bento-item span-4 reveal tilt" data-d="3" id="app-user">
+      <!-- App 4: Username OSINT -->
+      <div class="bento-item span-4 reveal tilt wobble-hover" data-d="3" id="app-user">
         <div class="app-header"><span class="app-title">Username OSINT</span></div>
         <input type="text" class="osint-input" id="usernameInput" placeholder="e.g. johndoe" value="TechAdityaBRO">
         <div class="terminal-wrapper">
-          <div class="terminal" id="usernameTerminal" style="height: 100px;">
-            <span class="terminal-line">> Ready</span>
-          </div>
+          <div class="terminal" id="usernameTerminal" style="height: 100px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
         <button class="osint-btn magnetic" id="usernameLookupBtn">Search</button>
       </div>
 
-      <!-- App 5: MAC Lookup (Small) -->
-      <div class="bento-item span-4 reveal tilt" id="app-mac">
+      <!-- App 5: MAC Lookup -->
+      <div class="bento-item span-4 reveal tilt wobble-hover" id="app-mac">
         <div class="app-header"><span class="app-title">MAC Address</span></div>
         <input type="text" class="osint-input" id="macInput" placeholder="e.g. 00:1A:2B" value="00:1A:2B">
         <div class="terminal-wrapper">
-          <div class="terminal" id="macTerminal" style="height: 100px;">
-            <span class="terminal-line">> Ready</span>
-          </div>
+          <div class="terminal" id="macTerminal" style="height: 100px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
         <button class="osint-btn magnetic" id="macLookupBtn">Lookup Vendor</button>
       </div>
 
-      <!-- App 6: URL Expander (Small) -->
-      <div class="bento-item span-6 reveal tilt" data-d="1" id="app-url">
+      <!-- App 6: URL Expander -->
+      <div class="bento-item span-6 reveal tilt wobble-hover" data-d="1" id="app-url">
         <div class="app-header"><span class="app-title">URL Expander</span></div>
         <input type="text" class="osint-input" id="urlInput" placeholder="Short URL" value="https://bit.ly/3x...">
         <div class="terminal-wrapper">
-          <div class="terminal" id="urlTerminal" style="height: 80px;">
-            <span class="terminal-line">> Ready</span>
-          </div>
+          <div class="terminal" id="urlTerminal" style="height: 80px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
         <button class="osint-btn magnetic" id="urlLookupBtn">Expand</button>
       </div>
 
-      <!-- App 7: Email Breach (Small) -->
-      <div class="bento-item span-6 reveal tilt" data-d="2" id="app-email">
+      <!-- App 7: Email Breach -->
+      <div class="bento-item span-6 reveal tilt wobble-hover" data-d="2" id="app-email">
         <div class="app-header"><span class="app-title">Email Breach</span></div>
         <input type="email" class="osint-input" id="emailInput" placeholder="e.g. test@example.com" value="test@example.com">
         <div class="terminal-wrapper">
-          <div class="terminal" id="emailTerminal" style="height: 80px;">
-            <span class="terminal-line">> Ready</span>
-          </div>
+          <div class="terminal" id="emailTerminal" style="height: 80px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
         <button class="osint-btn magnetic" id="emailLookupBtn">Check Breaches</button>
       </div>
 
-      <!-- App 8: Subdomain Checker (Large) -->
-      <div class="bento-item span-12 reveal tilt" data-d="3" id="app-sub">
+      <!-- App 8: Subdomain Checker -->
+      <div class="bento-item span-12 reveal tilt wobble-hover" data-d="3" id="app-sub">
         <div class="app-header"><span class="app-title">Subdomain Checker</span></div>
         <input type="text" class="osint-input" id="subInput" placeholder="e.g. google.com" value="google.com">
         <div class="terminal-wrapper">
-          <div class="terminal" id="subTerminal" style="height: 120px;">
-            <span class="terminal-line">> Ready</span>
-          </div>
+          <div class="terminal" id="subTerminal" style="height: 120px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
         <button class="osint-btn magnetic" id="subLookupBtn">Find Subdomains (crt.sh)</button>
       </div>
 
-      <!-- App 9: Site Builder (Small) -->
-      <div class="bento-item span-6 reveal tilt" id="app-builder">
+      <!-- App 9: Site Builder -->
+      <div class="bento-item span-6 reveal tilt wobble-hover" id="app-builder">
         <div class="app-header"><span class="app-title">Site Builder</span></div>
         <input type="text" class="osint-input" id="builderInput" placeholder="e.g. wordpress.org" value="wordpress.org">
         <div class="terminal-wrapper">
-          <div class="terminal" id="builderTerminal" style="height: 100px;">
-            <span class="terminal-line">> Ready</span>
-          </div>
+          <div class="terminal" id="builderTerminal" style="height: 100px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
         <button class="osint-btn magnetic" id="builderLookupBtn">Detect CMS</button>
       </div>
 
-      <!-- App 10: Bug Finder (Small) -->
-      <div class="bento-item span-6 reveal tilt" data-d="1" id="app-bug">
+      <!-- App 10: Bug Finder -->
+      <div class="bento-item span-6 reveal tilt wobble-hover" data-d="1" id="app-bug">
         <div class="app-header"><span class="app-title">Bug Finder (Headers)</span></div>
         <input type="text" class="osint-input" id="bugInput" placeholder="e.g. github.com" value="github.com">
         <div class="terminal-wrapper">
-          <div class="terminal" id="bugTerminal" style="height: 100px;">
-            <span class="terminal-line">> Ready</span>
-          </div>
+          <div class="terminal" id="bugTerminal" style="height: 100px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
         <button class="osint-btn magnetic" id="bugLookupBtn">Scan Headers</button>
@@ -502,13 +468,13 @@
     </div>
     
     <div class="gh-stats">
-      <div class="gh-card gh-span-6 reveal tilt">
+      <div class="gh-card gh-span-6 reveal tilt wobble-hover">
         <img src="https://gh-stats.com/api/TechAdityaBRO?theme=cyberpunk&show_icons=true&hide_border=true&title_color=00ff41&icon_color=10b981&text_color=a4a9c4&bg_color=050a05" alt="GitHub Stats">
       </div>
-      <div class="gh-card gh-span-6 reveal tilt" data-d="1">
+      <div class="gh-card gh-span-6 reveal tilt wobble-hover" data-d="1">
         <img src="https://gh-stats.com/api/top-langs/TechAdityaBRO?theme=cyberpunk&layout=compact&hide_border=true&title_color=00ff41&text_color=a4a9c4&bg_color=050a05" alt="Top Languages">
       </div>
-      <div class="gh-card gh-span-12 reveal tilt" data-d="2" style="padding: 2rem;">
+      <div class="gh-card gh-span-12 reveal tilt wobble-hover" data-d="2" style="padding: 2rem;">
         <img src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=TechAdityaBRO&theme=2077" alt="GitHub Profile Summary">
       </div>
     </div>
@@ -520,8 +486,8 @@
       <h2 style="font-family: 'Outfit'; font-size: clamp(3rem, 7vw, 5rem); margin-bottom: 1.5rem; font-weight: 900; letter-spacing: -.03em; line-height: 1.1;">Let's build <br><span style="color: var(--accent);">something.</span></h2>
       <p style="color: var(--text-2); margin-bottom: 3rem; max-width: 45ch; margin-inline: auto; font-size: 1.1rem;">Open to collabs, weird ideas, and anything that ships. The fastest way to reach me is email or Discord.</p>
       <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
-        <a href="mailto:chairmanaditya@brogang.jo3.org" class="btn btn-primary magnetic">Email me <span class="arrow">→</span></a>
-        <a href="https://discord.gg/TSWg34Zets" target="_blank" rel="noopener" class="btn btn-ghost magnetic">Join Discord ↗</a>
+        <a href="mailto:chairmanaditya@brogang.jo3.org" class="btn btn-primary magnetic wobble-hover">Email me <span class="arrow">→</span></a>
+        <a href="https://discord.gg/TSWg34Zets" target="_blank" rel="noopener" class="btn btn-ghost magnetic wobble-hover">Join Discord ↗</a>
       </div>
     </div>
   </section>
@@ -536,29 +502,11 @@
 <dialog id="demo-dialog">
   <h3 style="margin-bottom: 1rem; font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800;">Native Modal</h3>
   <p style="color: var(--text-2); margin-bottom: 2rem; line-height: 1.7; font-size: 1.1rem;">This dialog is created with the HTML <code>&lt;dialog&gt;</code> element. It handles focus trapping, background inertness, and the ESC key automatically.</p>
-  <button class="btn btn-primary magnetic" onclick="document.getElementById('demo-dialog').close()">Close Dialog</button>
+  <button class="btn btn-primary magnetic wobble-hover" onclick="document.getElementById('demo-dialog').close()">Close Dialog</button>
 </dialog>
 
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
-
-/* ===== Force Preloader to show ===== */
-// Even if images fail to load, the preloader will hide after 1.5s
-document.addEventListener('DOMContentLoaded', () => {
-  const fill = document.getElementById('loaderFill');
-  
-  // Animate progress bar
-  setTimeout(() => { fill.style.width = '40%'; }, 100);
-  setTimeout(() => { fill.style.width = '80%'; }, 600);
-  setTimeout(() => { fill.style.width = '100%'; }, 1100);
-  
-  // Hide preloader after 1.5 seconds
-  setTimeout(() => {
-    document.getElementById('preloader').classList.add('hidden');
-    // Trigger initial reveal animations
-    document.querySelectorAll('.hero-title, .reveal').forEach(el => el.classList.add('in'));
-  }, 1500);
-});
 
 /* ===== Spotlight & Cursor Tracking ===== */
 const spotlight = document.getElementById('spotlight');
@@ -641,24 +589,16 @@ document.querySelectorAll('.tilt').forEach(card => {
   });
 });
 
-/* ===== Nav & Scroll Progress & Parallax ===== */
+/* ===== Nav & Scroll Progress ===== */
 let lastY = 0;
 const nav = document.getElementById('nav');
-const bgContainer = document.getElementById('bgContainer');
 
 window.addEventListener('scroll', () => {
   const y = window.scrollY;
-  
-  // Nav hide
   nav.classList.toggle('hidden', y > 100 && y > lastY);
   lastY = y;
-  
-  // Progress bar
   const h = document.documentElement.scrollHeight - window.innerHeight;
   document.getElementById('progress').style.transform = `scaleX(${h > 0 ? y / h : 0})`;
-  
-  // Parallax background
-  bgContainer.style.transform = `translateY(${y * 0.3}px)`;
 }, { passive: true });
 
 /* ===== Intersection Observer for Reveals ===== */
@@ -709,21 +649,107 @@ async function fetchAnimeBackground() {
     isFetchingBg = false;
   }
 }
-
-fetchAnimeBackground();
 setInterval(fetchAnimeBackground, 7500);
+
+/* ===== WebGL Fluid Simulation Background ===== */
+const canvas = document.getElementById('webgl-canvas');
+if (canvas) {
+  const gl = canvas.getContext('webgl');
+  if (gl) {
+    // Basic WebGL setup for a subtle fluid-like effect
+    const vs = `
+      attribute vec2 position;
+      void main() {
+        gl_Position = vec4(position, 0.0, 1.0);
+      }
+    `;
+    const fs = `
+      precision highp float;
+      uniform vec2 u_resolution;
+      uniform float u_time;
+      
+      void main() {
+        vec2 st = gl_FragCoord.xy / u_resolution.xy;
+        st.x *= u_resolution.x / u_resolution.y;
+        
+        vec3 color = vec3(0.0);
+        float t = u_time * 0.2;
+        
+        // Create fluid-like blobs
+        float d1 = length(st - vec2(0.3 + sin(t) * 0.1, 0.3 + cos(t * 1.2) * 0.1));
+        float d2 = length(st - vec2(0.7 + cos(t * 0.8) * 0.1, 0.6 + sin(t * 0.9) * 0.1));
+        
+        color += vec3(0.0, 0.6, 0.2) * smoothstep(0.4, 0.0, d1);
+        color += vec3(0.0, 0.8, 0.4) * smoothstep(0.5, 0.0, d2);
+        
+        // Add subtle noise
+        float n = fract(sin(dot(st, vec2(12.9898, 78.233))) * 43758.5453);
+        color += n * 0.05;
+        
+        gl_FragColor = vec4(color, 0.8);
+      }
+    `;
+
+    function createShader(gl, type, source) {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      return shader;
+    }
+
+    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vs);
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fs);
+    const program = gl.createProgram();
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+    gl.useProgram(program);
+
+    const positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    const positions = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
+    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+    
+    const positionLocation = gl.getAttribLocation(program, 'position');
+    gl.enableVertexAttribArray(positionLocation);
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+    const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
+    const timeLocation = gl.getUniformLocation(program, 'u_time');
+
+    function resizeCanvas() {
+      canvas.width = canvas.clientWidth * window.devicePixelRatio;
+      canvas.height = canvas.clientHeight * window.devicePixelRatio;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    let startTime = Date.now();
+    function render() {
+      const time = (Date.now() - startTime) / 1000;
+      gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+      gl.uniform1f(timeLocation, time);
+      
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      requestAnimationFrame(render);
+    }
+    render();
+  }
+}
 
 /* ===== Helper: Typewriter Terminal ===== */
 async function typeTerminal(terminalEl, lines, speed = 30) {
   terminalEl.innerHTML = '';
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
     const lineEl = document.createElement('span');
     lineEl.className = 'terminal-line';
     terminalEl.appendChild(lineEl);
     
     await new Promise(r => setTimeout(r, 100)); 
-    lineEl.innerHTML = line;
+    lineEl.innerHTML = lines[i];
     terminalEl.scrollTop = terminalEl.scrollHeight;
   }
   terminalEl.innerHTML += `<span class="terminal-line">> Done.</span>`;
@@ -760,6 +786,7 @@ async function runIPScan() {
   }
 }
 ipScanBtn.addEventListener('click', runIPScan);
+setTimeout(runIPScan, 500);
 
 // 2. DNS Lookup
 const dnsInput = document.getElementById('dnsInput');
@@ -851,7 +878,6 @@ async function runUsernameLookup() {
   const username = usernameInput.value.trim();
   if (!username) return;
   appUser.classList.add('loading');
-  
   usernameTerminal.innerHTML = `<span class="terminal-line">> Searching...</span>`;
   
   try {
@@ -1092,9 +1118,6 @@ async function runBugLookup() {
   }
 }
 bugLookupBtn.addEventListener('click', runBugLookup);
-
-// Trigger Initial load for IP after preloader
-setTimeout(() => { runIPScan(); }, 1600);
 </script>
 </body>
 </html>
