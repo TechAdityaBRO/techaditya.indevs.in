@@ -66,15 +66,13 @@
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
     transform: scale(1.05);
-    /* No dark filter, just a very slight blur to keep text readable */
     filter: blur(1px) brightness(0.9); 
   }
   
   .anime-bg-layer.active {
-    opacity: 1; /* Fully visible */
+    opacity: 1; 
   }
   
-  /* Subtle gradient to ensure text at the bottom is readable */
   .anime-overlay {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
     background: linear-gradient(to bottom, rgba(5,10,5,0) 0%, rgba(5,10,5,0.4) 50%, rgba(5,10,5,0.9) 100%);
@@ -308,7 +306,7 @@
     </div>
     <div class="apps-grid">
       
-      <!-- App 1: IP Scanner -->
+      <!-- App 1: IP Scanner (Kamero - Unlimited) -->
       <div class="app-card reveal">
         <span class="app-title">IP Scanner</span>
         <div class="terminal" id="ipTerminal">
@@ -338,7 +336,7 @@
         <button class="osint-btn" id="whoisLookupBtn">Lookup</button>
       </div>
 
-      <!-- App 4: Username OSINT -->
+      <!-- App 4: Username OSINT (WhatsMyName) -->
       <div class="app-card reveal" data-d="3">
         <span class="app-title">Username OSINT</span>
         <input type="text" class="osint-input" id="usernameInput" placeholder="e.g. johndoe" value="TechAdityaBRO">
@@ -348,7 +346,7 @@
         <button class="osint-btn" id="usernameLookupBtn">Search (WhatsMyName)</button>
       </div>
 
-      <!-- App 5: MAC Address Lookup (Fixed) -->
+      <!-- App 5: MAC Address Lookup -->
       <div class="app-card reveal">
         <span class="app-title">MAC Address Lookup</span>
         <input type="text" class="osint-input" id="macInput" placeholder="e.g. 00:1A:2B" value="00:1A:2B">
@@ -376,6 +374,36 @@
           <span class="terminal-line">> Ready<span class="terminal-cursor"></span></span>
         </div>
         <button class="osint-btn" id="emailLookupBtn">Check Breaches</button>
+      </div>
+
+      <!-- App 8: Subdomain Checker (crt.sh - No Rate Limits) -->
+      <div class="app-card reveal" data-d="3">
+        <span class="app-title">Subdomain Checker</span>
+        <input type="text" class="osint-input" id="subInput" placeholder="e.g. google.com" value="google.com">
+        <div class="terminal" id="subTerminal" style="height: 120px;">
+          <span class="terminal-line">> Ready<span class="terminal-cursor"></span></span>
+        </div>
+        <button class="osint-btn" id="subLookupBtn">Find Subdomains (crt.sh)</button>
+      </div>
+
+      <!-- App 9: Site Builder Finder (TechSpy) -->
+      <div class="app-card reveal">
+        <span class="app-title">Site Builder Finder</span>
+        <input type="text" class="osint-input" id="builderInput" placeholder="e.g. wordpress.org" value="wordpress.org">
+        <div class="terminal" id="builderTerminal" style="height: 100px;">
+          <span class="terminal-line">> Ready<span class="terminal-cursor"></span></span>
+        </div>
+        <button class="osint-btn" id="builderLookupBtn">Detect CMS/Tech</button>
+      </div>
+
+      <!-- App 10: Bug Finder (WebSec0) -->
+      <div class="app-card reveal" data-d="1">
+        <span class="app-title">Bug Finder (Headers)</span>
+        <input type="text" class="osint-input" id="bugInput" placeholder="e.g. github.com" value="github.com">
+        <div class="terminal" id="bugTerminal" style="height: 120px;">
+          <span class="terminal-line">> Ready<span class="terminal-cursor"></span></span>
+        </div>
+        <button class="osint-btn" id="bugLookupBtn">Scan Headers</button>
       </div>
 
     </div>
@@ -516,24 +544,22 @@ document.querySelectorAll('.reveal, .hero-title').forEach(el => io.observe(el));
 
 /* ===== OSINT Tools ===== */
 
-// 1. IP Scanner
+// 1. IP Scanner (Kamero Geo API - Unlimited, No Key)
 const ipTerminal = document.getElementById('ipTerminal');
 const ipScanBtn = document.getElementById('ipScanBtn');
 
 async function runIPScan() {
-  ipTerminal.innerHTML = '<span class="terminal-line">> Querying ipwho.is...</span><span class="terminal-cursor"></span>';
+  ipTerminal.innerHTML = '<span class="terminal-line">> Querying geo.kamero.ai...</span><span class="terminal-cursor"></span>';
   try {
-    const res = await fetch('https://ipwho.is/');
+    const res = await fetch('https://geo.kamero.ai/api/geo');
     if (!res.ok) throw new Error('Network error');
     const data = await res.json();
     
-    const isProxy = data.connection?.type?.toLowerCase().includes('hosting') ? 'DETECTED ⚠️' : 'CLEAN ✅';
     const lines = [
       `> IP: <span>${data.ip}</span>`,
-      `> ISP: <span>${data.connection?.isp || 'Unknown'}</span>`,
-      `> LOC: <span>${data.city || '?'}, ${data.region || '?'}, ${data.country || '?'}</span>`,
-      `> TZ: <span>${data.timezone?.id || '?'}</span>`,
-      `> VPN: <span>${isProxy}</span>`
+      `> LOC: <span>${data.city || '?'}, ${data.country || '?'}</span>`,
+      `> TZ: <span>${data.timezone || '?'}</span>`,
+      `> COORDS: <span>${data.latitude || '?'}, ${data.longitude || '?'}</span>`
     ];
     
     ipTerminal.innerHTML = '';
@@ -555,7 +581,7 @@ async function runIPScan() {
 ipScanBtn.addEventListener('click', runIPScan);
 runIPScan();
 
-// 2. DNS Lookup
+// 2. DNS Lookup (Google DoH - Free)
 const dnsInput = document.getElementById('dnsInput');
 const dnsTerminal = document.getElementById('dnsTerminal');
 const dnsLookupBtn = document.getElementById('dnsLookupBtn');
@@ -718,7 +744,7 @@ async function runUsernameLookup() {
 }
 usernameLookupBtn.addEventListener('click', runUsernameLookup);
 
-// 5. MAC Address Lookup (maclookup.app via allorigins proxy to avoid CORS)
+// 5. MAC Address Lookup (maclookup.app via proxy)
 const macInput = document.getElementById('macInput');
 const macTerminal = document.getElementById('macTerminal');
 const macLookupBtn = document.getElementById('macLookupBtn');
@@ -729,7 +755,6 @@ async function runMacLookup() {
   macTerminal.innerHTML = `<span class="terminal-line">> Querying MAC vendor for ${mac}...</span><span class="terminal-cursor"></span>`;
   
   try {
-    // Using allorigins to proxy the request and bypass CORS
     const targetUrl = encodeURIComponent(`https://api.macvendors.com/${mac}`);
     const res = await fetch(`https://api.allorigins.win/get?url=${targetUrl}`);
     const data = await res.json();
@@ -747,7 +772,7 @@ async function runMacLookup() {
 }
 macLookupBtn.addEventListener('click', runMacLookup);
 
-// 6. URL Expander
+// 6. URL Expander (unshorten.me)
 const urlInput = document.getElementById('urlInput');
 const urlTerminal = document.getElementById('urlTerminal');
 const urlLookupBtn = document.getElementById('urlLookupBtn');
@@ -803,6 +828,120 @@ async function runEmailBreachLookup() {
   }
 }
 emailLookupBtn.addEventListener('click', runEmailBreachLookup);
+
+// 8. Subdomain Checker (crt.sh - No Rate Limits)
+const subInput = document.getElementById('subInput');
+const subTerminal = document.getElementById('subTerminal');
+const subLookupBtn = document.getElementById('subLookupBtn');
+
+async function runSubdomainLookup() {
+  const domain = subInput.value.trim();
+  if (!domain) return;
+  subTerminal.innerHTML = `<span class="terminal-line">> Querying crt.sh for ${domain}...</span><span class="terminal-cursor"></span>`;
+  
+  try {
+    // crt.sh has no rate limits [citation:11]
+    const res = await fetch(`https://crt.sh/?q=%25.${domain}&output=json`);
+    if (!res.ok) throw new Error('crt.sh error');
+    const certs = await res.json();
+    
+    const subdomains = new Set();
+    certs.forEach(cert => {
+      cert.name_value.split('\n').forEach(name => {
+        const clean = name.trim().toLowerCase();
+        if (clean.includes(domain) && clean !== domain && !clean.startsWith('*')) {
+          subdomains.add(clean);
+        }
+      });
+    });
+    
+    subTerminal.innerHTML = '';
+    if (subdomains.size > 0) {
+      subTerminal.innerHTML += `<span class="terminal-line">> Found <span>${subdomains.size}</span> unique subdomains (showing 15):</span>`;
+      Array.from(subdomains).slice(0, 15).forEach(sub => {
+        subTerminal.innerHTML += `<span class="terminal-line">  <span>${sub}</span></span>`;
+      });
+    } else {
+      subTerminal.innerHTML += `<span class="terminal-line">> No subdomains found in CT logs.</span>`;
+    }
+    subTerminal.innerHTML += `<span class="terminal-line">> Done.<span class="terminal-cursor"></span></span>`;
+  } catch (e) {
+    subTerminal.innerHTML = '<span class="terminal-line">> ERROR: crt.sh failed or timed out. Try a smaller domain.</span><span class="terminal-cursor"></span>';
+  }
+}
+subLookupBtn.addEventListener('click', runSubdomainLookup);
+
+// 9. Site Builder Finder (TechSpy - Free, No Key)
+const builderInput = document.getElementById('builderInput');
+const builderTerminal = document.getElementById('builderTerminal');
+const builderLookupBtn = document.getElementById('builderLookupBtn');
+
+async function runBuilderLookup() {
+  const url = builderInput.value.trim();
+  if (!url) return;
+  builderTerminal.innerHTML = `<span class="terminal-line">> Analyzing ${url} with TechSpy...</span><span class="terminal-cursor"></span>`;
+  
+  try {
+    // TechSpy API (techspy.dev) - free, no account required [citation:5]
+    const res = await fetch(`https://api.techspy.dev/detect?url=${encodeURIComponent(url)}`);
+    if (!res.ok) throw new Error('TechSpy error');
+    const data = await res.json();
+    
+    builderTerminal.innerHTML = '';
+    if (data.technologies && data.technologies.length > 0) {
+      builderTerminal.innerHTML += `<span class="terminal-line">> Detected <span>${data.technologies.length}</span> technologies:</span>`;
+      data.technologies.slice(0, 8).forEach(tech => {
+        builderTerminal.innerHTML += `<span class="terminal-line">  - <span>${tech.name}</span> (${tech.category})</span>`;
+      });
+    } else {
+      builderTerminal.innerHTML += `<span class="terminal-line">> No technologies detected.</span>`;
+    }
+    builderTerminal.innerHTML += `<span class="terminal-line">> Done.<span class="terminal-cursor"></span></span>`;
+  } catch (e) {
+    builderTerminal.innerHTML = '<span class="terminal-line">> ERROR: TechSpy scan failed.</span><span class="terminal-cursor"></span>';
+  }
+}
+builderLookupBtn.addEventListener('click', runBuilderLookup);
+
+// 10. Bug Finder (WebSec0 - Free, No Account)
+const bugInput = document.getElementById('bugInput');
+const bugTerminal = document.getElementById('bugTerminal');
+const bugLookupBtn = document.getElementById('bugLookupBtn');
+
+async function runBugLookup() {
+  const host = bugInput.value.trim();
+  if (!host) return;
+  bugTerminal.innerHTML = `<span class="terminal-line">> Scanning security headers for ${host}...</span><span class="terminal-cursor"></span>`;
+  
+  try {
+    // WebSec0 API - free, no account required [citation:6][citation:14]
+    const res = await fetch('https://www.websec0.com/api/v1/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ host: host })
+    });
+    if (!res.ok) throw new Error('WebSec0 error');
+    const data = await res.json();
+    
+    bugTerminal.innerHTML = '';
+    if (data.grades) {
+      bugTerminal.innerHTML += `<span class="terminal-line">> TLS Grade: <span>${data.grades.tls || 'N/A'}</span></span>`;
+      bugTerminal.innerHTML += `<span class="terminal-line">> Headers Grade: <span>${data.grades.headers || 'N/A'}</span></span>`;
+    }
+    if (data.findings && data.findings.length > 0) {
+      bugTerminal.innerHTML += `<span class="terminal-line">> Findings (top 3):</span>`;
+      data.findings.slice(0, 3).forEach(f => {
+        bugTerminal.innerHTML += `<span class="terminal-line">  - <span>${f.title}</span></span>`;
+      });
+    } else {
+      bugTerminal.innerHTML += `<span class="terminal-line">> No critical findings.</span>`;
+    }
+    bugTerminal.innerHTML += `<span class="terminal-line">> Done.<span class="terminal-cursor"></span></span>`;
+  } catch (e) {
+    bugTerminal.innerHTML = '<span class="terminal-line">> ERROR: WebSec0 scan failed.</span><span class="terminal-cursor"></span>';
+  }
+}
+bugLookupBtn.addEventListener('click', runBugLookup);
 </script>
 </body>
 </html>
