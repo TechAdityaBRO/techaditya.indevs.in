@@ -306,7 +306,7 @@
     </div>
     <div class="apps-grid">
       
-      <!-- App 1: IP Scanner (Kamero - Unlimited) -->
+      <!-- App 1: IP Scanner (Fixed: ipwho.is) -->
       <div class="app-card reveal">
         <span class="app-title">IP Scanner</span>
         <div class="terminal" id="ipTerminal">
@@ -376,7 +376,7 @@
         <button class="osint-btn" id="emailLookupBtn">Check Breaches</button>
       </div>
 
-      <!-- App 8: Subdomain Checker (crt.sh - No Rate Limits) -->
+      <!-- App 8: Subdomain Checker (crt.sh) -->
       <div class="app-card reveal" data-d="3">
         <span class="app-title">Subdomain Checker</span>
         <input type="text" class="osint-input" id="subInput" placeholder="e.g. google.com" value="google.com">
@@ -386,7 +386,7 @@
         <button class="osint-btn" id="subLookupBtn">Find Subdomains (crt.sh)</button>
       </div>
 
-      <!-- App 9: Site Builder Finder (TechSpy) -->
+      <!-- App 9: Site Builder Finder -->
       <div class="app-card reveal">
         <span class="app-title">Site Builder Finder</span>
         <input type="text" class="osint-input" id="builderInput" placeholder="e.g. wordpress.org" value="wordpress.org">
@@ -544,22 +544,24 @@ document.querySelectorAll('.reveal, .hero-title').forEach(el => io.observe(el));
 
 /* ===== OSINT Tools ===== */
 
-// 1. IP Scanner (Kamero Geo API - Unlimited, No Key)
+// 1. IP Scanner (Fixed: ipwho.is)
 const ipTerminal = document.getElementById('ipTerminal');
 const ipScanBtn = document.getElementById('ipScanBtn');
 
 async function runIPScan() {
-  ipTerminal.innerHTML = '<span class="terminal-line">> Querying geo.kamero.ai...</span><span class="terminal-cursor"></span>';
+  ipTerminal.innerHTML = '<span class="terminal-line">> Querying ipwho.is...</span><span class="terminal-cursor"></span>';
   try {
-    const res = await fetch('https://geo.kamero.ai/api/geo');
+    const res = await fetch('https://ipwho.is/');
     if (!res.ok) throw new Error('Network error');
     const data = await res.json();
     
+    if (!data.success) throw new Error('API Error');
+    
     const lines = [
       `> IP: <span>${data.ip}</span>`,
-      `> LOC: <span>${data.city || '?'}, ${data.country || '?'}</span>`,
-      `> TZ: <span>${data.timezone || '?'}</span>`,
-      `> COORDS: <span>${data.latitude || '?'}, ${data.longitude || '?'}</span>`
+      `> ISP: <span>${data.connection?.isp || 'Unknown'}</span>`,
+      `> LOC: <span>${data.city || '?'}, ${data.region || '?'}, ${data.country || '?'}</span>`,
+      `> TZ: <span>${data.timezone?.id || '?'}</span>`
     ];
     
     ipTerminal.innerHTML = '';
@@ -575,13 +577,13 @@ async function runIPScan() {
       }
     }, 200);
   } catch (e) {
-    ipTerminal.innerHTML = '<span class="terminal-line">> ERROR: Scan failed.</span><span class="terminal-cursor"></span>';
+    ipTerminal.innerHTML = '<span class="terminal-line">> ERROR: Scan failed (rate limit or network).</span><span class="terminal-cursor"></span>';
   }
 }
 ipScanBtn.addEventListener('click', runIPScan);
 runIPScan();
 
-// 2. DNS Lookup (Google DoH - Free)
+// 2. DNS Lookup
 const dnsInput = document.getElementById('dnsInput');
 const dnsTerminal = document.getElementById('dnsTerminal');
 const dnsLookupBtn = document.getElementById('dnsLookupBtn');
@@ -744,7 +746,7 @@ async function runUsernameLookup() {
 }
 usernameLookupBtn.addEventListener('click', runUsernameLookup);
 
-// 5. MAC Address Lookup (maclookup.app via proxy)
+// 5. MAC Address Lookup
 const macInput = document.getElementById('macInput');
 const macTerminal = document.getElementById('macTerminal');
 const macLookupBtn = document.getElementById('macLookupBtn');
@@ -772,7 +774,7 @@ async function runMacLookup() {
 }
 macLookupBtn.addEventListener('click', runMacLookup);
 
-// 6. URL Expander (unshorten.me)
+// 6. URL Expander
 const urlInput = document.getElementById('urlInput');
 const urlTerminal = document.getElementById('urlTerminal');
 const urlLookupBtn = document.getElementById('urlLookupBtn');
@@ -795,7 +797,7 @@ async function runUrlExpand() {
 }
 urlLookupBtn.addEventListener('click', runUrlExpand);
 
-// 7. Email Breach Checker (XposedOrNot API)
+// 7. Email Breach Checker
 const emailInput = document.getElementById('emailInput');
 const emailTerminal = document.getElementById('emailTerminal');
 const emailLookupBtn = document.getElementById('emailLookupBtn');
@@ -829,7 +831,7 @@ async function runEmailBreachLookup() {
 }
 emailLookupBtn.addEventListener('click', runEmailBreachLookup);
 
-// 8. Subdomain Checker (crt.sh - No Rate Limits)
+// 8. Subdomain Checker (crt.sh)
 const subInput = document.getElementById('subInput');
 const subTerminal = document.getElementById('subTerminal');
 const subLookupBtn = document.getElementById('subLookupBtn');
@@ -840,7 +842,6 @@ async function runSubdomainLookup() {
   subTerminal.innerHTML = `<span class="terminal-line">> Querying crt.sh for ${domain}...</span><span class="terminal-cursor"></span>`;
   
   try {
-    // crt.sh has no rate limits [citation:11]
     const res = await fetch(`https://crt.sh/?q=%25.${domain}&output=json`);
     if (!res.ok) throw new Error('crt.sh error');
     const certs = await res.json();
@@ -866,12 +867,12 @@ async function runSubdomainLookup() {
     }
     subTerminal.innerHTML += `<span class="terminal-line">> Done.<span class="terminal-cursor"></span></span>`;
   } catch (e) {
-    subTerminal.innerHTML = '<span class="terminal-line">> ERROR: crt.sh failed or timed out. Try a smaller domain.</span><span class="terminal-cursor"></span>';
+    subTerminal.innerHTML = '<span class="terminal-line">> ERROR: crt.sh failed or timed out.</span><span class="terminal-cursor"></span>';
   }
 }
 subLookupBtn.addEventListener('click', runSubdomainLookup);
 
-// 9. Site Builder Finder (TechSpy - Free, No Key)
+// 9. Site Builder Finder
 const builderInput = document.getElementById('builderInput');
 const builderTerminal = document.getElementById('builderTerminal');
 const builderLookupBtn = document.getElementById('builderLookupBtn');
@@ -879,10 +880,9 @@ const builderLookupBtn = document.getElementById('builderLookupBtn');
 async function runBuilderLookup() {
   const url = builderInput.value.trim();
   if (!url) return;
-  builderTerminal.innerHTML = `<span class="terminal-line">> Analyzing ${url} with TechSpy...</span><span class="terminal-cursor"></span>`;
+  builderTerminal.innerHTML = `<span class="terminal-line">> Analyzing ${url}...</span><span class="terminal-cursor"></span>`;
   
   try {
-    // TechSpy API (techspy.dev) - free, no account required [citation:5]
     const res = await fetch(`https://api.techspy.dev/detect?url=${encodeURIComponent(url)}`);
     if (!res.ok) throw new Error('TechSpy error');
     const data = await res.json();
@@ -903,7 +903,7 @@ async function runBuilderLookup() {
 }
 builderLookupBtn.addEventListener('click', runBuilderLookup);
 
-// 10. Bug Finder (WebSec0 - Free, No Account)
+// 10. Bug Finder
 const bugInput = document.getElementById('bugInput');
 const bugTerminal = document.getElementById('bugTerminal');
 const bugLookupBtn = document.getElementById('bugLookupBtn');
@@ -911,10 +911,9 @@ const bugLookupBtn = document.getElementById('bugLookupBtn');
 async function runBugLookup() {
   const host = bugInput.value.trim();
   if (!host) return;
-  bugTerminal.innerHTML = `<span class="terminal-line">> Scanning security headers for ${host}...</span><span class="terminal-cursor"></span>`;
+  bugTerminal.innerHTML = `<span class="terminal-line">> Scanning headers for ${host}...</span><span class="terminal-cursor"></span>`;
   
   try {
-    // WebSec0 API - free, no account required [citation:6][citation:14]
     const res = await fetch('https://www.websec0.com/api/v1/scan', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
