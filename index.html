@@ -5,25 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aditya Kumar Sethi — Developer & Founder</title>
 <meta name="description" content="Portfolio of Aditya Kumar Sethi. Founder of BRO GANG. Creator of PGlove, Bro Gang AI CLI, and Nexa Search.">
-<meta name="theme-color" content="#020503">
+<meta name="theme-color" content="#0a0a0a">
 <link rel="icon" type="image/webp" href="icon.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #020503;
-    --surface: rgba(10, 20, 10, 0.25); 
-    --glass-border: rgba(0, 255, 65, 0.15);
-    --glass-highlight: rgba(255, 255, 255, 0.4);
+    --bg: #0a0a0a;
+    --glass-tint: rgba(255, 255, 255, 0.04);
+    --glass-tint-hover: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --glass-edge-light: rgba(255, 255, 255, 0.5);
+    --glass-edge-dark: rgba(0, 0, 0, 0.4);
     --text: #ffffff;
-    --text-2: #b3d9b3; 
-    --text-3: #5c7a5c;
-    --accent: #00ff41;      
-    --accent-2: #10b981;    
-    --glow-green: rgba(0, 255, 65, 0.5);
-    --radius: 24px; 
-    --ease: cubic-bezier(0.2, 0.8, 0.2, 1); 
+    --text-2: rgba(255,255,255,0.7);
+    --text-3: rgba(255,255,255,0.4);
+    --radius: 24px;
+    --ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,131 +32,199 @@
   body {
     background: var(--bg); 
     color: var(--text);
-    font-family: 'Space Grotesk', system-ui, sans-serif; 
+    font-family: 'Inter', system-ui, sans-serif; 
     line-height: 1.6;
     overflow-x: hidden; 
     -webkit-font-smoothing: antialiased;
     cursor: none;
     @media (pointer: coarse) { cursor: auto; }
-    &::selection { background: var(--accent); color: var(--bg); }
+    &::selection { background: rgba(255,255,255,0.2); color: #fff; }
   }
 
   a { color: inherit; text-decoration: none; }
   button { font-family: inherit; cursor: none; border: none; background: none; color: inherit; @media (pointer: coarse) { cursor: pointer; } }
   img, iframe { max-width: 100%; display: block; }
 
+  /* ===== Anime Background ===== */
   .anime-bg-container { position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden; }
   .anime-bg-layer {
     position: absolute; inset: 0; background-size: cover; background-position: center;
-    opacity: 0; transition: opacity 1.5s ease-in-out; transform: scale(1.02); 
-    filter: brightness(1) saturate(1.2); 
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out; 
+    transform: scale(1.02);
   }
-  .anime-bg-layer.active { opacity: 1; }
-  .anime-overlay { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, rgba(2,5,3,0.1) 0%, rgba(2,5,3,0.6) 60%, rgba(2,5,3,0.95) 100%); }
+  .anime-bg-layer.active { opacity: 0.7; }
+  .anime-overlay {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(circle at 50% 0%, transparent 0%, rgba(10,10,10,0.55) 60%, #0a0a0a 100%);
+  }
 
-  .spotlight { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 255, 65, 0.1), transparent 40%); transition: background 0.1s linear; }
+  /* ===== Custom Cursor ===== */
+  .cursor-dot {
+    position: fixed; top: 0; left: 0; width: 8px; height: 8px; background: #fff; border-radius: 50%;
+    pointer-events: none; z-index: 9999; transform: translate(-50%, -50%);
+    transition: width 0.3s var(--ease), height 0.3s var(--ease), background 0.3s;
+  }
+  .cursor-outline {
+    position: fixed; top: 0; left: 0; width: 40px; height: 40px; border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 50%;
+    pointer-events: none; z-index: 9998; transform: translate(-50%, -50%);
+    transition: width 0.3s var(--ease), height 0.3s var(--ease), border-color 0.3s;
+  }
+  .cursor-dot.hover { width: 60px; height: 60px; background: rgba(255,255,255,0.1); }
+  .cursor-outline.hover { width: 80px; height: 80px; border-color: #fff; border-width: 2px; }
 
-  .cursor-dot { position: fixed; top: 0; left: 0; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.3s var(--ease), height 0.3s var(--ease), background 0.3s, opacity 0.3s; }
-  .cursor-outline { position: fixed; top: 0; left: 0; width: 40px; height: 40px; border: 1px solid rgba(0, 255, 65, 0.5); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: width 0.3s var(--ease), height 0.3s var(--ease), border-color 0.3s; }
-  .cursor-dot.hover { width: 60px; height: 60px; background: rgba(0, 255, 65, 0.1); }
-  .cursor-outline.hover { width: 80px; height: 80px; border-color: var(--accent); border-width: 2px; }
-
-  #progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; background: var(--accent); z-index: 2000; transform-origin: 0 50%; transform: scaleX(0); box-shadow: 0 0 15px var(--accent); }
-  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem clamp(1.5rem, 5vw, 4rem); background: linear-gradient(to bottom, rgba(2,5,3,0.8), transparent); border-bottom: 1px solid var(--glass-border); transition: transform .5s var(--ease); }
+  /* ===== Nav ===== */
+  #progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; background: #fff; z-index: 2000; transform-origin: 0 50%; transform: scaleX(0); }
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem clamp(1.5rem, 5vw, 4rem); background: linear-gradient(to bottom, rgba(10,10,10,0.8), transparent); border-bottom: 1px solid var(--glass-border); transition: transform .5s var(--ease-smooth); }
   .nav.hidden { transform: translateY(-100%); }
-  .brand { display: flex; align-items: center; gap: .8rem; font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
-  .brand-dot { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 15px var(--accent); animation: pulse 2s infinite; }
-  .nav-links { display: flex; align-items: center; gap: clamp(1rem, 3vw, 2.5rem); font-size: 0.9rem; font-weight: 500; }
+  .brand { display: flex; align-items: center; gap: .6rem; font-size: 1.1rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
+  .brand-dot { width: 10px; height: 10px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+  .nav-links { display: flex; align-items: center; gap: clamp(1rem, 3vw, 2.5rem); font-size: 0.85rem; font-weight: 500; }
   .nav-links a { color: var(--text-2); position: relative; padding: .5rem 0; transition: color .3s; font-family: 'JetBrains Mono', monospace; }
-  .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: var(--accent); transform: scaleX(0); transform-origin: right; transition: transform 0.4s var(--ease); }
-  .nav-links a:hover { color: var(--accent); }
+  .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: #fff; transform: scaleX(0); transform-origin: right; transition: transform 0.4s var(--ease-smooth); }
+  .nav-links a:hover { color: #fff; }
   .nav-links a:hover::after { transform: scaleX(1); transform-origin: left; }
 
+  /* ===== Layout ===== */
   main { position: relative; z-index: 2; }
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 clamp(1.5rem, 5vw, 4rem); }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 clamp(1.5rem, 5vw, 4rem); }
 
-  #webgl-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.6; }
-
-  .hero { padding: clamp(10rem, 25vh, 16rem) 0 clamp(6rem, 15vh, 10rem); display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
-  .hero-eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: 'JetBrains Mono', monospace; font-size: .8rem; letter-spacing: .15em; text-transform: uppercase; color: var(--accent); padding: .5rem 1rem; border: 1px solid var(--glass-border); border-radius: 50px; background: rgba(0,0,0,0.4); margin-bottom: 3rem; backdrop-filter: blur(10px); box-shadow: 0 0 20px rgba(0,255,65,0.1); }
-  .hero-title { font-family: 'Outfit', sans-serif; font-size: clamp(4rem, 12vw, 9rem); font-weight: 900; line-height: 0.9; letter-spacing: -0.05em; text-shadow: 0 10px 40px rgba(0,0,0,0.9); }
+  /* ===== Hero ===== */
+  .hero { padding: clamp(10rem, 25vh, 16rem) 0 clamp(6rem, 15vh, 10rem); display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: .5rem; font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; color: var(--text-2); padding: .4rem .8rem; border: 1px solid var(--glass-border); border-radius: 50px; background: var(--glass-tint); margin-bottom: 2.5rem; backdrop-filter: url(#glass-refract); -webkit-backdrop-filter: url(#glass-refract); box-shadow: inset 0 1px 0 var(--glass-edge-light), 0 4px 12px rgba(0,0,0,0.4); }
+  
+  .hero-title { font-size: clamp(4rem, 12vw, 8rem); font-weight: 900; line-height: 0.9; letter-spacing: -0.05em; text-shadow: 0 10px 40px rgba(0,0,0,0.5); }
   .hero-title .line { display: block; overflow: hidden; padding-bottom: 0.1em; margin-bottom: -0.1em; }
-  .hero-title .word { display: inline-block; transform: translateY(110%); transition: transform 1.2s var(--ease); }
+  .hero-title .word { display: inline-block; transform: translateY(110%); transition: transform 1.2s var(--ease-smooth); }
   .hero-title.in .word { transform: translateY(0); }
   .hero-title.in .line:nth-child(1) .word { transition-delay: 0.1s; }
   .hero-title.in .line:nth-child(2) .word { transition-delay: 0.2s; }
-  .hero-title .accent { background: linear-gradient(135deg, var(--accent), #a8ffcb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 40px var(--glow-green)); }
-  .hero-sub { margin-top: 2.5rem; max-width: 60ch; font-size: clamp(1.1rem, 1.8vw, 1.3rem); color: var(--text); line-height: 1.7; background: rgba(0,0,0,0.4); padding: 1.5rem 2rem; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid var(--glass-border); box-shadow: inset 0 1px 0 var(--glass-highlight); text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
-  .hero-sub strong { color: var(--accent); font-weight: 700; }
-  .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-top: 4rem; }
+  .hero-title .accent { font-style: italic; font-weight: 400; color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,0.8); }
 
-  .btn { display: inline-flex; align-items: center; gap: .8rem; padding: 1rem 2rem; border-radius: 12px; font-size: 1rem; font-weight: 700; border: 1px solid var(--glass-border); background: rgba(10, 20, 10, 0.4); color: var(--text); transition: all .3s var(--ease); font-family: 'Outfit', sans-serif; letter-spacing: 0.02em; backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.5), inset 0 1px 0 var(--glass-highlight); position: relative; overflow: hidden; }
-  .btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.6s var(--ease); }
+  .hero-sub { margin-top: 2rem; max-width: 55ch; font-size: clamp(1rem, 1.5vw, 1.15rem); color: var(--text-2); line-height: 1.7; }
+  .hero-sub strong { color: #fff; font-weight: 600; }
+  .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 3rem; }
+
+  /* ===== Refractive Glass Buttons ===== */
+  .btn { 
+    display: inline-flex; align-items: center; gap: .6rem; padding: .9rem 1.8rem; border-radius: 12px; font-size: .95rem; font-weight: 600; 
+    border: 1px solid var(--glass-border); 
+    background: var(--glass-tint);
+    color: #fff; transition: all .3s var(--ease); font-family: 'Inter', sans-serif;
+    backdrop-filter: url(#glass-refract); -webkit-backdrop-filter: url(#glass-refract);
+    box-shadow: inset 0 1px 0 var(--glass-edge-light), inset 0 -1px 0 var(--glass-edge-dark), 0 4px 12px rgba(0,0,0,0.4); 
+    position: relative; overflow: hidden; 
+  }
+  .btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.6s var(--ease-smooth); }
   .btn:hover::before { left: 100%; }
-  .btn-primary { background: var(--accent); color: var(--bg); border-color: var(--accent); box-shadow: 0 0 30px var(--glow-green); }
-  .btn-primary:hover { box-shadow: 0 10px 50px var(--glow-green); }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 20px rgba(0,255,65,0.2); }
+  
+  .btn-primary { background: #fff; color: #000; border-color: #fff; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
+  .btn-ghost:hover { background: var(--glass-tint-hover); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
   .btn .arrow { transition: transform .4s var(--ease); }
-  .btn:hover .arrow { transform: translateX(6px); }
+  .btn:hover .arrow { transform: translateX(4px); }
 
   @keyframes wobble { 0% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(-2deg) scale(1.02); } 50% { transform: rotate(2deg) scale(1.02); } 75% { transform: rotate(-1deg) scale(1.01); } 100% { transform: rotate(0deg) scale(1); } }
-  .wobble-hover:hover { animation: wobble 0.5s ease-in-out; }
+  .wobble-hover:hover { animation: wobble 0.5s var(--ease); }
 
   .section { padding: clamp(6rem, 15vh, 10rem) 0; }
-  .section-head { margin-bottom: 4rem; position: relative; }
-  .section-num { font-family: 'JetBrains Mono', monospace; font-size: .9rem; color: var(--accent); letter-spacing: .2em; text-transform: uppercase; margin-bottom: 0.5rem; display: block; }
-  .section-head h2 { font-family: 'Outfit', sans-serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+  .section-head { margin-bottom: 3rem; }
+  .section-num { font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--text-3); letter-spacing: .15em; text-transform: uppercase; margin-bottom: 0.5rem; display: block; }
+  .section-head h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 
+  /* ===== Bento Grid ===== */
   .bento-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
-  .bento-item { background: var(--surface); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 1px 0 var(--glass-highlight); transition: transform 0.1s ease, border-color 0.3s; transform-style: preserve-3d; }
+  .bento-item { 
+    background: var(--glass-tint);
+    backdrop-filter: url(#glass-refract); -webkit-backdrop-filter: url(#glass-refract);
+    border: 1px solid var(--glass-border); 
+    border-radius: var(--radius); 
+    padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; position: relative; overflow: hidden;
+    box-shadow: inset 0 1px 0 var(--glass-edge-light), inset 0 -2px 4px var(--glass-edge-dark), 0 8px 24px rgba(0,0,0,0.4);
+    transition: all 0.3s var(--ease-smooth);
+  }
+  
+  .bento-item::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: var(--radius);
+    background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 35%, transparent 65%, rgba(255,255,255,0.06) 100%);
+    z-index: 0;
+  }
+  
   .span-12 { grid-column: span 12; }
   .span-6 { grid-column: span 6; }
   .span-4 { grid-column: span 4; }
-  .bento-item:hover { border-color: rgba(0, 255, 65, 0.5); }
-  .bento-item::after { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(circle at var(--local-x, 50%) var(--local-y, 50%), rgba(0,255,65,0.15), transparent 60%); opacity: 0; transition: opacity 0.3s; }
-  .bento-item:hover::after { opacity: 1; }
+  
+  .bento-item:hover { background: var(--glass-tint-hover); border-color: rgba(255,255,255,0.3); }
+
   .app-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; position: relative; z-index: 1; }
-  .app-title { font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 0.8rem; }
-  .app-title::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+  .app-title { font-family: 'JetBrains Mono', monospace; font-size: .9rem; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 0.6rem; }
+  .app-title::before { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+
   .terminal-wrapper { position: relative; border-radius: 12px; overflow: hidden; }
-  .terminal { background: rgba(0, 0, 0, 0.85); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1.2rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent); height: 180px; overflow-y: auto; line-height: 1.7; box-shadow: inset 0 0 20px rgba(0,0,0,1); position: relative; z-index: 1; }
+  .terminal { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-2); height: 140px; overflow-y: auto; line-height: 1.6; box-shadow: inset 0 2px 6px rgba(0,0,0,0.5); position: relative; z-index: 1; }
   .terminal::-webkit-scrollbar { width: 4px; }
-  .terminal::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
-  .terminal-line { display: block; margin-bottom: 4px; word-break: break-all; }
-  .terminal-line span { color: #a8ffcb; }
-  .terminal-line a { color: #a8ffcb; text-decoration: underline; }
-  .osint-input { width: 100%; padding: 0.8rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border); border-radius: 8px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; outline: none; transition: all 0.3s; position: relative; z-index: 1; }
-  .osint-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0,255,65,0.3); background: rgba(0,0,0,0.8); }
-  .osint-btn { padding: 0.8rem 1.5rem; font-size: 0.85rem; font-weight: 700; font-family: 'Outfit', sans-serif; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(0, 255, 65, 0.1); color: var(--accent); cursor: pointer; transition: all .3s; width: 100%; position: relative; z-index: 1; }
-  .osint-btn:hover { background: var(--accent); color: var(--bg); box-shadow: 0 0 20px var(--glow-green); animation: wobble 0.5s ease-in-out; }
-  .skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(0,255,65,0.2), transparent); background-size: 200% 100%; animation: shimmer 1s infinite; z-index: 10; pointer-events: none; opacity: 0; transition: opacity 0.3s; border-radius: 12px; }
+  .terminal::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+  .terminal-line { display: block; margin-bottom: 3px; word-break: break-all; }
+  .terminal-line span { color: #fff; font-weight: 600; }
+  .terminal-line a { color: #fff; text-decoration: underline; }
+
+  .osint-input { width: 100%; padding: 0.7rem 1rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none; transition: border-color 0.3s; position: relative; z-index: 1; }
+  .osint-input:focus { border-color: rgba(255,255,255,0.45); background: rgba(0,0,0,0.5); }
+  .osint-btn { padding: 0.7rem 1.5rem; font-size: 0.85rem; font-weight: 600; font-family: 'Inter', sans-serif; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); color: #fff; cursor: pointer; transition: all .3s var(--ease); width: 100%; position: relative; z-index: 1; backdrop-filter: url(#glass-refract); box-shadow: inset 0 1px 0 var(--glass-edge-light); }
+  .osint-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.35); }
+
+  .skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); background-size: 200% 100%; animation: shimmer 1.2s infinite; z-index: 10; pointer-events: none; opacity: 0; transition: opacity 0.3s; border-radius: 12px; }
   .loading .skeleton { opacity: 1; }
   @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-  .projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
-  .card { background: var(--surface); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 2.5rem; display: flex; flex-direction: column; gap: 1.5rem; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 var(--glass-highlight); transition: transform 0.1s ease, border-color 0.3s; transform-style: preserve-3d; }
-  .card:hover { border-color: var(--accent); animation: wobble 0.5s ease-in-out; }
-  .card-badge { font-family: 'JetBrains Mono', monospace; font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: var(--bg); background: var(--accent); padding: .3rem .8rem; border-radius: 50px; font-weight: 700; align-self: flex-start; }
-  .card h3 { font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 700; margin-top: 1rem; }
-  .card p { font-size: 1rem; color: var(--text-2); line-height: 1.7; flex-grow: 1; }
-  .card-tags { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: auto; }
-  .tag { font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--text-2); border: 1px solid var(--glass-border); padding: .3rem .8rem; border-radius: 50px; background: rgba(0,0,0,0.4); }
+  .result-panel { display: flex; flex-direction: column; gap: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; position: relative; z-index: 1; }
+  .result-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.8rem; background: rgba(0,0,0,0.3); border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); }
+  .result-label { color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.65rem; }
+  .result-value { font-weight: 600; color: #fff; }
+  .badge { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; }
+  .badge-ok { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+  .badge-warn { background: rgba(255,200,0,0.15); color: #ffc800; border: 1px solid rgba(255,200,0,0.4); }
+  .badge-bad { background: rgba(255,80,80,0.15); color: #ff5050; border: 1px solid rgba(255,80,80,0.4); }
 
+  /* ===== Projects ===== */
+  .projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+  .card { 
+    background: var(--glass-tint); 
+    backdrop-filter: url(#glass-refract); -webkit-backdrop-filter: url(#glass-refract);
+    border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 2rem; 
+    display: flex; flex-direction: column; gap: 1.25rem; position: relative; overflow: hidden; 
+    box-shadow: inset 0 1px 0 var(--glass-edge-light), inset 0 -2px 4px var(--glass-edge-dark), 0 8px 24px rgba(0,0,0,0.4);
+    transition: all 0.3s var(--ease-smooth);
+  }
+  .card::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 35%, transparent 65%, rgba(255,255,255,0.06) 100%); border-radius: var(--radius); z-index: 0; }
+  .card:hover { background: var(--glass-tint-hover); border-color: rgba(255,255,255,0.3); }
+  .card-badge { font-family: 'JetBrains Mono', monospace; font-size: .65rem; text-transform: uppercase; letter-spacing: .08em; color: #000; background: #fff; padding: .2rem .6rem; border-radius: 4px; align-self: flex-start; position: relative; z-index: 1; }
+  .card h3 { font-size: 1.5rem; font-weight: 700; color: #fff; position: relative; z-index: 1; }
+  .card p { font-size: 0.9rem; color: var(--text-2); line-height: 1.6; flex-grow: 1; position: relative; z-index: 1; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: auto; position: relative; z-index: 1; }
+  .tag { font-family: 'JetBrains Mono', monospace; font-size: .65rem; color: var(--text-3); border: 1px solid var(--glass-border); padding: .2rem .5rem; border-radius: 4px; }
+
+  /* ===== GitHub Stats ===== */
   .gh-stats { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
-  .gh-card { background: var(--surface); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 1.5rem; display: flex; align-items: center; justify-content: center; transition: border-color .3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 var(--glass-highlight); }
-  .gh-card:hover { border-color: var(--accent); }
+  .gh-card { background: var(--glass-tint); backdrop-filter: url(#glass-refract); -webkit-backdrop-filter: url(#glass-refract); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 1.5rem; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 var(--glass-edge-light), 0 8px 24px rgba(0,0,0,0.4); }
   .gh-card img { width: 100%; height: auto; display: block; border-radius: 8px; }
   .gh-span-6 { grid-column: span 6; }
   .gh-span-12 { grid-column: span 12; }
 
-  dialog { background: var(--bg-2); color: var(--text); border: 1px solid var(--accent); border-radius: 24px; padding: 3rem; max-width: 500px; width: 90%; box-shadow: 0 0 100px var(--glow-green); opacity: 0; transform: scale(0.95); transition: opacity 0.4s var(--ease), transform 0.4s var(--ease); &::backdrop { background: rgba(2,5,3,0.9); backdrop-filter: blur(10px); opacity: 0; transition: opacity 0.4s; } &:open { opacity: 1; transform: scale(1); &::backdrop { opacity: 1; } } }
+  /* ===== Native Dialog ===== */
+  dialog { background: #1a1a1a; color: #fff; border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 2.5rem; max-width: 450px; width: 90%; box-shadow: 0 30px 80px rgba(0,0,0,0.8); opacity: 0; transform: scale(0.95); transition: opacity 0.4s var(--ease-smooth), transform 0.4s var(--ease-smooth); &::backdrop { background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.4s; } &:open { opacity: 1; transform: scale(1); &::backdrop { opacity: 1; } } }
   @starting-style { dialog[open] { opacity: 0; transform: scale(0.95); } dialog[open]::backdrop { opacity: 0; } }
 
-  .footer { border-top: 1px solid var(--glass-border); padding: 3rem 0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: var(--text-3); }
-  .footer a { color: var(--accent); }
+  /* ===== Footer ===== */
+  .footer { border-top: 1px solid var(--glass-border); padding: 2.5rem 0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: .8rem; color: var(--text-3); }
+  .footer a { color: #fff; text-decoration: underline; }
 
-  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1s var(--ease), transform 1s var(--ease); }
+  /* ===== Animations ===== */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 1s var(--ease-smooth), transform 1s var(--ease-smooth); }
   .reveal.in { opacity: 1; transform: none; }
+  .reveal[data-d="1"] { transition-delay: 0.1s; }
+  .reveal[data-d="2"] { transition-delay: 0.2s; }
+  .reveal[data-d="3"] { transition-delay: 0.3s; }
 
   @media (max-width: 1024px) {
     .span-6, .gh-span-6 { grid-column: span 12; }
@@ -172,7 +240,13 @@
 </head>
 <body>
 
-<div class="spotlight" id="spotlight"></div>
+<svg style="display: none;" aria-hidden="true">
+  <filter id="glass-refract">
+    <feTurbulence type="fractalNoise" baseFrequency="0.01 0.015" numOctaves="2" result="noise" />
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
+  </filter>
+</svg>
+
 <div class="cursor-dot" id="cursorDot"></div>
 <div class="cursor-outline" id="cursorOutline"></div>
 
@@ -196,8 +270,7 @@
 
 <main id="top">
   <header class="hero wrap">
-    <canvas id="webgl-canvas"></canvas>
-    <div class="hero-eyebrow reveal"><span class="brand-dot" style="width:6px;height:6px"></span> Available for collabs</div>
+    <div class="hero-eyebrow reveal"><span class="brand-dot" style="width:5px;height:5px"></span> Available for collabs</div>
     <h1 class="hero-title">
       <span class="line"><span class="word">Developer</span></span>
       <span class="line"><span class="word accent">&amp; Founder</span></span>
@@ -208,7 +281,7 @@
     </p>
     <div class="hero-actions reveal" data-d="3">
       <a href="#work" class="btn btn-primary magnetic wobble-hover">View work <span class="arrow">→</span></a>
-      <a href="https://github.com/TechAdityaBRO" target="_blank" rel="noopener" class="btn btn-ghost magnetic wobble-hover">GitHub ↗</a>
+      <a href="https://github.com/TechAdityaBRO" target="_blank" rel="noopener noreferrer" class="btn btn-ghost magnetic wobble-hover">GitHub ↗</a>
     </div>
   </header>
 
@@ -218,25 +291,25 @@
       <h2>Things I've built</h2>
     </div>
     <div class="projects">
-      <a class="card tilt reveal wobble-hover" href="https://pglove.jo3.org" target="_blank" rel="noopener">
+      <a class="card reveal wobble-hover" href="https://pglove.jo3.org" target="_blank" rel="noopener noreferrer">
         <span class="card-badge">Browser</span>
         <h3>PGlove</h3>
         <p>An experimental desktop browser built with Tauri 2 (Rust + WebView2). Lightweight, fast, and unapologetically different.</p>
         <div class="card-tags"><span class="tag">Rust</span><span class="tag">Tauri</span></div>
       </a>
-      <a class="card tilt reveal wobble-hover" data-d="1" href="https://brogangaicli.pages.dev/" target="_blank" rel="noopener">
+      <a class="card reveal wobble-hover" data-d="1" href="https://brogangaicli.pages.dev/" target="_blank" rel="noopener noreferrer">
         <span class="card-badge">CLI · AI</span>
         <h3>Bro Gang AI CLI</h3>
         <p>A free-forever AI coding agent for the terminal. No API keys, no signup — powered by Llama 3.3 70B on Cloudflare Workers.</p>
         <div class="card-tags"><span class="tag">TypeScript</span><span class="tag">Llama</span></div>
       </a>
-      <a class="card tilt reveal wobble-hover" data-d="2" href="https://nexasearch.pages.dev/" target="_blank" rel="noopener">
+      <a class="card reveal wobble-hover" data-d="2" href="https://nexasearch.pages.dev/" target="_blank" rel="noopener noreferrer">
         <span class="card-badge">Search</span>
         <h3>Nexa Search</h3>
         <p>A privacy-first search engine. No ads in results, no tracking pixels, no sold browsing history. Just the signal.</p>
         <div class="card-tags"><span class="tag">JavaScript</span><span class="tag">Privacy</span></div>
       </a>
-      <div class="card tilt reveal wobble-hover" onclick="document.getElementById('demo-dialog').showModal()" style="cursor: pointer;" data-d="3">
+      <div class="card reveal wobble-hover" onclick="document.getElementById('demo-dialog').showModal()" style="cursor: pointer;" data-d="3">
         <span class="card-badge">Native HTML</span>
         <h3>Native Dialog</h3>
         <p>Click to open a native HTML <code>&lt;dialog&gt;</code> element. Built-in modal functionality without external libraries.</p>
@@ -253,105 +326,104 @@
     
     <div class="bento-grid">
       
-      <div class="bento-item span-6 reveal tilt wobble-hover" id="app-ip">
-        <div class="app-header"><span class="app-title">IP Scanner</span></div>
+      <div class="bento-item span-6 reveal" id="app-ip">
+        <div class="app-header"><span class="app-title">IP Intelligence</span></div>
         <div class="terminal-wrapper">
           <div class="terminal" id="ipTerminal"><span class="terminal-line">> Awaiting scan...</span></div>
           <div class="skeleton"></div>
         </div>
-        <button class="osint-btn magnetic" id="ipScanBtn">Run Scan ↻</button>
+        <button class="osint-btn" id="ipScanBtn">Run Scan ↻</button>
       </div>
 
-      <div class="bento-item span-6 reveal tilt wobble-hover" data-d="1" id="app-dns">
+      <div class="bento-item span-6 reveal" data-d="1" id="app-dns">
         <div class="app-header"><span class="app-title">DNS Lookup</span></div>
         <input type="text" class="osint-input" id="dnsInput" placeholder="e.g. github.com" value="github.com">
         <div class="terminal-wrapper">
           <div class="terminal" id="dnsTerminal" style="height: 100px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
-        <button class="osint-btn magnetic" id="dnsLookupBtn">Lookup (A, MX, TXT, NS)</button>
+        <button class="osint-btn" id="dnsLookupBtn">Lookup (A, MX, TXT, NS)</button>
       </div>
 
-      <div class="bento-item span-4 reveal tilt wobble-hover" data-d="2" id="app-whois">
+      <div class="bento-item span-4 reveal" data-d="2" id="app-whois">
         <div class="app-header"><span class="app-title">WHOIS (RDAP)</span></div>
         <input type="text" class="osint-input" id="whoisInput" placeholder="e.g. google.com" value="google.com">
         <div class="terminal-wrapper">
           <div class="terminal" id="whoisTerminal" style="height: 100px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
-        <button class="osint-btn magnetic" id="whoisLookupBtn">Lookup</button>
+        <button class="osint-btn" id="whoisLookupBtn">Lookup</button>
       </div>
 
-      <div class="bento-item span-4 reveal tilt wobble-hover" data-d="3" id="app-user">
-        <div class="app-header"><span class="app-title">Username OSINT</span></div>
-        <input type="text" class="osint-input" id="usernameInput" placeholder="e.g. johndoe" value="TechAdityaBRO">
+      <div class="bento-item span-4 reveal" data-d="3" id="app-email">
+        <div class="app-header"><span class="app-title">Email Breach</span></div>
+        <input type="email" class="osint-input" id="emailInput" placeholder="e.g. test@example.com" value="test@example.com">
         <div class="terminal-wrapper">
-          <div class="terminal" id="usernameTerminal" style="height: 100px;"><span class="terminal-line">> Ready</span></div>
+          <div class="terminal" id="emailTerminal" style="height: 100px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
-        <button class="osint-btn magnetic" id="usernameLookupBtn">Search</button>
+        <button class="osint-btn" id="emailLookupBtn">Check Breaches</button>
       </div>
 
-      <div class="bento-item span-4 reveal tilt wobble-hover" id="app-mac">
+      <div class="bento-item span-4 reveal" id="app-email-osint">
+        <div class="app-header"><span class="app-title">Email OSINT</span></div>
+        <input type="email" class="osint-input" id="emailOsintInput" placeholder="e.g. test@example.com" value="test@example.com">
+        <div class="result-panel" id="emailOsintResult">
+          <div class="result-row"><span class="result-label">Status</span><span class="result-value" style="color:var(--text-3)">Awaiting input</span></div>
+        </div>
+        <div class="skeleton"></div>
+        <button class="osint-btn" id="emailOsintBtn">Analyze Email</button>
+      </div>
+
+      <div class="bento-item span-6 reveal" data-d="1" id="app-mac">
         <div class="app-header"><span class="app-title">MAC Address</span></div>
         <input type="text" class="osint-input" id="macInput" placeholder="e.g. 00:1A:2B" value="00:1A:2B">
         <div class="terminal-wrapper">
-          <div class="terminal" id="macTerminal" style="height: 100px;"><span class="terminal-line">> Ready</span></div>
+          <div class="terminal" id="macTerminal" style="height: 80px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
-        <button class="osint-btn magnetic" id="macLookupBtn">Lookup Vendor</button>
+        <button class="osint-btn" id="macLookupBtn">Lookup Vendor</button>
       </div>
 
-      <div class="bento-item span-6 reveal tilt wobble-hover" data-d="1" id="app-url">
+      <div class="bento-item span-6 reveal" data-d="2" id="app-url">
         <div class="app-header"><span class="app-title">URL Expander</span></div>
         <input type="text" class="osint-input" id="urlInput" placeholder="Short URL" value="https://bit.ly/3x...">
         <div class="terminal-wrapper">
           <div class="terminal" id="urlTerminal" style="height: 80px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
-        <button class="osint-btn magnetic" id="urlLookupBtn">Expand</button>
+        <button class="osint-btn" id="urlLookupBtn">Expand</button>
       </div>
 
-      <div class="bento-item span-6 reveal tilt wobble-hover" data-d="2" id="app-email">
-        <div class="app-header"><span class="app-title">Email Breach</span></div>
-        <input type="email" class="osint-input" id="emailInput" placeholder="e.g. test@example.com" value="test@example.com">
-        <div class="terminal-wrapper">
-          <div class="terminal" id="emailTerminal" style="height: 80px;"><span class="terminal-line">> Ready</span></div>
-          <div class="skeleton"></div>
-        </div>
-        <button class="osint-btn magnetic" id="emailLookupBtn">Check Breaches</button>
-      </div>
-
-      <div class="bento-item span-12 reveal tilt wobble-hover" data-d="3" id="app-sub">
+      <div class="bento-item span-12 reveal" data-d="3" id="app-sub">
         <div class="app-header"><span class="app-title">Subdomain Checker</span></div>
         <input type="text" class="osint-input" id="subInput" placeholder="e.g. google.com" value="google.com">
         <div class="terminal-wrapper">
-          <div class="terminal" id="subTerminal" style="height: 120px;"><span class="terminal-line">> Ready</span></div>
+          <div class="terminal" id="subTerminal" style="height: 100px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
-        <button class="osint-btn magnetic" id="subLookupBtn">Find Subdomains (crt.sh)</button>
+        <button class="osint-btn" id="subLookupBtn">Find Subdomains (crt.sh)</button>
       </div>
 
-      <div class="bento-item span-6 reveal tilt wobble-hover" id="app-builder">
+      <div class="bento-item span-6 reveal" id="app-builder">
         <div class="app-header"><span class="app-title">Site Builder</span></div>
         <input type="text" class="osint-input" id="builderInput" placeholder="e.g. wordpress.org" value="wordpress.org">
         <div class="terminal-wrapper">
           <div class="terminal" id="builderTerminal" style="height: 100px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
-        <button class="osint-btn magnetic" id="builderLookupBtn">Detect CMS</button>
+        <button class="osint-btn" id="builderLookupBtn">Detect CMS</button>
       </div>
 
-      <div class="bento-item span-6 reveal tilt wobble-hover" data-d="1" id="app-bug">
+      <div class="bento-item span-6 reveal" data-d="1" id="app-bug">
         <div class="app-header"><span class="app-title">Bug Finder (Headers)</span></div>
         <input type="text" class="osint-input" id="bugInput" placeholder="e.g. github.com" value="github.com">
         <div class="terminal-wrapper">
           <div class="terminal" id="bugTerminal" style="height: 100px;"><span class="terminal-line">> Ready</span></div>
           <div class="skeleton"></div>
         </div>
-        <button class="osint-btn magnetic" id="bugLookupBtn">Scan Headers</button>
+        <button class="osint-btn" id="bugLookupBtn">Scan Headers</button>
       </div>
-
     </div>
   </section>
 
@@ -361,53 +433,52 @@
       <h2>Live activity</h2>
     </div>
     <div class="gh-stats">
-      <div class="gh-card gh-span-6 reveal tilt wobble-hover">
-        <img src="https://gh-stats.com/api/TechAdityaBRO?theme=cyberpunk&show_icons=true&hide_border=true&title_color=00ff41&icon_color=10b981&text_color=a4a9c4&bg_color=050a05" alt="GitHub Stats">
+      <div class="gh-card gh-span-6 reveal">
+        <img src="https://gh-stats.com/api/TechAdityaBRO?theme=dark&show_icons=true&hide_border=true&title_color=ffffff&icon_color=ffffff&text_color=aaaaaa&bg_color=0a0a0a" alt="GitHub Stats">
       </div>
-      <div class="gh-card gh-span-6 reveal tilt wobble-hover" data-d="1">
-        <img src="https://gh-stats.com/api/top-langs/TechAdityaBRO?theme=cyberpunk&layout=compact&hide_border=true&title_color=00ff41&text_color=a4a9c4&bg_color=050a05" alt="Top Languages">
+      <div class="gh-card gh-span-6 reveal" data-d="1">
+        <img src="https://gh-stats.com/api/top-langs/TechAdityaBRO?theme=dark&layout=compact&hide_border=true&title_color=ffffff&text_color=aaaaaa&bg_color=0a0a0a" alt="Top Languages">
       </div>
-      <div class="gh-card gh-span-12 reveal tilt wobble-hover" data-d="2" style="padding: 2rem;">
-        <img src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=TechAdityaBRO&theme=2077" alt="GitHub Profile Summary">
+      <div class="gh-card gh-span-12 reveal" data-d="2" style="padding: 1.5rem;">
+        <img src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=TechAdityaBRO&theme=github_dark" alt="GitHub Profile Summary">
       </div>
     </div>
   </section>
 
   <section class="section wrap" id="contact">
-    <div class="reveal" style="text-align: center; padding: 4rem 2rem; background: var(--surface); border-radius: var(--radius); backdrop-filter: blur(20px); box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 1px 0 var(--glass-highlight); border: 1px solid var(--glass-border);">
-      <h2 style="font-family: 'Outfit'; font-size: clamp(3rem, 7vw, 5rem); margin-bottom: 1.5rem; font-weight: 900; letter-spacing: -.03em; line-height: 1.1;">Let's build <br><span style="color: var(--accent);">something.</span></h2>
-      <p style="color: var(--text-2); margin-bottom: 3rem; max-width: 45ch; margin-inline: auto; font-size: 1.1rem;">Open to collabs, weird ideas, and anything that ships. The fastest way to reach me is email or Discord.</p>
-      <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+    <div class="reveal" style="text-align: center; padding: 4rem 2rem; background: var(--glass-tint); border-radius: var(--radius); backdrop-filter: url(#glass-refract); -webkit-backdrop-filter: url(#glass-refract); box-shadow: inset 0 1px 0 var(--glass-edge-light), inset 0 -2px 4px var(--glass-edge-dark), 0 8px 24px rgba(0,0,0,0.4); border: 1px solid var(--glass-border); position: relative; overflow: hidden;">
+      <h2 style="font-size: clamp(2.5rem, 6vw, 4rem); margin-bottom: 1.5rem; font-weight: 900; letter-spacing: -.03em; line-height: 1.1; color: #fff; position: relative;">Let's build <br><span style="color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,0.6);">something.</span></h2>
+      <p style="color: var(--text-2); margin-bottom: 2.5rem; max-width: 45ch; margin-inline: auto; font-size: 1rem; position: relative;">Open to collabs, weird ideas, and anything that ships. The fastest way to reach me is email or Discord.</p>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; position: relative;">
         <a href="mailto:chairmanaditya@brogang.jo3.org" class="btn btn-primary magnetic wobble-hover">Email me <span class="arrow">→</span></a>
-        <a href="https://discord.gg/TSWg34Zets" target="_blank" rel="noopener" class="btn btn-ghost magnetic wobble-hover">Join Discord ↗</a>
+        <a href="https://discord.gg/TSWg34Zets" target="_blank" rel="noopener noreferrer" class="btn btn-ghost magnetic wobble-hover">Join Discord ↗</a>
       </div>
     </div>
   </section>
 
   <div class="footer wrap">
     <span>© <span id="year"></span> Aditya Kumar Sethi</span>
-    <span>Part of <a href="https://github.com/BRO-GANG" target="_blank" rel="noopener">BRO GANG</a></span>
+    <span>Part of <a href="https://github.com/BRO-GANG" target="_blank" rel="noopener noreferrer">BRO GANG</a></span>
   </div>
 </main>
 
 <dialog id="demo-dialog">
-  <h3 style="margin-bottom: 1rem; font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800;">Native Modal</h3>
-  <p style="color: var(--text-2); margin-bottom: 2rem; line-height: 1.7; font-size: 1.1rem;">This dialog is created with the HTML <code>&lt;dialog&gt;</code> element. It handles focus trapping, background inertness, and the ESC key automatically.</p>
-  <button class="btn btn-primary magnetic wobble-hover" onclick="document.getElementById('demo-dialog').close()">Close Dialog</button>
+  <h3 style="margin-bottom: 1rem; font-size: 1.8rem; font-weight: 800;">Native Modal</h3>
+  <p style="color: var(--text-2); margin-bottom: 2rem; line-height: 1.7; font-size: 1rem;">This dialog is created with the HTML <code>&lt;dialog&gt;</code> element. It handles focus trapping, background inertness, and the ESC key automatically.</p>
+  <button class="btn btn-primary" onclick="document.getElementById('demo-dialog').close()">Close Dialog</button>
 </dialog>
 
 <script>
+'use strict';
 document.getElementById('year').textContent = new Date().getFullYear();
 
-const spotlight = document.getElementById('spotlight');
+/* ===== Cursor ===== */
 const cursorDot = document.getElementById('cursorDot');
 const cursorOutline = document.getElementById('cursorOutline');
 let mouseX = 0, mouseY = 0, outlineX = 0, outlineY = 0;
 
 window.addEventListener('mousemove', (e) => {
   mouseX = e.clientX; mouseY = e.clientY;
-  spotlight.style.setProperty('--mouse-x', `${mouseX}px`);
-  spotlight.style.setProperty('--mouse-y', `${mouseY}px`);
   cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
 });
 
@@ -424,6 +495,7 @@ document.querySelectorAll('a, button, .bento-item, .card, input').forEach(el => 
   el.addEventListener('mouseleave', () => { cursorDot.classList.remove('hover'); cursorOutline.classList.remove('hover'); });
 });
 
+/* ===== Magnetic Buttons ===== */
 document.querySelectorAll('.magnetic').forEach(btn => {
   btn.addEventListener('mousemove', (e) => {
     const rect = btn.getBoundingClientRect();
@@ -431,23 +503,11 @@ document.querySelectorAll('.magnetic').forEach(btn => {
     const y = e.clientY - rect.top - rect.height / 2;
     btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
   });
-  btn.addEventListener('mouseleave', () => { btn.style.transform = `translate(0px, 0px)`; btn.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)'; });
+  btn.addEventListener('mouseleave', () => { btn.style.transform = `translate(0px, 0px)`; btn.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'; });
   btn.addEventListener('mouseenter', () => { btn.style.transition = 'transform 0.1s ease'; });
 });
 
-document.querySelectorAll('.tilt').forEach(card => {
-  card.addEventListener('mousemove', (e) => {
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left, y = e.clientY - rect.top;
-    const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -5;
-    const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 5;
-    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-    card.style.setProperty('--local-x', `${x}px`); card.style.setProperty('--local-y', `${y}px`);
-  });
-  card.addEventListener('mouseleave', () => { card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`; card.style.transition = 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)'; });
-  card.addEventListener('mouseenter', () => { card.style.transition = 'transform 0.1s ease'; });
-});
-
+/* ===== Nav & Scroll ===== */
 let lastY = 0;
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
@@ -458,11 +518,13 @@ window.addEventListener('scroll', () => {
   document.getElementById('progress').style.transform = `scaleX(${h > 0 ? y / h : 0})`;
 }, { passive: true });
 
+/* ===== Reveal ===== */
 const io = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
+/* ===== Anime Background (Mixed Boys & Girls) ===== */
 const bgLayer1 = document.getElementById('bgLayer1');
 const bgLayer2 = document.getElementById('bgLayer2');
 let currentLayer = bgLayer1, nextLayer = bgLayer2, isFetchingBg = false;
@@ -470,226 +532,293 @@ let currentLayer = bgLayer1, nextLayer = bgLayer2, isFetchingBg = false;
 async function fetchAnimeBackground() {
   if (isFetchingBg) return;
   isFetchingBg = true;
+  
+  const isBoy = Math.random() > 0.5; 
+  let imgUrl = null;
+
   try {
-    const res = await fetch('https://nekos.best/api/v2/neko?amount=1');
+    // Waifu.im supports both 'waifu' and 'husbando' tags with CORS
+    const tag = isBoy ? 'husbando' : 'waifu';
+    const res = await fetch(`https://api.waifu.im/search?included_tags=${tag}&limit=1`);
     if (!res.ok) throw new Error('API Error');
     const data = await res.json();
-    const imgUrl = data.results[0].url;
-    const img = new Image();
-    img.src = imgUrl;
-    img.onload = () => {
-      nextLayer.style.backgroundImage = `url('${imgUrl}')`;
-      nextLayer.classList.add('active'); currentLayer.classList.remove('active');
-      [currentLayer, nextLayer] = [nextLayer, currentLayer];
-      isFetchingBg = false;
-    };
-    img.onerror = () => { isFetchingBg = false; };
-  } catch (e) { isFetchingBg = false; }
-}
-setInterval(fetchAnimeBackground, 7500);
+    
+    if (data.images && data.images.length > 0) {
+      imgUrl = data.images[0].url;
+    }
 
-const canvas = document.getElementById('webgl-canvas');
-if (canvas) {
-  const gl = canvas.getContext('webgl');
-  if (gl) {
-    const vs = `attribute vec2 position; void main() { gl_Position = vec4(position, 0.0, 1.0); }`;
-    const fs = `precision highp float; uniform vec2 u_resolution; uniform float u_time; void main() { vec2 st = gl_FragCoord.xy / u_resolution.xy; st.x *= u_resolution.x / u_resolution.y; vec3 color = vec3(0.0); float t = u_time * 0.2; float d1 = length(st - vec2(0.3 + sin(t) * 0.1, 0.3 + cos(t * 1.2) * 0.1)); float d2 = length(st - vec2(0.7 + cos(t * 0.8) * 0.1, 0.6 + sin(t * 0.9) * 0.1)); color += vec3(0.0, 0.6, 0.2) * smoothstep(0.4, 0.0, d1); color += vec3(0.0, 0.8, 0.4) * smoothstep(0.5, 0.0, d2); float n = fract(sin(dot(st, vec2(12.9898, 78.233))) * 43758.5453); color += n * 0.05; gl_FragColor = vec4(color, 0.8); }`;
-    function createShader(gl, type, source) { const s = gl.createShader(type); gl.shaderSource(s, source); gl.compileShader(s); return s; }
-    const program = gl.createProgram();
-    gl.attachShader(program, createShader(gl, gl.VERTEX_SHADER, vs));
-    gl.attachShader(program, createShader(gl, gl.FRAGMENT_SHADER, fs));
-    gl.linkProgram(program); gl.useProgram(program);
-    const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-    const pos = gl.getAttribLocation(program, 'position'); gl.enableVertexAttribArray(pos); gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
-    const resLoc = gl.getUniformLocation(program, 'u_resolution'), timeLoc = gl.getUniformLocation(program, 'u_time');
-    function resize() { canvas.width = canvas.clientWidth * devicePixelRatio; canvas.height = canvas.clientHeight * devicePixelRatio; gl.viewport(0, 0, canvas.width, canvas.height); }
-    window.addEventListener('resize', resize); resize();
-    let start = Date.now();
-    function render() { const t = (Date.now() - start) / 1000; gl.uniform2f(resLoc, canvas.width, canvas.height); gl.uniform1f(timeLoc, t); gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); requestAnimationFrame(render); }
-    render();
+    if (imgUrl) {
+      const img = new Image();
+      img.src = imgUrl;
+      img.onload = () => {
+        nextLayer.style.backgroundImage = `url('${imgUrl}')`;
+        nextLayer.classList.add('active'); currentLayer.classList.remove('active');
+        [currentLayer, nextLayer] = [nextLayer, currentLayer];
+        isFetchingBg = false;
+      };
+      img.onerror = () => { isFetchingBg = false; };
+    } else {
+      isFetchingBg = false;
+    }
+  } catch (e) { 
+    isFetchingBg = false; 
   }
 }
 
+// 2.5 second cycle
+setInterval(fetchAnimeBackground, 2500);
+
+/* ===== Typewriter ===== */
 async function typeTerminal(terminalEl, lines) {
-  terminalEl.innerHTML = '';
+  terminalEl.textContent = '';
   for (let i = 0; i < lines.length; i++) {
     const lineEl = document.createElement('span');
     lineEl.className = 'terminal-line';
     terminalEl.appendChild(lineEl);
-    await new Promise(r => setTimeout(r, 100)); 
-    lineEl.innerHTML = lines[i];
+    await new Promise(r => setTimeout(r, 80));
+    lineEl.textContent = lines[i];
     terminalEl.scrollTop = terminalEl.scrollHeight;
   }
-  terminalEl.innerHTML += `<span class="terminal-line">> Done.</span>`;
+  const done = document.createElement('span');
+  done.className = 'terminal-line';
+  done.textContent = '> Done.';
+  terminalEl.appendChild(done);
 }
 
-// 1. IP Scanner (Fixed: ipwho.is)
-document.getElementById('ipScanBtn').addEventListener('click', async () => {
+/* ===== OSINT 1: IP Intelligence ===== */
+async function runIPScan() {
   const term = document.getElementById('ipTerminal');
-  document.getElementById('app-ip').classList.add('loading');
-  term.innerHTML = '<span class="terminal-line">> Querying ipwho.is...</span>';
+  const card = document.getElementById('app-ip');
+  card.classList.add('loading');
+  term.textContent = '> Querying ipwho.is...';
   try {
     const res = await fetch('https://ipwho.is/');
+    if (!res.ok) throw new Error('Network error');
     const data = await res.json();
     if (!data.success) throw new Error('API Error');
-    await typeTerminal(term, [`> IP: <span>${data.ip}</span>`, `> ISP: <span>${data.connection?.isp || 'Unknown'}</span>`, `> LOC: <span>${data.city || '?'}, ${data.country || '?'}</span>`]);
-  } catch (e) { term.innerHTML = '<span class="terminal-line" style="color:#ff3366">> ERROR: Scan failed.</span>'; }
-  document.getElementById('app-ip').classList.remove('loading');
-});
-document.getElementById('ipScanBtn').click();
+    const isHosting = (data.connection?.type || '').toLowerCase().includes('hosting');
+    await typeTerminal(term, [
+      `> IP: ${data.ip}`,
+      `> ISP: ${data.connection?.isp || 'Unknown'}`,
+      `> LOC: ${data.city || '?'}, ${data.country || '?'}`,
+      `> VPN: ${isHosting ? 'DETECTED ⚠️' : 'CLEAN ✅'}`
+    ]);
+  } catch (e) {
+    term.textContent = '> ERROR: Scan failed.';
+  }
+  card.classList.remove('loading');
+}
+document.getElementById('ipScanBtn').addEventListener('click', runIPScan);
+runIPScan();
 
-// 2. DNS Lookup (Google DoH)
+/* ===== OSINT 2: DNS Lookup ===== */
 document.getElementById('dnsLookupBtn').addEventListener('click', async () => {
   const domain = document.getElementById('dnsInput').value.trim();
+  if (!domain) return;
   const term = document.getElementById('dnsTerminal');
-  document.getElementById('app-dns').classList.add('loading');
-  term.innerHTML = '<span class="terminal-line">> Fetching records...</span>';
+  const card = document.getElementById('app-dns');
+  card.classList.add('loading');
+  term.textContent = '> Fetching records...';
   try {
     const types = ['A', 'MX', 'TXT', 'NS'];
-    const results = await Promise.all(types.map(t => fetch(`https://dns.google/resolve?name=${domain}&type=${t}`).then(r => r.json())));
-    let lines = [];
+    const results = await Promise.all(types.map(t =>
+      fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=${t}`).then(r => r.json())
+    ));
+    const lines = [];
     results.forEach((d, i) => {
-      if (d.Answer) { lines.push(`> ${types[i]}:`); d.Answer.forEach(a => lines.push(`  <span>${a.data}</span>`)); }
-      else lines.push(`> ${types[i]}: None`);
+      if (d.Answer) {
+        lines.push(`> ${types[i]}:`);
+        d.Answer.slice(0, 3).forEach(a => lines.push(`  ${a.data}`));
+      } else lines.push(`> ${types[i]}: None`);
     });
     await typeTerminal(term, lines);
-  } catch (e) { term.innerHTML = '<span class="terminal-line" style="color:#ff3366">> ERROR: Lookup failed.</span>'; }
-  document.getElementById('app-dns').classList.remove('loading');
+  } catch (e) { term.textContent = '> ERROR: Lookup failed.'; }
+  card.classList.remove('loading');
 });
 
-// 3. WHOIS (Fixed: Domainee)
+/* ===== OSINT 3: WHOIS ===== */
 document.getElementById('whoisLookupBtn').addEventListener('click', async () => {
   const domain = document.getElementById('whoisInput').value.trim();
+  if (!domain) return;
   const term = document.getElementById('whoisTerminal');
-  document.getElementById('app-whois').classList.add('loading');
-  term.innerHTML = '<span class="terminal-line">> Querying Domainee...</span>';
+  const card = document.getElementById('app-whois');
+  card.classList.add('loading');
+  term.textContent = '> Querying RDAP...';
   try {
-    const res = await fetch(`https://api.domainee.dev/v1/tools/whois-lookup?domain=${domain}`);
+    const res = await fetch(`https://rdap.org/domain/${encodeURIComponent(domain)}`);
+    if (!res.ok) throw new Error('Not found');
     const data = await res.json();
-    if (!data.ok) throw new Error(data.error?.message || 'Failed');
-    const d = data.data;
-    await typeTerminal(term, [`> Domain: <span>${d.domain}</span>`, `> Registrar: <span>${d.registrar || 'N/A'}</span>`, `> Created: <span>${d.created?.split('T')[0] || 'N/A'}</span>`, `> Expires: <span>${d.expires?.split('T')[0] || 'N/A'}</span>`]);
-  } catch (e) { term.innerHTML = '<span class="terminal-line" style="color:#ff3366">> ERROR: WHOIS failed.</span>'; }
-  document.getElementById('app-whois').classList.remove('loading');
-});
-
-// 4. Username OSINT (WhatsMyName fallback)
-document.getElementById('usernameLookupBtn').addEventListener('click', async () => {
-  const username = document.getElementById('usernameInput').value.trim();
-  const term = document.getElementById('usernameTerminal');
-  document.getElementById('app-user').classList.add('loading');
-  term.innerHTML = '<span class="terminal-line">> Searching...</span>';
-  try {
-    const res = await fetch(`https://whatsmyname.app/api/check?username=${encodeURIComponent(username)}`);
-    const data = await res.json();
-    const found = data.filter(s => s.status === 'found');
-    let lines = found.length ? [`> Found on ${found.length} platforms:`] : ['> No accounts found.'];
-    found.slice(0, 6).forEach(s => lines.push(`  <a href="${s.url}" target="_blank">${s.name}</a>`));
+    const lines = [`> Domain: ${data.ldhName || domain}`, `> Status: ${(data.status || []).join(', ') || 'Unknown'}`];
+    const registrar = (data.entities || []).find(e => (e.roles || []).includes('registrar'));
+    if (registrar) {
+      const vcard = (registrar.vcardArray?.[1] || []).find(v => v[0] === 'fn');
+      if (vcard) lines.push(`> Registrar: ${vcard[3]}`);
+    }
+    (data.events || []).forEach(ev => {
+      if (ev.eventAction === 'registration') lines.push(`> Created: ${ev.eventDate.split('T')[0]}`);
+    });
     await typeTerminal(term, lines);
-  } catch (e) { term.innerHTML = '<span class="terminal-line" style="color:#ff3366">> ERROR: Search failed.</span>'; }
-  document.getElementById('app-user').classList.remove('loading');
+  } catch (e) { term.textContent = '> ERROR: WHOIS failed.'; }
+  card.classList.remove('loading');
 });
 
-// 5. MAC Address Lookup (Fixed: IPWhois.net)
+/* ===== OSINT 4: Email Breach ===== */
+document.getElementById('emailLookupBtn').addEventListener('click', async () => {
+  const email = document.getElementById('emailInput').value.trim();
+  if (!email) return;
+  const term = document.getElementById('emailTerminal');
+  const card = document.getElementById('app-email');
+  card.classList.add('loading');
+  term.textContent = '> Checking breaches...';
+  try {
+    const res = await fetch(`https://api.xposedornot.com/v1/check-email/${encodeURIComponent(email)}`);
+    if (res.status === 404) {
+      await typeTerminal(term, ['> No breaches found. ✅']);
+    } else {
+      const data = await res.json();
+      const lines = (data.breaches && data.breaches.length)
+        ? [`> Found in ${data.breaches.length} breaches:`, ...data.breaches.slice(0, 3).map(b => `  - ${b}`)]
+        : ['> No breaches found. ✅'];
+      await typeTerminal(term, lines);
+    }
+  } catch (e) { term.textContent = '> ERROR: API failed.'; }
+  card.classList.remove('loading');
+});
+
+/* ===== OSINT 5: Email OSINT ===== */
+document.getElementById('emailOsintBtn').addEventListener('click', async () => {
+  const email = document.getElementById('emailOsintInput').value.trim();
+  if (!email) return;
+  const panel = document.getElementById('emailOsintResult');
+  const card = document.getElementById('app-email-osint');
+  card.classList.add('loading');
+  panel.innerHTML = '<div class="result-row"><span class="result-label">Status</span><span class="result-value">Analyzing...</span></div>';
+
+  try {
+    const res = await fetch(`https://open.kickbox.com/v1/disposable/${encodeURIComponent(email)}`);
+    if (!res.ok) throw new Error('API Error');
+    const data = await res.json();
+
+    const isDisposable = data.disposable === true;
+    const disposableBadge = isDisposable 
+      ? '<span class="badge badge-warn">Disposable</span>' 
+      : '<span class="badge badge-ok">Clean</span>';
+
+    panel.innerHTML = `
+      <div class="result-row"><span class="result-label">Email</span><span class="result-value">${escapeHtml(email)}</span></div>
+      <div class="result-row"><span class="result-label">Disposable</span><span class="result-value">${disposableBadge}</span></div>
+      <div class="result-row"><span class="result-label">Status</span><span class="result-value" style="color:var(--text-2)">Validated</span></div>
+    `;
+  } catch (e) {
+    panel.innerHTML = '<div class="result-row"><span class="result-label">Error</span><span class="result-value" style="color:#ff5050">Analysis failed</span></div>';
+  }
+  card.classList.remove('loading');
+});
+
+/* ===== OSINT 6: MAC Lookup ===== */
 document.getElementById('macLookupBtn').addEventListener('click', async () => {
   const mac = document.getElementById('macInput').value.trim();
+  if (!mac) return;
   const term = document.getElementById('macTerminal');
-  document.getElementById('app-mac').classList.add('loading');
-  term.innerHTML = '<span class="terminal-line">> Querying IPWhois.net...</span>';
+  const card = document.getElementById('app-mac');
+  card.classList.add('loading');
+  term.textContent = '> Querying...';
   try {
-    const res = await fetch(`https://ipwhois.net/api/mac/v1/lookup?mac=${encodeURIComponent(mac)}`);
+    const targetUrl = encodeURIComponent(`https://api.macvendors.com/${mac}`);
+    const res = await fetch(`https://api.allorigins.win/get?url=${targetUrl}`);
     const data = await res.json();
-    if (data.success && data.found) {
-      await typeTerminal(term, [`> Vendor: <span>${data.vendor?.company || 'Unknown'}</span>`, `> Country: <span>${data.vendor?.country || 'N/A'}</span>`]);
+    let lines;
+    if (data.contents && !data.contents.includes('Not Found')) {
+      lines = [`> Vendor: ${data.contents}`];
     } else {
-      await typeTerminal(term, ['> Vendor: <span>Not found</span>']);
+      lines = ['> Vendor: Not found'];
     }
-  } catch (e) { term.innerHTML = '<span class="terminal-line" style="color:#ff3366">> ERROR: Lookup failed.</span>'; }
-  document.getElementById('app-mac').classList.remove('loading');
+    await typeTerminal(term, lines);
+  } catch (e) { term.textContent = '> ERROR: Lookup failed.'; }
+  card.classList.remove('loading');
 });
 
-// 6. URL Expander
+/* ===== OSINT 7: URL Expander ===== */
 document.getElementById('urlLookupBtn').addEventListener('click', async () => {
   const url = document.getElementById('urlInput').value.trim();
+  if (!url) return;
   const term = document.getElementById('urlTerminal');
-  document.getElementById('app-url').classList.add('loading');
-  term.innerHTML = '<span class="terminal-line">> Expanding...</span>';
+  const card = document.getElementById('app-url');
+  card.classList.add('loading');
+  term.textContent = '> Expanding...';
   try {
     const res = await fetch(`https://unshorten.me/api/v2/unshorten?url=${encodeURIComponent(url)}`);
     const data = await res.json();
-    await typeTerminal(term, data.success ? [`> Original: <a href="${data.real_url}" target="_blank">${data.real_url}</a>`] : ['> Failed to expand.']);
-  } catch (e) { term.innerHTML = '<span class="terminal-line" style="color:#ff3366">> ERROR: Expansion failed.</span>'; }
-  document.getElementById('app-url').classList.remove('loading');
+    await typeTerminal(term, data.success ? [`> Original: ${data.real_url}`] : ['> Failed to expand.']);
+  } catch (e) { term.textContent = '> ERROR: Expansion failed.'; }
+  card.classList.remove('loading');
 });
 
-// 7. Email Breach
-document.getElementById('emailLookupBtn').addEventListener('click', async () => {
-  const email = document.getElementById('emailInput').value.trim();
-  const term = document.getElementById('emailTerminal');
-  document.getElementById('app-email').classList.add('loading');
-  term.innerHTML = '<span class="terminal-line">> Checking breaches...</span>';
-  try {
-    const res = await fetch(`https://api.xposedornot.com/v1/check-email/${encodeURIComponent(email)}`);
-    if (res.status === 404) { await typeTerminal(term, ['> No breaches found. ✅']); }
-    else {
-      const data = await res.json();
-      let lines = data.breaches?.length ? [`> Found in <span>${data.breaches.length}</span> breaches:`, ...data.breaches.slice(0, 3).map(b => `  - <span>${b}</span>`)] : ['> No breaches found. ✅'];
-      await typeTerminal(term, lines);
-    }
-  } catch (e) { term.innerHTML = '<span class="terminal-line" style="color:#ff3366">> ERROR: API failed.</span>'; }
-  document.getElementById('app-email').classList.remove('loading');
-});
-
-// 8. Subdomain Checker (crt.sh)
+/* ===== OSINT 8: Subdomains ===== */
 document.getElementById('subLookupBtn').addEventListener('click', async () => {
   const domain = document.getElementById('subInput').value.trim();
+  if (!domain) return;
   const term = document.getElementById('subTerminal');
-  document.getElementById('app-sub').classList.add('loading');
-  term.innerHTML = '<span class="terminal-line">> Querying crt.sh...</span>';
+  const card = document.getElementById('app-sub');
+  card.classList.add('loading');
+  term.textContent = '> Querying crt.sh...';
   try {
-    const res = await fetch(`https://crt.sh/?q=%25.${domain}&output=json`);
+    const res = await fetch(`https://crt.sh/?q=%25.${encodeURIComponent(domain)}&output=json`);
     const certs = await res.json();
     const subs = new Set();
-    certs.forEach(c => c.name_value.split('\n').forEach(n => { const cl = n.trim().toLowerCase(); if (cl.includes(domain) && cl !== domain && !cl.startsWith('*')) subs.add(cl); }));
-    let lines = subs.size ? [`> Found <span>${subs.size}</span> subdomains:`, ...Array.from(subs).slice(0, 8).map(s => `  <span>${s}</span>`)] : ['> No subdomains found.'];
+    certs.forEach(c => (c.name_value || '').split('\n').forEach(n => {
+      const cl = n.trim().toLowerCase();
+      if (cl.includes(domain) && cl !== domain && !cl.startsWith('*')) subs.add(cl);
+    }));
+    const lines = subs.size
+      ? [`> Found ${subs.size} subdomains:`, ...Array.from(subs).slice(0, 8).map(s => `  ${s}`)]
+      : ['> No subdomains found.'];
     await typeTerminal(term, lines);
-  } catch (e) { term.innerHTML = '<span class="terminal-line" style="color:#ff3366">> ERROR: crt.sh failed.</span>'; }
-  document.getElementById('app-sub').classList.remove('loading');
+  } catch (e) { term.textContent = '> ERROR: crt.sh failed.'; }
+  card.classList.remove('loading');
 });
 
-// 9. Site Builder
+/* ===== OSINT 9: Site Builder ===== */
 document.getElementById('builderLookupBtn').addEventListener('click', async () => {
   const url = document.getElementById('builderInput').value.trim();
+  if (!url) return;
   const term = document.getElementById('builderTerminal');
-  document.getElementById('app-builder').classList.add('loading');
-  term.innerHTML = '<span class="terminal-line">> Analyzing...</span>';
+  const card = document.getElementById('app-builder');
+  card.classList.add('loading');
+  term.textContent = '> Analyzing...';
   try {
     const res = await fetch(`https://api.techspy.dev/detect?url=${encodeURIComponent(url)}`);
     const data = await res.json();
-    let lines = data.technologies?.length ? [`> Detected <span>${data.technologies.length}</span> tech:`, ...data.technologies.slice(0, 5).map(t => `  - <span>${t.name}</span>`)] : ['> No tech detected.'];
+    const lines = (data.technologies && data.technologies.length)
+      ? [`> Detected ${data.technologies.length} tech:`, ...data.technologies.slice(0, 5).map(t => `  - ${t.name}`)]
+      : ['> No tech detected.'];
     await typeTerminal(term, lines);
-  } catch (e) { term.innerHTML = '<span class="terminal-line" style="color:#ff3366">> ERROR: Scan failed.</span>'; }
-  document.getElementById('app-builder').classList.remove('loading');
+  } catch (e) { term.textContent = '> ERROR: Scan failed.'; }
+  card.classList.remove('loading');
 });
 
-// 10. Bug Finder (Fixed: HackMyIP Security Headers)
+/* ===== OSINT 10: Bug Finder ===== */
 document.getElementById('bugLookupBtn').addEventListener('click', async () => {
   const host = document.getElementById('bugInput').value.trim();
+  if (!host) return;
   const term = document.getElementById('bugTerminal');
-  document.getElementById('app-bug').classList.add('loading');
-  term.innerHTML = '<span class="terminal-line">> Scanning headers...</span>';
+  const card = document.getElementById('app-bug');
+  card.classList.add('loading');
+  term.textContent = '> Scanning headers...';
   try {
     const res = await fetch(`https://hackmyip.com/api/security-headers?host=${encodeURIComponent(host)}`);
     const data = await res.json();
-    let lines = [`> Grade: <span>${data.grade || 'N/A'}</span>`];
-    if (data.headers) {
-      Object.entries(data.headers).slice(0, 4).forEach(([k, v]) => lines.push(`  - <span>${k}:</span> ${v}`));
-    }
+    const lines = [`> Grade: ${data.grade || 'N/A'}`];
+    if (data.headers) Object.entries(data.headers).slice(0, 4).forEach(([k, v]) => lines.push(`  - ${k}: ${v}`));
     await typeTerminal(term, lines);
-  } catch (e) { term.innerHTML = '<span class="terminal-line" style="color:#ff3366">> ERROR: Scan failed.</span>'; }
-  document.getElementById('app-bug').classList.remove('loading');
+  } catch (e) { term.textContent = '> ERROR: Scan failed.'; }
+  card.classList.remove('loading');
 });
+
+/* ===== Helpers ===== */
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
 </script>
 </body>
 </html>
