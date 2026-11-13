@@ -54,7 +54,7 @@
   button { font-family: inherit; cursor: none; border: none; background: none; color: inherit; @media (pointer: coarse) { cursor: pointer; } }
   img, iframe { max-width: 100%; display: block; }
 
-  /* ===== Dynamic Anime Background Slideshow ===== */
+  /* ===== Dynamic Anime Background Slideshow (Preloaded) ===== */
   .anime-bg-container {
     position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden;
   }
@@ -66,16 +66,15 @@
     opacity: 0;
     transition: opacity 2s ease-in-out;
     transform: scale(1.05);
-    filter: blur(1px); /* Very slight blur */
+    filter: blur(1px);
   }
   
   .anime-bg-layer.active {
-    opacity: 0.75; /* Highly visible */
+    opacity: 0.75;
   }
   
   .anime-overlay {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    /* Light gradient so the image is visible but text is readable */
     background: linear-gradient(to bottom, rgba(10,10,15,0.2) 0%, rgba(10,10,15,0.85) 100%);
   }
 
@@ -157,7 +156,6 @@
     opacity: 0; transition: opacity 0.4s ease;
     mix-blend-mode: luminosity; 
   }
-  /* Static high-quality images for hover */
   .card:nth-child(1)::after { background-image: url('https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=800'); } 
   .card:nth-child(2)::after { background-image: url('https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=800'); } 
   .card:nth-child(3)::after { background-image: url('https://images.unsplash.com/photo-1542451313056-b7c8e626645f?q=80&w=800'); } 
@@ -185,6 +183,7 @@
   .terminal::-webkit-scrollbar-thumb { background: #00ff41; border-radius: 4px; }
   .terminal-line { display: block; margin-bottom: 2px; word-break: break-all; }
   .terminal-line span { color: var(--accent-2); }
+  .terminal-line a { color: var(--accent); text-decoration: underline; }
   .terminal-cursor { display: inline-block; width: 8px; height: 15px; background: #00ff41; animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 2px; }
   @keyframes blink { 50% { opacity: 0; } }
 
@@ -194,14 +193,6 @@
   .osint-btn-group { display: flex; gap: 0.5rem; }
   .osint-btn { flex: 1; padding: 0.6rem; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; border-radius: 8px; border: 1px solid var(--line-2); background: var(--bg-2); color: var(--text-2); cursor: pointer; transition: all .2s; }
   .osint-btn:hover { border-color: var(--accent-2); color: var(--accent-2); }
-
-  /* Threat Links */
-  .threat-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
-  .threat-link { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; padding: 0.3rem 0.6rem; border-radius: 4px; background: rgba(255,51,102,0.1); color: var(--accent); border: 1px solid var(--accent); transition: all .2s; }
-  .threat-link:hover { background: var(--accent); color: #fff; }
-
-  .app-action { align-self: center; padding: .6rem 1.2rem; font-size: .8rem; font-family: 'JetBrains Mono', monospace; border-radius: 8px; border: 1px solid var(--line-2); background: var(--bg-2); color: var(--text-2); cursor: pointer; transition: all .2s; margin-top: auto; }
-  .app-action:hover { border-color: var(--accent-2); color: var(--accent-2); box-shadow: 0 0 10px var(--glow-blue); }
 
   /* ===== GitHub Stats (Modern) ===== */
   .gh-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
@@ -235,7 +226,7 @@
 
 <!-- Dynamic Anime Background Layers -->
 <div class="anime-bg-container" id="bgContainer">
-  <div class="anime-bg-layer active" id="bgLayer1"></div>
+  <div class="anime-bg-layer" id="bgLayer1"></div>
   <div class="anime-bg-layer" id="bgLayer2"></div>
 </div>
 <div class="anime-overlay" aria-hidden="true"></div>
@@ -345,9 +336,9 @@
         </div>
       </div>
 
-      <!-- App 3: WHOIS Lookup -->
+      <!-- App 3: WHOIS Lookup (Fixed with RDAP) -->
       <div class="app-card reveal" data-d="2">
-        <span class="app-title">WHOIS Lookup</span>
+        <span class="app-title">WHOIS (RDAP)</span>
         <input type="text" class="osint-input" id="whoisInput" placeholder="e.g. google.com" value="google.com">
         <div class="terminal" id="whoisTerminal" style="height: 100px;">
           <span class="terminal-line">> Ready<span class="terminal-cursor"></span></span>
@@ -357,15 +348,15 @@
         </div>
       </div>
 
-      <!-- App 4: Threat Intel -->
+      <!-- App 4: Username / Email OSINT -->
       <div class="app-card reveal" data-d="3">
-        <span class="app-title">Threat Intel</span>
-        <input type="text" class="osint-input" id="threatInput" placeholder="IP or Domain" value="8.8.8.8">
-        <div class="threat-links" id="threatLinks">
-          <!-- Links will be generated -->
+        <span class="app-title">Username / Email OSINT</span>
+        <input type="text" class="osint-input" id="usernameInput" placeholder="e.g. johndoe or john@doe.com" value="TechAdityaBRO">
+        <div class="terminal" id="usernameTerminal" style="height: 120px;">
+          <span class="terminal-line">> Ready<span class="terminal-cursor"></span></span>
         </div>
-        <div class="osint-btn-group" style="margin-top: 0.5rem;">
-          <button class="osint-btn" id="threatBtn">Generate Links</button>
+        <div class="osint-btn-group">
+          <button class="osint-btn" id="usernameLookupBtn">Search</button>
         </div>
       </div>
 
@@ -435,12 +426,13 @@
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
-/* ===== Dynamic Anime Background Slideshow (Nekos.life API) ===== */
+/* ===== Preloaded Dynamic Anime Background Slideshow ===== */
 const bgLayer1 = document.getElementById('bgLayer1');
 const bgLayer2 = document.getElementById('bgLayer2');
 let currentLayer = bgLayer1;
 let nextLayer = bgLayer2;
 let isFetchingBg = false;
+let isInitialLoad = true;
 
 async function fetchAnimeBackground() {
   if (isFetchingBg) return;
@@ -457,8 +449,15 @@ async function fetchAnimeBackground() {
     img.src = imgUrl;
     img.onload = () => {
       nextLayer.style.backgroundImage = `url('${imgUrl}')`;
-      nextLayer.classList.add('active');
-      currentLayer.classList.remove('active');
+      
+      // If it's the very first load, activate immediately without fade
+      if (isInitialLoad) {
+        nextLayer.classList.add('active');
+        isInitialLoad = false;
+      } else {
+        nextLayer.classList.add('active');
+        currentLayer.classList.remove('active');
+      }
       
       const temp = currentLayer;
       currentLayer = nextLayer;
@@ -475,8 +474,9 @@ async function fetchAnimeBackground() {
   }
 }
 
+// Start the slideshow
 fetchAnimeBackground();
-setInterval(fetchAnimeBackground, 10000);
+setInterval(fetchAnimeBackground, 12000); // 12 seconds for better stability
 
 /* ===== Cursor & Scroll ===== */
 if (matchMedia('(pointer: fine)').matches) {
@@ -615,7 +615,7 @@ async function runDNSLookup() {
 }
 dnsLookupBtn.addEventListener('click', runDNSLookup);
 
-// 3. WHOIS Lookup (HackerTarget)
+// 3. WHOIS Lookup (RDAP - Modern replacement)
 const whoisInput = document.getElementById('whoisInput');
 const whoisTerminal = document.getElementById('whoisTerminal');
 const whoisLookupBtn = document.getElementById('whoisLookupBtn');
@@ -623,14 +623,31 @@ const whoisLookupBtn = document.getElementById('whoisLookupBtn');
 async function runWhoisLookup() {
   const domain = whoisInput.value.trim();
   if (!domain) return;
-  whoisTerminal.innerHTML = `<span class="terminal-line">> Querying WHOIS for ${domain}...</span><span class="terminal-cursor"></span>`;
+  whoisTerminal.innerHTML = `<span class="terminal-line">> Querying RDAP for ${domain}...</span><span class="terminal-cursor"></span>`;
   
   try {
-    const res = await fetch(`https://api.hackertarget.com/whois/?q=${domain}`);
-    const text = await res.text();
+    // RDAP is the modern, CORS-friendly replacement for WHOIS
+    const res = await fetch(`https://rdap.org/domain/${domain}`);
+    if (!res.ok) throw new Error('Domain not found');
+    const data = await res.json();
     
-    // HackerTarget returns plain text, so we just split by newlines
-    const lines = text.split('\n').filter(l => l.trim()).slice(0, 8).map(l => `> ${l}`);
+    let lines = [
+      `> Domain: <span>${data.ldhName || domain}</span>`,
+      `> Status: <span>${data.status?.join(', ') || 'Unknown'}</span>`
+    ];
+    
+    // Extract registrar if available
+    const registrar = data.entities?.find(e => e.roles?.includes('registrar'));
+    if (registrar) {
+      const vcard = registrar.vcardArray?.[1]?.find(v => v[0] === 'fn');
+      if (vcard) lines.push(`> Registrar: <span>${vcard[3]}</span>`);
+    }
+    
+    // Extract dates
+    data.events?.forEach(ev => {
+      if (ev.eventAction === 'registration') lines.push(`> Created: <span>${ev.eventDate.split('T')[0]}</span>`);
+      if (ev.eventAction === 'expiration') lines.push(`> Expires: <span>${ev.eventDate.split('T')[0]}</span>`);
+    });
     
     whoisTerminal.innerHTML = '';
     let i = 0;
@@ -645,28 +662,60 @@ async function runWhoisLookup() {
       }
     }, 150);
   } catch (e) {
-    whoisTerminal.innerHTML = '<span class="terminal-line">> ERROR: WHOIS failed.</span><span class="terminal-cursor"></span>';
+    whoisTerminal.innerHTML = '<span class="terminal-line">> ERROR: Domain not found or RDAP failed.</span><span class="terminal-cursor"></span>';
   }
 }
 whoisLookupBtn.addEventListener('click', runWhoisLookup);
 
-// 4. Threat Intel Links
-const threatInput = document.getElementById('threatInput');
-const threatLinks = document.getElementById('threatLinks');
-const threatBtn = document.getElementById('threatBtn');
+// 4. Username / Email OSINT (WhatsMyName logic)
+const usernameInput = document.getElementById('usernameInput');
+const usernameTerminal = document.getElementById('usernameTerminal');
+const usernameLookupBtn = document.getElementById('usernameLookupBtn');
 
-function generateThreatLinks() {
-  const target = threatInput.value.trim() || '8.8.8.8';
-  const encoded = encodeURIComponent(target);
+async function runUsernameLookup() {
+  let input = usernameInput.value.trim();
+  if (!input) return;
   
-  threatLinks.innerHTML = `
-    <a href="https://www.virustotal.com/gui/search/${encoded}" target="_blank" class="threat-link">VirusTotal ↗</a>
-    <a href="https://www.shodan.io/search?query=${encoded}" target="_blank" class="threat-link">Shodan ↗</a>
-    <a href="https://www.abuseipdb.com/check/${encoded}" target="_blank" class="threat-link">AbuseIPDB ↗</a>
-  `;
+  // Extract username from email if needed
+  if (input.includes('@')) {
+    input = input.split('@')[0];
+  }
+  
+  usernameTerminal.innerHTML = `<span class="terminal-line">> Searching platforms for: ${input}...</span><span class="terminal-cursor"></span>`;
+  
+  // List of platforms to check (based on WhatsMyName project)
+  const platforms = [
+    { name: 'GitHub', url: `https://github.com/${input}` },
+    { name: 'Twitter/X', url: `https://x.com/${input}` },
+    { name: 'Instagram', url: `https://instagram.com/${input}` },
+    { name: 'Reddit', url: `https://reddit.com/user/${input}` },
+    { name: 'Medium', url: `https://medium.com/@${input}` },
+    { name: 'Pinterest', url: `https://pinterest.com/${input}` },
+    { name: 'TikTok', url: `https://tiktok.com/@${input}` },
+    { name: 'Twitch', url: `https://twitch.tv/${input}` },
+    { name: 'Steam', url: `https://steamcommunity.com/id/${input}` },
+    { name: 'Keybase', url: `https://keybase.io/${input}` }
+  ];
+  
+  let lines = [];
+  platforms.forEach(p => {
+    lines.push(`> ${p.name}: <a href="${p.url}" target="_blank">${p.url}</a>`);
+  });
+  
+  usernameTerminal.innerHTML = '';
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i < lines.length) {
+      usernameTerminal.innerHTML += `<span class="terminal-line">${lines[i]}</span>`;
+      usernameTerminal.scrollTop = usernameTerminal.scrollHeight;
+      i++;
+    } else {
+      usernameTerminal.innerHTML += `<span class="terminal-line">> Note: Link existence != confirmed account.<span class="terminal-cursor"></span></span>`;
+      clearInterval(interval);
+    }
+  }, 100);
 }
-threatBtn.addEventListener('click', generateThreatLinks);
-generateThreatLinks();
+usernameLookupBtn.addEventListener('click', runUsernameLookup);
 </script>
 </body>
 </html>
