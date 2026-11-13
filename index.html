@@ -15,7 +15,7 @@
   :root {
     --bg: #0a0a0f;
     --bg-2: #12121a;
-    --surface: rgba(22, 22, 34, 0.75);
+    --surface: rgba(22, 22, 34, 0.8);
     --surface-2: #1f1f30;
     --text: #f0f2f5;
     --text-2: #a4a9c4;
@@ -66,16 +66,17 @@
     opacity: 0;
     transition: opacity 2s ease-in-out;
     transform: scale(1.05);
-    filter: blur(3px) saturate(1.2) brightness(0.5);
+    filter: blur(1px); /* Very slight blur */
   }
   
   .anime-bg-layer.active {
-    opacity: 0.35;
+    opacity: 0.75; /* Highly visible */
   }
   
   .anime-overlay {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    background: linear-gradient(to bottom, rgba(10,10,15,0.4) 0%, rgba(10,10,15,0.95) 100%);
+    /* Light gradient so the image is visible but text is readable */
+    background: linear-gradient(to bottom, rgba(10,10,15,0.2) 0%, rgba(10,10,15,0.85) 100%);
   }
 
   /* ===== Custom Crosshair Cursor ===== */
@@ -139,7 +140,7 @@
   .section-num { font-family: 'JetBrains Mono', monospace; font-size: .8rem; color: var(--accent-2); letter-spacing: .15em; text-transform: uppercase; text-shadow: 0 0 10px var(--glow-blue); }
   .section-head h2 { font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; letter-spacing: -.02em; }
   
-  /* ===== Projects (Hover Anime Images) ===== */
+  /* ===== Projects ===== */
   .projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; perspective: 1000px; }
   .card { 
     position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 2rem; 
@@ -171,46 +172,43 @@
   .card-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1.5rem; }
   .tag { font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: var(--text-2); border: 1px solid var(--line-2); padding: .2rem .6rem; border-radius: 6px; background: rgba(0,0,0,0.6); }
 
-  /* ===== Mini Apps (OSINT & Dark Web) ===== */
+  /* ===== Mini Apps / OSINT ===== */
   .apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
   .app-card { background: var(--surface); backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.8rem; display: flex; flex-direction: column; gap: 1rem; transition: transform .3s, border-color .3s; position: relative; overflow: hidden; }
   .app-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--accent-3); opacity: 0.3; }
   .app-card:hover { border-color: var(--accent-3); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(138,43,226,0.15); }
   .app-title { font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: 700; color: var(--accent-3); border-bottom: 1px solid var(--line); padding-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; letter-spacing: 0.1em; }
   
-  /* OSINT Terminal */
-  .terminal { background: #000; border: 1px solid var(--line-2); border-radius: 8px; padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #00ff41; height: 150px; overflow-y: auto; line-height: 1.5; }
+  /* Terminal */
+  .terminal { background: #000; border: 1px solid var(--line-2); border-radius: 8px; padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #00ff41; height: 180px; overflow-y: auto; line-height: 1.5; }
   .terminal::-webkit-scrollbar { width: 4px; }
   .terminal::-webkit-scrollbar-thumb { background: #00ff41; border-radius: 4px; }
-  .terminal-line { display: block; margin-bottom: 2px; }
+  .terminal-line { display: block; margin-bottom: 2px; word-break: break-all; }
   .terminal-line span { color: var(--accent-2); }
   .terminal-cursor { display: inline-block; width: 8px; height: 15px; background: #00ff41; animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 2px; }
   @keyframes blink { 50% { opacity: 0; } }
 
-  /* Dark Web Quote */
-  .cyber-quote { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-style: italic; color: var(--text); line-height: 1.5; flex-grow: 1; padding: 1rem 0; border-left: 3px solid var(--accent); padding-left: 1rem; background: rgba(255, 51, 102, 0.05); border-radius: 0 8px 8px 0; }
-  .cyber-author { font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: var(--accent-2); text-align: right; }
+  /* OSINT Input */
+  .osint-input { width: 100%; padding: 0.7rem; background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 8px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none; margin-bottom: 0.5rem; }
+  .osint-input:focus { border-color: var(--accent-2); }
+  .osint-btn-group { display: flex; gap: 0.5rem; }
+  .osint-btn { flex: 1; padding: 0.6rem; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; border-radius: 8px; border: 1px solid var(--line-2); background: var(--bg-2); color: var(--text-2); cursor: pointer; transition: all .2s; }
+  .osint-btn:hover { border-color: var(--accent-2); color: var(--accent-2); }
 
-  /* Trending Media */
-  .anime-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 150px; overflow-y: auto; padding-right: 5px; }
-  .anime-list::-webkit-scrollbar { width: 4px; }
-  .anime-list::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 4px; }
-  .anime-item { display: flex; gap: 0.8rem; align-items: center; background: var(--bg-2); padding: 0.5rem; border-radius: 8px; border: 1px solid var(--line); }
-  .anime-item img { width: 35px; height: 50px; object-fit: cover; border-radius: 4px; }
-  .anime-item-info { font-size: 0.8rem; }
-  .anime-item-title { font-weight: 700; color: var(--text); line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .anime-item-score { color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+  /* Threat Links */
+  .threat-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+  .threat-link { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; padding: 0.3rem 0.6rem; border-radius: 4px; background: rgba(255,51,102,0.1); color: var(--accent); border: 1px solid var(--accent); transition: all .2s; }
+  .threat-link:hover { background: var(--accent); color: #fff; }
 
   .app-action { align-self: center; padding: .6rem 1.2rem; font-size: .8rem; font-family: 'JetBrains Mono', monospace; border-radius: 8px; border: 1px solid var(--line-2); background: var(--bg-2); color: var(--text-2); cursor: pointer; transition: all .2s; margin-top: auto; }
   .app-action:hover { border-color: var(--accent-2); color: var(--accent-2); box-shadow: 0 0 10px var(--glow-blue); }
 
-  /* ===== GitHub Stats Iframes ===== */
+  /* ===== GitHub Stats (Modern) ===== */
   .gh-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
   .gh-card { background: var(--surface); backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; display: flex; align-items: center; justify-content: center; transition: border-color .3s; }
   .gh-card:hover { border-color: var(--accent-2); }
-  .gh-card iframe { width: 100%; height: 180px; border: none; border-radius: 8px; }
+  .gh-card img { width: 100%; height: auto; display: block; }
   .gh-wide { grid-column: 1 / -1; }
-  .gh-wide iframe { height: 220px; }
 
   /* ===== Native Dialog ===== */
   dialog { background: var(--surface-2); color: var(--text); border: 1px solid var(--accent-2); border-radius: 24px; padding: 2.5rem; max-width: 500px; width: 90%; box-shadow: 0 0 50px var(--glow-blue); opacity: 0; transform: scale(0.95); transition: opacity 0.3s, transform 0.3s; &::backdrop { background: rgba(10,10,15,0.8); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s; } &:open { opacity: 1; transform: scale(1); &::backdrop { opacity: 1; } } }
@@ -248,7 +246,7 @@
   <a href="#top" class="brand"><span class="brand-dot"></span>Aditya</a>
   <div class="nav-links">
     <a href="#work">Work</a>
-    <a href="#apps">Playground</a>
+    <a href="#apps">OSINT</a>
     <a href="#stats">Stats</a>
     <a href="#contact">Contact</a>
   </div>
@@ -318,59 +316,93 @@
     </div>
   </section>
 
-  <!-- Mini Apps (OSINT & Dark Web) -->
+  <!-- OSINT Tools -->
   <section class="section wrap" id="apps">
     <div class="section-head reveal">
-      <div><div class="section-num">02 — Playground</div><h2>Cyber Tools</h2></div>
+      <div><div class="section-num">02 — Playground</div><h2>OSINT Tools</h2></div>
     </div>
     <div class="apps-grid">
       
-      <!-- App 1: OSINT IP Scanner (FIXED: IPPubblico HTTPS) -->
+      <!-- App 1: IP Scanner -->
       <div class="app-card reveal">
-        <span class="app-title">OSINT IP Scanner</span>
+        <span class="app-title">IP Scanner</span>
         <div class="terminal" id="ipTerminal">
-          <span class="terminal-line">> Initializing connection...</span>
-          <span class="terminal-line">> Resolving IP...</span>
-          <span class="terminal-line">> Awaiting data<span class="terminal-cursor"></span></span>
+          <span class="terminal-line">> Initializing...</span>
+          <span class="terminal-line">> Awaiting scan<span class="terminal-cursor"></span></span>
         </div>
         <button class="app-action" id="ipScanBtn" style="margin-top: 0.5rem;">Run Scan ↻</button>
       </div>
 
-      <!-- App 2: Hacker Quote (Static curated list) -->
+      <!-- App 2: DNS Lookup -->
       <div class="app-card reveal" data-d="1">
-        <span class="app-title">Dark Web Quote</span>
-        <div class="cyber-quote" id="cyberQuote">"The quieter you become, the more you are able to hear."</div>
-        <div class="cyber-author" id="cyberAuthor">— Kali Linux</div>
-        <button class="app-action" id="cyberBtn">Next Quote ↻</button>
+        <span class="app-title">DNS Lookup</span>
+        <input type="text" class="osint-input" id="dnsInput" placeholder="e.g. github.com" value="github.com">
+        <div class="terminal" id="dnsTerminal" style="height: 100px;">
+          <span class="terminal-line">> Ready<span class="terminal-cursor"></span></span>
+        </div>
+        <div class="osint-btn-group">
+          <button class="osint-btn" id="dnsLookupBtn">Lookup</button>
+        </div>
       </div>
 
-      <!-- App 3: Trending Media (Jikan API) -->
+      <!-- App 3: WHOIS Lookup -->
       <div class="app-card reveal" data-d="2">
-        <span class="app-title">Trending Media</span>
-        <div class="anime-list" id="animeList">
-          <div style="font-size: 0.8rem; color: var(--text-3);">Loading...</div>
+        <span class="app-title">WHOIS Lookup</span>
+        <input type="text" class="osint-input" id="whoisInput" placeholder="e.g. google.com" value="google.com">
+        <div class="terminal" id="whoisTerminal" style="height: 100px;">
+          <span class="terminal-line">> Ready<span class="terminal-cursor"></span></span>
         </div>
-        <button class="app-action" id="animeListBtn">Refresh ↻</button>
+        <div class="osint-btn-group">
+          <button class="osint-btn" id="whoisLookupBtn">Lookup</button>
+        </div>
+      </div>
+
+      <!-- App 4: Threat Intel -->
+      <div class="app-card reveal" data-d="3">
+        <span class="app-title">Threat Intel</span>
+        <input type="text" class="osint-input" id="threatInput" placeholder="IP or Domain" value="8.8.8.8">
+        <div class="threat-links" id="threatLinks">
+          <!-- Links will be generated -->
+        </div>
+        <div class="osint-btn-group" style="margin-top: 0.5rem;">
+          <button class="osint-btn" id="threatBtn">Generate Links</button>
+        </div>
       </div>
 
     </div>
   </section>
 
-  <!-- GitHub Stats -->
+  <!-- GitHub Stats (Modern) -->
   <section class="section wrap" id="stats">
     <div class="section-head reveal">
       <div><div class="section-num">03 — GitHub</div><h2>Live activity</h2></div>
       <a class="section-hint" href="https://github.com/TechAdityaBRO" target="_blank" rel="noopener" style="color:var(--accent-2); font-family: 'JetBrains Mono'; font-size: 0.8rem;">Profile ↗</a>
     </div>
+    
     <div class="gh-stats reveal">
+      <!-- Stats Card (gh-stats.com) -->
       <div class="gh-card">
-        <iframe src="https://github-readme-stats.vercel.app/api?username=TechAdityaBRO&show_icons=true&theme=transparent&hide_border=true&title_color=00e5ff&icon_color=ff3366&text_color=a4a9c4&bg_color=00000000&count_private=true" title="GitHub Stats" loading="lazy"></iframe>
+        <img src="https://gh-stats.com/api/TechAdityaBRO?theme=cyberpunk&show_icons=true&hide_border=true&title_color=00e5ff&icon_color=ff3366&text_color=a4a9c4&bg_color=0a0a0f" alt="GitHub Stats">
       </div>
+      
+      <!-- Top Languages (gh-stats.com) -->
       <div class="gh-card">
-        <iframe src="https://github-readme-stats.vercel.app/api/top-langs/?username=TechAdityaBRO&layout=compact&theme=transparent&hide_border=true&title_color=00e5ff&text_color=a4a9c4&bg_color=00000000&count_private=true" title="Top Languages" loading="lazy"></iframe>
+        <img src="https://gh-stats.com/api/top-langs/TechAdityaBRO?theme=cyberpunk&layout=compact&hide_border=true&title_color=00e5ff&text_color=a4a9c4&bg_color=0a0a0f" alt="Top Languages">
       </div>
-      <div class="gh-card gh-wide">
-        <iframe src="https://github-readme-streak-stats.herokuapp.com/?user=TechAdityaBRO&theme=transparent&hide_border=true&stroke=00e5ff&ring=ff3366&fire=00e5ff&currStreakLabel=a4a9c4&sideLabels=a4a9c4&dates=727796" title="GitHub Streak" loading="lazy"></iframe>
+
+      <!-- Profile Summary (2077 Theme) - Full width -->
+      <div class="gh-card gh-wide" style="padding: 1.5rem;">
+        <img src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=TechAdityaBRO&theme=2077" alt="GitHub Profile Summary" style="max-width: 100%;">
+      </div>
+      
+      <!-- Productive Time Card (2077 Theme) -->
+      <div class="gh-card">
+        <img src="https://github-profile-summary-cards.vercel.app/api/cards/productive-time?username=TechAdityaBRO&theme=2077&utcOffset=5.5" alt="Productive Time">
+      </div>
+      
+      <!-- Repos Per Language (2077 Theme) -->
+      <div class="gh-card">
+        <img src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=TechAdityaBRO&theme=2077" alt="Repos Per Language">
       </div>
     </div>
   </section>
@@ -415,7 +447,6 @@ async function fetchAnimeBackground() {
   isFetchingBg = true;
   
   try {
-    // Nekos.life is a reliable, free, no-auth anime image API with CORS
     const res = await fetch('https://nekos.life/api/v2/img/wallpaper');
     if (!res.ok) throw new Error('API Error');
     const data = await res.json();
@@ -444,7 +475,6 @@ async function fetchAnimeBackground() {
   }
 }
 
-// Initial fetch and set interval (every 10 seconds)
 fetchAnimeBackground();
 setInterval(fetchAnimeBackground, 10000);
 
@@ -503,31 +533,26 @@ document.querySelectorAll('.tilt').forEach(card => {
   });
 });
 
-/* ===== Mini Apps (OSINT & Dark Web) ===== */
+/* ===== OSINT Tools ===== */
 
-// 1. OSINT IP Scanner (FIXED: Using IPPubblico HTTPS)
+// 1. IP Scanner (ipwho.is)
 const ipTerminal = document.getElementById('ipTerminal');
 const ipScanBtn = document.getElementById('ipScanBtn');
 
 async function runIPScan() {
-  ipTerminal.innerHTML = '<span class="terminal-line">> Bypassing proxy...</span><span class="terminal-line">> Querying IPPubblico...</span><span class="terminal-cursor"></span>';
+  ipTerminal.innerHTML = '<span class="terminal-line">> Querying ipwho.is...</span><span class="terminal-cursor"></span>';
   try {
-    // IPPubblico: HTTPS, CORS, no key required
-    const res = await fetch('https://ippubblico.org/?api=1');
+    const res = await fetch('https://ipwho.is/');
     if (!res.ok) throw new Error('Network error');
     const data = await res.json();
     
-    // Basic check for hosting/proxy based on ISP name
-    const isp = (data.isp || '').toLowerCase();
-    const isProxy = isp.includes('vpn') || isp.includes('hosting') || isp.includes('cloud') || isp.includes('server') ? 'DETECTED ⚠️' : 'CLEAN ✅';
-
+    const isProxy = data.connection?.type?.toLowerCase().includes('hosting') ? 'DETECTED ⚠️' : 'CLEAN ✅';
     const lines = [
       `> IP: <span>${data.ip}</span>`,
-      `> ISP: <span>${data.isp || 'Unknown'}</span>`,
-      `> LOC: <span>${data.geo?.city || '?'}, ${data.geo?.region || '?'}, ${data.geo?.country || '?'}</span>`,
-      `> TIMEZONE: <span>${data.timezone || '?'}</span>`,
-      `> VPN/PROXY: <span>${isProxy}</span>`,
-      `> STATUS: <span>SECURE</span>`
+      `> ISP: <span>${data.connection?.isp || 'Unknown'}</span>`,
+      `> LOC: <span>${data.city || '?'}, ${data.region || '?'}, ${data.country || '?'}</span>`,
+      `> TZ: <span>${data.timezone?.id || '?'}</span>`,
+      `> VPN: <span>${isProxy}</span>`
     ];
     
     ipTerminal.innerHTML = '';
@@ -538,66 +563,110 @@ async function runIPScan() {
         ipTerminal.scrollTop = ipTerminal.scrollHeight;
         i++;
       } else {
-        ipTerminal.innerHTML += `<span class="terminal-line">> Scan complete.<span class="terminal-cursor"></span></span>`;
+        ipTerminal.innerHTML += `<span class="terminal-line">> Done.<span class="terminal-cursor"></span></span>`;
         clearInterval(interval);
       }
-    }, 250);
-    
+    }, 200);
   } catch (e) {
-    ipTerminal.innerHTML = '<span class="terminal-line">> ERROR: Connection failed.</span><span class="terminal-cursor"></span>';
+    ipTerminal.innerHTML = '<span class="terminal-line">> ERROR: Scan failed.</span><span class="terminal-cursor"></span>';
   }
 }
 ipScanBtn.addEventListener('click', runIPScan);
-runIPScan(); // Initial run
+runIPScan();
 
-// 2. Dark Web / Hacker Quote (Curated Static List)
-const cyberQuote = document.getElementById('cyberQuote');
-const cyberAuthor = document.getElementById('cyberAuthor');
-const cyberBtn = document.getElementById('cyberBtn');
+// 2. DNS Lookup (Google DoH)
+const dnsInput = document.getElementById('dnsInput');
+const dnsTerminal = document.getElementById('dnsTerminal');
+const dnsLookupBtn = document.getElementById('dnsLookupBtn');
 
-const darkQuotes = [
-  { q: "The quieter you become, the more you are able to hear.", a: "Kali Linux" },
-  { q: "There is no patch for human stupidity.", a: "Kevin Mitnick" },
-  { q: "Security is a process, not a product.", a: "Bruce Schneier" },
-  { q: "The only truly secure system is one that is powered off, cast in a block of concrete and sealed in a lead-lined room with armed guards.", a: "Gene Spafford" },
-  { q: "Hackers are breaking the systems for profit. Before, it was about intellectual curiosity.", a: "Kevin Mitnick" },
-  { q: "Amateurs hack systems, professionals hack people.", a: "Bruce Schneier" },
-  { q: "The internet is a dark place. You just have to know where to look.", a: "Unknown" },
-  { q: "Privacy is not something that I'm merely entitled to, it's an absolute prerequisite.", a: "Marlon Brando" }
-];
-
-function nextQuote() {
-  const q = darkQuotes[Math.floor(Math.random() * darkQuotes.length)];
-  cyberQuote.textContent = `"${q.q}"`;
-  cyberAuthor.textContent = `— ${q.a}`;
-}
-cyberBtn.addEventListener('click', nextQuote);
-
-// 3. Trending Media (Jikan API)
-const animeList = document.getElementById('animeList');
-const animeListBtn = document.getElementById('animeListBtn');
-
-async function fetchTopAnime() {
-  animeList.innerHTML = '<div style="font-size: 0.8rem; color: var(--text-3);">Loading...</div>';
+async function runDNSLookup() {
+  const domain = dnsInput.value.trim();
+  if (!domain) return;
+  dnsTerminal.innerHTML = `<span class="terminal-line">> Resolving ${domain}...</span><span class="terminal-cursor"></span>`;
+  
   try {
-    const res = await fetch('https://api.jikan.moe/v4/top/anime?limit=5');
+    const res = await fetch(`https://dns.google/resolve?name=${domain}&type=A`);
     const data = await res.json();
     
-    animeList.innerHTML = data.data.map(anime => `
-      <div class="anime-item">
-        <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
-        <div class="anime-item-info">
-          <div class="anime-item-title">${anime.title}</div>
-          <div class="anime-item-score">★ ${anime.score || 'N/A'}</div>
-        </div>
-      </div>
-    `).join('');
+    let lines = [];
+    if (data.Answer) {
+      data.Answer.forEach(ans => {
+        lines.push(`> A: <span>${ans.data}</span>`);
+      });
+    } else {
+      lines.push('> No A records found.');
+    }
+    
+    dnsTerminal.innerHTML = '';
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i < lines.length) {
+        dnsTerminal.innerHTML += `<span class="terminal-line">${lines[i]}</span>`;
+        dnsTerminal.scrollTop = dnsTerminal.scrollHeight;
+        i++;
+      } else {
+        dnsTerminal.innerHTML += `<span class="terminal-line">> Done.<span class="terminal-cursor"></span></span>`;
+        clearInterval(interval);
+      }
+    }, 150);
   } catch (e) {
-    animeList.innerHTML = '<div style="font-size: 0.8rem; color: var(--accent);">Rate limit exceeded. Try again in a minute.</div>';
+    dnsTerminal.innerHTML = '<span class="terminal-line">> ERROR: Lookup failed.</span><span class="terminal-cursor"></span>';
   }
 }
-animeListBtn.addEventListener('click', fetchTopAnime);
-fetchTopAnime();
+dnsLookupBtn.addEventListener('click', runDNSLookup);
+
+// 3. WHOIS Lookup (HackerTarget)
+const whoisInput = document.getElementById('whoisInput');
+const whoisTerminal = document.getElementById('whoisTerminal');
+const whoisLookupBtn = document.getElementById('whoisLookupBtn');
+
+async function runWhoisLookup() {
+  const domain = whoisInput.value.trim();
+  if (!domain) return;
+  whoisTerminal.innerHTML = `<span class="terminal-line">> Querying WHOIS for ${domain}...</span><span class="terminal-cursor"></span>`;
+  
+  try {
+    const res = await fetch(`https://api.hackertarget.com/whois/?q=${domain}`);
+    const text = await res.text();
+    
+    // HackerTarget returns plain text, so we just split by newlines
+    const lines = text.split('\n').filter(l => l.trim()).slice(0, 8).map(l => `> ${l}`);
+    
+    whoisTerminal.innerHTML = '';
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i < lines.length) {
+        whoisTerminal.innerHTML += `<span class="terminal-line">${lines[i]}</span>`;
+        whoisTerminal.scrollTop = whoisTerminal.scrollHeight;
+        i++;
+      } else {
+        whoisTerminal.innerHTML += `<span class="terminal-line">> Done.<span class="terminal-cursor"></span></span>`;
+        clearInterval(interval);
+      }
+    }, 150);
+  } catch (e) {
+    whoisTerminal.innerHTML = '<span class="terminal-line">> ERROR: WHOIS failed.</span><span class="terminal-cursor"></span>';
+  }
+}
+whoisLookupBtn.addEventListener('click', runWhoisLookup);
+
+// 4. Threat Intel Links
+const threatInput = document.getElementById('threatInput');
+const threatLinks = document.getElementById('threatLinks');
+const threatBtn = document.getElementById('threatBtn');
+
+function generateThreatLinks() {
+  const target = threatInput.value.trim() || '8.8.8.8';
+  const encoded = encodeURIComponent(target);
+  
+  threatLinks.innerHTML = `
+    <a href="https://www.virustotal.com/gui/search/${encoded}" target="_blank" class="threat-link">VirusTotal ↗</a>
+    <a href="https://www.shodan.io/search?query=${encoded}" target="_blank" class="threat-link">Shodan ↗</a>
+    <a href="https://www.abuseipdb.com/check/${encoded}" target="_blank" class="threat-link">AbuseIPDB ↗</a>
+  `;
+}
+threatBtn.addEventListener('click', generateThreatLinks);
+generateThreatLinks();
 </script>
 </body>
 </html>
