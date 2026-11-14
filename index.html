@@ -28,13 +28,13 @@
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
-  
+
   body {
-    background: var(--bg); 
+    background: var(--bg);
     color: var(--text);
-    font-family: 'Inter', system-ui, sans-serif; 
+    font-family: 'Inter', system-ui, sans-serif;
     line-height: 1.6;
-    overflow-x: hidden; 
+    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     cursor: none;
     @media (pointer: coarse) { cursor: auto; }
@@ -50,7 +50,7 @@
   .anime-bg-layer {
     position: absolute; inset: 0; background-size: cover; background-position: center;
     opacity: 0;
-    transition: opacity 0.8s ease-in-out; 
+    transition: opacity 0.8s ease-in-out;
     transform: scale(1.02);
   }
   .anime-bg-layer.active { opacity: 0.7; }
@@ -92,7 +92,7 @@
   /* ===== Hero ===== */
   .hero { padding: clamp(10rem, 25vh, 16rem) 0 clamp(6rem, 15vh, 10rem); display: flex; flex-direction: column; align-items: center; text-align: center; }
   .hero-eyebrow { display: inline-flex; align-items: center; gap: .5rem; font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; color: var(--text-2); padding: .4rem .8rem; border: 1px solid var(--glass-border); border-radius: 50px; background: var(--glass-tint); margin-bottom: 2.5rem; backdrop-filter: url(#glass-refract); -webkit-backdrop-filter: url(#glass-refract); box-shadow: inset 0 1px 0 var(--glass-edge-light), 0 4px 12px rgba(0,0,0,0.4); }
-  
+
   .hero-title { font-size: clamp(4rem, 12vw, 8rem); font-weight: 900; line-height: 0.9; letter-spacing: -0.05em; text-shadow: 0 10px 40px rgba(0,0,0,0.5); }
   .hero-title .line { display: block; overflow: hidden; padding-bottom: 0.1em; margin-bottom: -0.1em; }
   .hero-title .word { display: inline-block; transform: translateY(110%); transition: transform 1.2s var(--ease-smooth); }
@@ -106,18 +106,18 @@
   .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 3rem; }
 
   /* ===== Refractive Glass Buttons ===== */
-  .btn { 
-    display: inline-flex; align-items: center; gap: .6rem; padding: .9rem 1.8rem; border-radius: 12px; font-size: .95rem; font-weight: 600; 
-    border: 1px solid var(--glass-border); 
+  .btn {
+    display: inline-flex; align-items: center; gap: .6rem; padding: .9rem 1.8rem; border-radius: 12px; font-size: .95rem; font-weight: 600;
+    border: 1px solid var(--glass-border);
     background: var(--glass-tint);
     color: #fff; transition: all .3s var(--ease); font-family: 'Inter', sans-serif;
     backdrop-filter: url(#glass-refract); -webkit-backdrop-filter: url(#glass-refract);
-    box-shadow: inset 0 1px 0 var(--glass-edge-light), inset 0 -1px 0 var(--glass-edge-dark), 0 4px 12px rgba(0,0,0,0.4); 
-    position: relative; overflow: hidden; 
+    box-shadow: inset 0 1px 0 var(--glass-edge-light), inset 0 -1px 0 var(--glass-edge-dark), 0 4px 12px rgba(0,0,0,0.4);
+    position: relative; overflow: hidden;
   }
   .btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.6s var(--ease-smooth); }
   .btn:hover::before { left: 100%; }
-  
+
   .btn-primary { background: #fff; color: #000; border-color: #fff; }
   .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
   .btn-ghost:hover { background: var(--glass-tint-hover); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
@@ -134,26 +134,26 @@
 
   /* ===== Bento Grid ===== */
   .bento-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.5rem; }
-  .bento-item { 
+  .bento-item {
     background: var(--glass-tint);
     backdrop-filter: url(#glass-refract); -webkit-backdrop-filter: url(#glass-refract);
-    border: 1px solid var(--glass-border); 
-    border-radius: var(--radius); 
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
     padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; position: relative; overflow: hidden;
     box-shadow: inset 0 1px 0 var(--glass-edge-light), inset 0 -2px 4px var(--glass-edge-dark), 0 8px 24px rgba(0,0,0,0.4);
     transition: all 0.3s var(--ease-smooth);
   }
-  
+
   .bento-item::before {
     content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: var(--radius);
     background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 35%, transparent 65%, rgba(255,255,255,0.06) 100%);
     z-index: 0;
   }
-  
+
   .span-12 { grid-column: span 12; }
   .span-6 { grid-column: span 6; }
   .span-4 { grid-column: span 4; }
-  
+
   .bento-item:hover { background: var(--glass-tint-hover); border-color: rgba(255,255,255,0.3); }
 
   .app-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; position: relative; z-index: 1; }
@@ -189,11 +189,11 @@
 
   /* ===== Projects ===== */
   .projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-  .card { 
-    background: var(--glass-tint); 
+  .card {
+    background: var(--glass-tint);
     backdrop-filter: url(#glass-refract); -webkit-backdrop-filter: url(#glass-refract);
-    border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 2rem; 
-    display: flex; flex-direction: column; gap: 1.25rem; position: relative; overflow: hidden; 
+    border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 2rem;
+    display: flex; flex-direction: column; gap: 1.25rem; position: relative; overflow: hidden;
     box-shadow: inset 0 1px 0 var(--glass-edge-light), inset 0 -2px 4px var(--glass-edge-dark), 0 8px 24px rgba(0,0,0,0.4);
     transition: all 0.3s var(--ease-smooth);
   }
@@ -227,6 +227,52 @@
   .reveal[data-d="2"] { transition-delay: 0.2s; }
   .reveal[data-d="3"] { transition-delay: 0.3s; }
 
+  /* ===== Connect / Socials ===== */
+  .socials { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .social-btn {
+    display: inline-flex; align-items: center; gap: 0.55rem;
+    padding: 0.7rem 1.1rem; border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-tint);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; font-weight: 500;
+    transition: all 0.3s var(--ease);
+    box-shadow: inset 0 1px 0 var(--glass-edge-light), 0 4px 12px rgba(0,0,0,0.4);
+  }
+  .social-btn:hover {
+    background: var(--glass-tint-hover);
+    border-color: rgba(255,255,255,0.4);
+    transform: translateY(-2px);
+  }
+  .social-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .social-btn .handle { color: var(--text-2); }
+
+  /* About list */
+  .about-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+  .about-list li {
+    display: flex; gap: 0.7rem; align-items: flex-start;
+    font-size: 0.95rem; color: var(--text-2); line-height: 1.55;
+    padding: 0.65rem 0.9rem; border-radius: 10px;
+    background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08);
+  }
+  .about-list li strong { color: #fff; font-weight: 600; }
+  .about-list .emoji { flex-shrink: 0; font-size: 1rem; }
+
+  /* Project table */
+  .proj-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .proj-table th, .proj-table td {
+    text-align: left; padding: 0.7rem 0.85rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .proj-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-3); font-weight: 600;
+  }
+  .proj-table td a { color: #fff; text-decoration: underline; }
+  .proj-table tr:hover td { background: rgba(255,255,255,0.03); }
+
   @media (max-width: 1024px) {
     .span-6, .gh-span-6 { grid-column: span 12; }
     .span-4 { grid-column: span 6; }
@@ -240,7 +286,7 @@
 
   /* ===== MOBILE BATTERY SAVERS ===== */
   @media (pointer: coarse), (max-width: 768px) {
-    .bento-item, .card, .btn, .gh-card, .hero-eyebrow, .osint-btn, .nav {
+    .bento-item, .card, .btn, .gh-card, .hero-eyebrow, .osint-btn, .nav, .social-btn {
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
     }
@@ -275,6 +321,8 @@
     <a href="#work">Work</a>
     <a href="#apps">OSINT</a>
     <a href="#stats">Stats</a>
+    <a href="#connect">Connect</a>
+    <a href="#about">About</a>
     <a href="#contact">Contact</a>
   </div>
 </nav>
@@ -287,7 +335,7 @@
       <span class="line"><span class="word accent">&amp; Founder</span></span>
     </h1>
     <p class="hero-sub reveal" data-d="2">
-      I make experimental browsers, AI tools, and open-source software. 
+      I make experimental browsers, AI tools, and open-source software.
       Currently running <strong>BRO GANG</strong>, a community I started in 2022.
     </p>
     <div class="hero-actions reveal" data-d="3">
@@ -334,9 +382,9 @@
       <div class="section-num">02 — Playground</div>
       <h2>OSINT Tools</h2>
     </div>
-    
+
     <div class="bento-grid">
-      
+
       <div class="bento-item span-6 reveal" id="app-ip">
         <div class="app-header"><span class="app-title">IP Intelligence</span></div>
         <div class="terminal-wrapper">
@@ -456,6 +504,89 @@
     </div>
   </section>
 
+  <!-- ===== Connect (from GitHub README) ===== -->
+  <section class="section wrap" id="connect">
+    <div class="section-head reveal">
+      <div class="section-num">04 — Connect</div>
+      <h2>Find me online</h2>
+    </div>
+
+    <div class="socials reveal">
+      <a class="social-btn" href="https://x.com/ProGroupBroGang" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        <span>X / Twitter</span>
+        <span class="handle">@ProGroupBroGang</span>
+      </a>
+
+      <a class="social-btn" href="https://www.instagram.com/@progroup_24" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        <span>Instagram</span>
+        <span class="handle">@progroup_24</span>
+      </a>
+
+      <a class="social-btn" href="https://discord.gg/TSWg34Zets" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.009c.12.099.246.198.373.292a.077.077 0 01-.006.127 12.3 12.3 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.84 19.84 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 00-.031-.03zM8.02 15.331c-.998 0-1.82-.918-1.82-2.045 0-1.128.805-2.045 1.82-2.045 1.023 0 1.836.925 1.82 2.045 0 1.127-.806 2.045-1.82 2.045zm6.975 0c-.997 0-1.82-.918-1.82-2.045 0-1.128.806-2.045 1.82-2.045 1.023 0 1.836.925 1.82 2.045 0 1.127-.797 2.045-1.82 2.045z"/></svg>
+        <span>Discord</span>
+        <span class="handle">BRO GANG</span>
+      </a>
+
+      <a class="social-btn" href="mailto:chairmanaditya@brogang.jo3.org">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M1.5 4.5h21A1.5 1.5 0 0124 6v12a1.5 1.5 0 01-1.5 1.5h-21A1.5 1.5 0 010 18V6a1.5 1.5 0 011.5-1.5zM12 13.06L2.4 7.5v10.5h19.2V7.5z"/></svg>
+        <span>Email</span>
+        <span class="handle">chairmanaditya@brogang.jo3.org</span>
+      </a>
+
+      <a class="social-btn" href="https://github.com/TechAdityaBRO" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.73.5.5 5.73.5 12a11.5 11.5 0 007.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.75.41-1.27.74-1.56-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.2-3.1-.12-.3-.52-1.48.12-3.08 0 0 .97-.31 3.18 1.18a11 11 0 015.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.6.24 2.78.12 3.08.75.81 1.2 1.84 1.2 3.1 0 4.43-2.7 5.4-5.26 5.69.42.36.79 1.07.79 2.16v3.2c0 .31.21.67.8.56A11.5 11.5 0 0023.5 12C23.5 5.73 18.27.5 12 .5z"/></svg>
+        <span>GitHub</span>
+        <span class="handle">@TechAdityaBRO</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== About (from README) ===== -->
+  <section class="section wrap" id="about">
+    <div class="section-head reveal">
+      <div class="section-num">05 — About</div>
+      <h2>What I'm building</h2>
+    </div>
+    <ul class="about-list reveal">
+      <li><span class="emoji">🔭</span><span>Currently building <strong>PGlove Browser</strong> — the browser that breaks so you don't have to</span></li>
+      <li><span class="emoji">⚡</span><span>Founder of <strong>BRO GANG</strong> — 38 members strong since 2022</span></li>
+      <li><span class="emoji">🤖</span><span>Working on <strong>Pro AI</strong> — powered by Gemini 2.5 Pro</span></li>
+      <li><span class="emoji">🔍</span><span>Building <strong>Nexa Search</strong> — privacy-first search, no tracking</span></li>
+      <li><span class="emoji">🧠</span><span>Running <strong>BRO GANG AI</strong> — Llama 3.3 70B on Cloudflare Workers AI</span></li>
+      <li><span class="emoji">⌨️</span><span>Building <strong>Bro Gang AI CLI</strong> — free, open source AI coding agent</span></li>
+      <li><span class="emoji">🎮</span><span>Running <strong>BroGangMC</strong> — our Minecraft SMP server</span></li>
+      <li><span class="emoji">💬</span><span>Ask me about <strong>Web Dev, Three.js, Game Dev, AI Systems</strong>, or anything tech</span></li>
+      <li><span class="emoji">📫</span><span>Reach me at <strong>chairmanaditya@brogang.jo3.org</strong></span></li>
+    </ul>
+  </section>
+
+  <!-- ===== Featured projects (from README) ===== -->
+  <section class="section wrap" id="featured">
+    <div class="section-head reveal">
+      <div class="section-num">06 — Featured</div>
+      <h2>All projects</h2>
+    </div>
+    <div class="card reveal" style="padding: 1rem; overflow-x: auto;">
+      <table class="proj-table">
+        <thead>
+          <tr><th>Project</th><th>Link</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>PGlove Browser</strong></td><td><a href="https://pglove.jo3.org" target="_blank" rel="noopener">pglove.jo3.org</a></td><td>Experimental desktop browser (Tauri 2 / Rust)</td></tr>
+          <tr><td><strong>BRO GANG</strong></td><td><a href="https://brogang.techaditya.workers.dev" target="_blank" rel="noopener">brogang.techaditya.workers.dev</a></td><td>Community of 38 — Gaming · Tech · Since 2022</td></tr>
+          <tr><td><strong>Bro Gang AI CLI</strong></td><td><a href="https://brogangaicli.pages.dev/" target="_blank" rel="noopener">brogangaicli.pages.dev</a></td><td>Free AI coding agent for your terminal</td></tr>
+          <tr><td><strong>Nexa Search</strong></td><td><a href="https://nexasearch.pages.dev/" target="_blank" rel="noopener">nexasearch.pages.dev</a></td><td>Privacy-first search engine</td></tr>
+          <tr><td><strong>CODEWEBSITE</strong></td><td><a href="https://code.oops.wtf" target="_blank" rel="noopener">code.oops.wtf</a></td><td>Code playground</td></tr>
+          <tr><td><strong>TickTackToe</strong></td><td><a href="https://ticktacktoe.site.je" target="_blank" rel="noopener">ticktacktoe.site.je</a></td><td>Tic-tac-toe game</td></tr>
+          <tr><td><strong>BroGangMC</strong></td><td><a href="https://brogangmc.minefort.com" target="_blank" rel="noopener">brogangmc.minefort.com</a></td><td>Minecraft SMP server</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
   <section class="section wrap" id="contact">
     <div class="reveal" style="text-align: center; padding: 4rem 2rem; background: var(--glass-tint); border-radius: var(--radius); backdrop-filter: url(#glass-refract); -webkit-backdrop-filter: url(#glass-refract); box-shadow: inset 0 1px 0 var(--glass-edge-light), inset 0 -2px 4px var(--glass-edge-dark), 0 8px 24px rgba(0,0,0,0.4); border: 1px solid var(--glass-border); position: relative; overflow: hidden;">
       <h2 style="font-size: clamp(2.5rem, 6vw, 4rem); margin-bottom: 1.5rem; font-weight: 900; letter-spacing: -.03em; line-height: 1.1; color: #fff; position: relative;">Let's build <br><span style="color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,0.6);">something.</span></h2>
@@ -545,7 +676,7 @@ if (!isTouch) {
     if (Math.abs(mouseX - outlineX) > 0.1 || Math.abs(mouseY - outlineY) > 0.1) {
       rafId = requestAnimationFrame(tick);
     } else {
-      rafId = null; // idle → stop
+      rafId = null;
     }
   }
 
@@ -604,7 +735,7 @@ var io = new IntersectionObserver(function (entries) {
 document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
 
 /* ============================================================
-   Hero title slide-in (was missing before)
+   Hero title slide-in
    ============================================================ */
 requestAnimationFrame(function () {
   var ht = document.getElementById('heroTitle');
@@ -612,7 +743,7 @@ requestAnimationFrame(function () {
 });
 
 /* ============================================================
-   Anime Background — FIXED
+   Anime Background — robust, multi-source, mobile-friendly
    ============================================================ */
 (function initAnimeBackground() {
   var bgLayer1 = document.getElementById('bgLayer1');
@@ -620,7 +751,7 @@ requestAnimationFrame(function () {
   if (!bgLayer1 || !bgLayer2) return;
 
   var isCoarse = window.matchMedia('(pointer: coarse)').matches;
-  var CYCLE_MS = isCoarse ? 15000 : 4000; // slow on mobile, 4s on desktop
+  var CYCLE_MS = isCoarse ? 15000 : 4000;
   var LOAD_TIMEOUT_MS = 8000;
 
   var currentLayer = bgLayer1;
@@ -686,7 +817,6 @@ requestAnimationFrame(function () {
     return tryNext();
   }
 
-  // IMPORTANT: attach handlers BEFORE setting src
   function preload(url) {
     return new Promise(function (resolve, reject) {
       var img = new Image();
@@ -713,7 +843,7 @@ requestAnimationFrame(function () {
       })
       .then(function (url) {
         nextLayer.style.backgroundImage = 'url("' + url + '")';
-        void nextLayer.offsetWidth; // force reflow
+        void nextLayer.offsetWidth;
         nextLayer.classList.add('active');
         currentLayer.classList.remove('active');
         var tmp = currentLayer;
@@ -729,7 +859,6 @@ requestAnimationFrame(function () {
   swap();
   var intervalId = setInterval(swap, CYCLE_MS);
 
-  // Pause when tab hidden, resume on return
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) {
       clearInterval(intervalId);
@@ -806,7 +935,7 @@ document.getElementById('dnsLookupBtn').addEventListener('click', async function
 });
 
 /* ============================================================
-   OSINT 3: WHOIS
+   OSINT 3: WHOIS (RDAP)
    ============================================================ */
 document.getElementById('whoisLookupBtn').addEventListener('click', async function (ev) {
   var domain = document.getElementById('whoisInput').value.trim();
@@ -902,7 +1031,7 @@ document.getElementById('emailOsintBtn').addEventListener('click', async functio
 });
 
 /* ============================================================
-   OSINT 6: MAC Lookup — FIXED (direct, no proxy, fast)
+   OSINT 6: MAC Lookup — direct, fallback via proxy
    ============================================================ */
 document.getElementById('macLookupBtn').addEventListener('click', async function (ev) {
   var mac = document.getElementById('macInput').value.trim();
@@ -912,24 +1041,36 @@ document.getElementById('macLookupBtn').addEventListener('click', async function
   var btn = ev.currentTarget;
   card.classList.add('loading');
   btn.disabled = true;
-  term.textContent = '> Querying maclookup.app...';
+  term.textContent = '> Querying...';
   try {
     var res = await fetchWithTimeout('https://api.maclookup.app/v2/macs/' + encodeURIComponent(mac), {}, 5000);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    var data = await res.json();
-    var lines;
-    if (data.success && data.company) {
-      lines = [
-        '> Vendor: ' + data.company,
-        '> Block: ' + (data.macPrefix || '—'),
-        '> Country: ' + (data.country || '—')
-      ];
-    } else {
-      lines = ['> Vendor: Not found'];
+    if (res.ok) {
+      var data = await res.json();
+      if (data.success && data.company) {
+        await typeTerminal(term, [
+          '> Vendor: ' + data.company,
+          '> Block: ' + (data.macPrefix || '—'),
+          '> Country: ' + (data.country || '—')
+        ]);
+        card.classList.remove('loading');
+        btn.disabled = false;
+        return;
+      }
     }
-    await typeTerminal(term, lines);
+    throw new Error('not found');
   } catch (e) {
-    term.textContent = '> ERROR: Lookup failed (' + e.message + ').';
+    try {
+      var targetUrl = encodeURIComponent('https://api.macvendors.com/' + mac);
+      var res2 = await fetchWithTimeout('https://api.allorigins.win/raw?url=' + targetUrl, {}, 5000);
+      var vendor = await res2.text();
+      if (vendor && !/not found/i.test(vendor)) {
+        await typeTerminal(term, ['> Vendor: ' + vendor]);
+      } else {
+        await typeTerminal(term, ['> Vendor: Not found']);
+      }
+    } catch (e2) {
+      term.textContent = '> ERROR: ' + e.message;
+    }
   }
   card.classList.remove('loading');
   btn.disabled = false;
@@ -993,7 +1134,7 @@ document.getElementById('subLookupBtn').addEventListener('click', async function
 });
 
 /* ============================================================
-   OSINT 9: Site Builder / CMS Detect — FIXED (fast, client-side)
+   OSINT 9: Site Builder / CMS Detect — multi-proxy
    ============================================================ */
 document.getElementById('builderLookupBtn').addEventListener('click', async function (ev) {
   var host = document.getElementById('builderInput').value.trim();
@@ -1004,12 +1145,31 @@ document.getElementById('builderLookupBtn').addEventListener('click', async func
   card.classList.add('loading');
   btn.disabled = true;
   term.textContent = '> Fetching page...';
+
   try {
     if (!/^https?:\/\//i.test(host)) host = 'https://' + host;
-    var proxied = 'https://corsproxy.io/?' + encodeURIComponent(host);
-    var res = await fetchWithTimeout(proxied, {}, 6000);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    var html = await res.text();
+
+    var proxies = [
+      'https://corsproxy.io/?',
+      'https://api.allorigins.win/raw?url=',
+      'https://cors.eu.org/'
+    ];
+
+    var html = null;
+    for (var i = 0; i < proxies.length; i++) {
+      try {
+        var res = await fetchWithTimeout(proxies[i] + encodeURIComponent(host), {}, 6000);
+        if (res.ok) {
+          html = await res.text();
+          if (html && html.length > 100) break;
+        }
+      } catch (err) {
+        console.warn('[cms] proxy failed:', proxies[i], err.message);
+      }
+    }
+
+    if (!html) throw new Error('all proxies failed');
+
     var hits = [];
     if (/wp-content|wp-includes|wordpress/i.test(html)) hits.push('WordPress');
     if (/cdn\.shopify\.com|Shopify\.theme/i.test(html)) hits.push('Shopify');
@@ -1020,19 +1180,20 @@ document.getElementById('builderLookupBtn').addEventListener('click', async func
     if (/\/sites\/default\/files|Drupal\.settings/i.test(html)) hits.push('Drupal');
     if (/joomla/i.test(html)) hits.push('Joomla');
     if (/gtag\(|googletagmanager/i.test(html)) hits.push('Google Analytics');
+
     var lines = hits.length
       ? ['> Detected ' + hits.length + ' signature(s):'].concat(hits.map(function (h) { return '  • ' + h; }))
       : ['> No common CMS detected.'];
     await typeTerminal(term, lines);
   } catch (e) {
-    term.textContent = '> ERROR: Scan failed (' + e.message + ').';
+    term.textContent = '> ERROR: ' + e.message + ' (try another host)';
   }
   card.classList.remove('loading');
   btn.disabled = false;
 });
 
 /* ============================================================
-   OSINT 10: Bug Finder
+   OSINT 10: Bug Finder (Headers)
    ============================================================ */
 document.getElementById('bugLookupBtn').addEventListener('click', async function (ev) {
   var host = document.getElementById('bugInput').value.trim();
