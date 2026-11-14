@@ -50,7 +50,7 @@
   .anime-bg-layer {
     position: absolute; inset: 0; background-size: cover; background-position: center;
     opacity: 0;
-    transition: opacity 0.6s ease-in-out; 
+    transition: opacity 0.8s ease-in-out; 
     transform: scale(1.02);
   }
   .anime-bg-layer.active { opacity: 0.7; }
@@ -172,6 +172,7 @@
   .osint-input:focus { border-color: rgba(255,255,255,0.45); background: rgba(0,0,0,0.5); }
   .osint-btn { padding: 0.7rem 1.5rem; font-size: 0.85rem; font-weight: 600; font-family: 'Inter', sans-serif; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); color: #fff; cursor: pointer; transition: all .3s var(--ease); width: 100%; position: relative; z-index: 1; backdrop-filter: url(#glass-refract); box-shadow: inset 0 1px 0 var(--glass-edge-light); }
   .osint-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.35); }
+  .osint-btn:disabled { opacity: 0.5; cursor: wait; }
 
   .skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent); background-size: 200% 100%; animation: shimmer 1.2s infinite; z-index: 10; pointer-events: none; opacity: 0; transition: opacity 0.3s; border-radius: 12px; }
   .loading .skeleton { opacity: 1; }
@@ -236,6 +237,16 @@
     body { cursor: auto; }
     .cursor-dot, .cursor-outline { display: none; }
   }
+
+  /* ===== MOBILE BATTERY SAVERS ===== */
+  @media (pointer: coarse), (max-width: 768px) {
+    .bento-item, .card, .btn, .gh-card, .hero-eyebrow, .osint-btn, .nav {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    .anime-bg-layer { transform: none; }
+    .cursor-dot, .cursor-outline { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -271,7 +282,7 @@
 <main id="top">
   <header class="hero wrap">
     <div class="hero-eyebrow reveal"><span class="brand-dot" style="width:5px;height:5px"></span> Available for collabs</div>
-    <h1 class="hero-title">
+    <h1 class="hero-title" id="heroTitle">
       <span class="line"><span class="word">Developer</span></span>
       <span class="line"><span class="word accent">&amp; Founder</span></span>
     </h1>
@@ -472,352 +483,586 @@
 'use strict';
 document.getElementById('year').textContent = new Date().getFullYear();
 
-/* ===== Cursor ===== */
-const cursorDot = document.getElementById('cursorDot');
-const cursorOutline = document.getElementById('cursorOutline');
-let mouseX = 0, mouseY = 0, outlineX = 0, outlineY = 0;
-
-window.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX; mouseY = e.clientY;
-  cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
-});
-
-function animateCursor() {
-  outlineX += (mouseX - outlineX) * 0.15;
-  outlineY += (mouseY - outlineY) * 0.15;
-  cursorOutline.style.transform = `translate(${outlineX}px, ${outlineY}px) translate(-50%, -50%)`;
-  requestAnimationFrame(animateCursor);
+/* ============================================================
+   Helpers
+   ============================================================ */
+function fetchWithTimeout(url, opts, ms) {
+  opts = opts || {};
+  ms = ms || 5000;
+  return Promise.race([
+    fetch(url, opts),
+    new Promise(function (_, rej) {
+      setTimeout(function () { rej(new Error('timeout')); }, ms);
+    })
+  ]);
 }
-animateCursor();
 
-document.querySelectorAll('a, button, .bento-item, .card, input').forEach(el => {
-  el.addEventListener('mouseenter', () => { cursorDot.classList.add('hover'); cursorOutline.classList.add('hover'); });
-  el.addEventListener('mouseleave', () => { cursorDot.classList.remove('hover'); cursorOutline.classList.remove('hover'); });
-});
-
-/* ===== Magnetic Buttons ===== */
-document.querySelectorAll('.magnetic').forEach(btn => {
-  btn.addEventListener('mousemove', (e) => {
-    const rect = btn.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+function typeTerminal(terminalEl, lines) {
+  terminalEl.textContent = '';
+  var i = 0;
+  return new Promise(function (resolve) {
+    function step() {
+      if (i >= lines.length) {
+        var done = document.createElement('span');
+        done.className = 'terminal-line';
+        done.textContent = '> Done.';
+        terminalEl.appendChild(done);
+        terminalEl.scrollTop = terminalEl.scrollHeight;
+        resolve();
+        return;
+      }
+      var s = document.createElement('span');
+      s.className = 'terminal-line';
+      s.textContent = lines[i];
+      terminalEl.appendChild(s);
+      terminalEl.scrollTop = terminalEl.scrollHeight;
+      i++;
+      setTimeout(step, 80);
+    }
+    step();
   });
-  btn.addEventListener('mouseleave', () => { btn.style.transform = `translate(0px, 0px)`; btn.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'; });
-  btn.addEventListener('mouseenter', () => { btn.style.transition = 'transform 0.1s ease'; });
+}
+
+/* ============================================================
+   Cursor — desktop only, idle-aware (no infinite RAF loop)
+   ============================================================ */
+var isTouch = window.matchMedia('(pointer: coarse)').matches;
+if (!isTouch) {
+  var cursorDot = document.getElementById('cursorDot');
+  var cursorOutline = document.getElementById('cursorOutline');
+  var mouseX = 0, mouseY = 0, outlineX = 0, outlineY = 0, rafId = null;
+
+  window.addEventListener('mousemove', function (e) {
+    mouseX = e.clientX; mouseY = e.clientY;
+    cursorDot.style.transform = 'translate(' + mouseX + 'px,' + mouseY + 'px) translate(-50%,-50%)';
+    if (rafId === null) rafId = requestAnimationFrame(tick);
+  });
+
+  function tick() {
+    outlineX += (mouseX - outlineX) * 0.18;
+    outlineY += (mouseY - outlineY) * 0.18;
+    cursorOutline.style.transform = 'translate(' + outlineX + 'px,' + outlineY + 'px) translate(-50%,-50%)';
+    if (Math.abs(mouseX - outlineX) > 0.1 || Math.abs(mouseY - outlineY) > 0.1) {
+      rafId = requestAnimationFrame(tick);
+    } else {
+      rafId = null; // idle → stop
+    }
+  }
+
+  document.querySelectorAll('a, button, .bento-item, .card, input').forEach(function (el) {
+    el.addEventListener('mouseenter', function () {
+      cursorDot.classList.add('hover');
+      cursorOutline.classList.add('hover');
+    });
+    el.addEventListener('mouseleave', function () {
+      cursorDot.classList.remove('hover');
+      cursorOutline.classList.remove('hover');
+    });
+  });
+}
+
+/* ============================================================
+   Magnetic Buttons
+   ============================================================ */
+document.querySelectorAll('.magnetic').forEach(function (btn) {
+  btn.addEventListener('mousemove', function (e) {
+    var rect = btn.getBoundingClientRect();
+    var x = e.clientX - rect.left - rect.width / 2;
+    var y = e.clientY - rect.top - rect.height / 2;
+    btn.style.transform = 'translate(' + (x * 0.2) + 'px,' + (y * 0.2) + 'px)';
+  });
+  btn.addEventListener('mouseleave', function () {
+    btn.style.transform = 'translate(0,0)';
+    btn.style.transition = 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+  });
+  btn.addEventListener('mouseenter', function () {
+    btn.style.transition = 'transform 0.1s ease';
+  });
 });
 
-/* ===== Nav & Scroll ===== */
-let lastY = 0;
-const nav = document.getElementById('nav');
-window.addEventListener('scroll', () => {
-  const y = window.scrollY;
+/* ============================================================
+   Nav & Scroll progress
+   ============================================================ */
+var lastY = 0;
+var nav = document.getElementById('nav');
+window.addEventListener('scroll', function () {
+  var y = window.scrollY;
   nav.classList.toggle('hidden', y > 100 && y > lastY);
   lastY = y;
-  const h = document.documentElement.scrollHeight - window.innerHeight;
-  document.getElementById('progress').style.transform = `scaleX(${h > 0 ? y / h : 0})`;
+  var h = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('progress').style.transform = 'scaleX(' + (h > 0 ? y / h : 0) + ')';
 }, { passive: true });
 
-/* ===== Reveal ===== */
-const io = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+/* ============================================================
+   Reveal
+   ============================================================ */
+var io = new IntersectionObserver(function (entries) {
+  entries.forEach(function (e) {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  });
 }, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
 
-/* ===== Anime Background (Mixed Boys & Girls) ===== */
-const bgLayer1 = document.getElementById('bgLayer1');
-const bgLayer2 = document.getElementById('bgLayer2');
-let currentLayer = bgLayer1, nextLayer = bgLayer2, isFetchingBg = false;
+/* ============================================================
+   Hero title slide-in (was missing before)
+   ============================================================ */
+requestAnimationFrame(function () {
+  var ht = document.getElementById('heroTitle');
+  if (ht) ht.classList.add('in');
+});
 
-async function fetchAnimeBackground() {
-  if (isFetchingBg) return;
-  isFetchingBg = true;
-  
-  const isBoy = Math.random() > 0.5; 
-  let imgUrl = null;
+/* ============================================================
+   Anime Background — FIXED
+   ============================================================ */
+(function initAnimeBackground() {
+  var bgLayer1 = document.getElementById('bgLayer1');
+  var bgLayer2 = document.getElementById('bgLayer2');
+  if (!bgLayer1 || !bgLayer2) return;
 
-  try {
-    // Waifu.im supports both 'waifu' and 'husbando' tags with CORS
-    const tag = isBoy ? 'husbando' : 'waifu';
-    const res = await fetch(`https://api.waifu.im/search?included_tags=${tag}&limit=1`);
-    if (!res.ok) throw new Error('API Error');
-    const data = await res.json();
-    
-    if (data.images && data.images.length > 0) {
-      imgUrl = data.images[0].url;
+  var isCoarse = window.matchMedia('(pointer: coarse)').matches;
+  var CYCLE_MS = isCoarse ? 15000 : 4000; // slow on mobile, 4s on desktop
+  var LOAD_TIMEOUT_MS = 8000;
+
+  var currentLayer = bgLayer1;
+  var nextLayer = bgLayer2;
+  var isFetching = false;
+  var fallbackIndex = 0;
+
+  var FALLBACKS = [
+    'https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=2000',
+    'https://images.unsplash.com/photo-1613376023733-0a73315d9b06?q=80&w=2000',
+    'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=2000',
+    'https://images.unsplash.com/photo-1601850494422-3cf14624b0b3?q=80&w=2000'
+  ];
+
+  function withTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, ms); })
+    ]);
+  }
+
+  function fromWaifuIm() {
+    var tag = Math.random() > 0.5 ? 'husbando' : 'waifu';
+    return fetch('https://api.waifu.im/search?included_tags=' + tag + '&is_nsfw=false&limit=1', { mode: 'cors' })
+      .then(function (r) { if (!r.ok) throw new Error('waifu.im ' + r.status); return r.json(); })
+      .then(function (d) { return (d && d.images && d.images[0] && d.images[0].url) || null; });
+  }
+
+  function fromWaifuPics() {
+    var tag = Math.random() > 0.5 ? 'waifu' : 'husbando';
+    return fetch('https://api.waifu.pics/sfw/' + tag, { mode: 'cors' })
+      .then(function (r) { if (!r.ok) throw new Error('waifu.pics ' + r.status); return r.json(); })
+      .then(function (d) { return (d && d.url) || null; });
+  }
+
+  function fromNekosBest() {
+    return fetch('https://nekos.best/api/v2/neko?amount=1', { mode: 'cors' })
+      .then(function (r) { if (!r.ok) throw new Error('nekos.best ' + r.status); return r.json(); })
+      .then(function (d) { return (d && d.results && d.results[0] && d.results[0].url) || null; });
+  }
+
+  function resolveImageUrl() {
+    var sources = [fromWaifuIm, fromWaifuPics, fromNekosBest];
+    var idx = 0;
+    function tryNext() {
+      if (idx >= sources.length) {
+        var fb = FALLBACKS[fallbackIndex % FALLBACKS.length];
+        fallbackIndex++;
+        console.warn('[bg] using static fallback:', fb);
+        return Promise.resolve(fb);
+      }
+      var src = sources[idx++];
+      return withTimeout(src(), LOAD_TIMEOUT_MS)
+        .then(function (url) {
+          if (url) return url;
+          return tryNext();
+        })
+        .catch(function (err) {
+          console.warn('[bg] source failed →', err.message);
+          return tryNext();
+        });
     }
+    return tryNext();
+  }
 
-    if (imgUrl) {
-      const img = new Image();
-      img.src = imgUrl;
-      img.onload = () => {
-        nextLayer.style.backgroundImage = `url('${imgUrl}')`;
-        nextLayer.classList.add('active'); currentLayer.classList.remove('active');
-        [currentLayer, nextLayer] = [nextLayer, currentLayer];
-        isFetchingBg = false;
-      };
-      img.onerror = () => { isFetchingBg = false; };
+  // IMPORTANT: attach handlers BEFORE setting src
+  function preload(url) {
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      img.onload = function () { resolve(url); };
+      img.onerror = function () { reject(new Error('image failed: ' + url)); };
+      img.src = url;
+    });
+  }
+
+  function swap() {
+    if (isFetching) return;
+    isFetching = true;
+
+    resolveImageUrl()
+      .then(function (url) {
+        return withTimeout(preload(url), LOAD_TIMEOUT_MS)
+          .then(function () { return url; })
+          .catch(function (err) {
+            console.warn('[bg] preload failed →', err.message);
+            var fb = FALLBACKS[fallbackIndex % FALLBACKS.length];
+            fallbackIndex++;
+            return preload(fb).then(function () { return fb; });
+          });
+      })
+      .then(function (url) {
+        nextLayer.style.backgroundImage = 'url("' + url + '")';
+        void nextLayer.offsetWidth; // force reflow
+        nextLayer.classList.add('active');
+        currentLayer.classList.remove('active');
+        var tmp = currentLayer;
+        currentLayer = nextLayer;
+        nextLayer = tmp;
+      })
+      .catch(function (err) {
+        console.warn('[bg] swap failed →', err.message);
+      })
+      .then(function () { isFetching = false; });
+  }
+
+  swap();
+  var intervalId = setInterval(swap, CYCLE_MS);
+
+  // Pause when tab hidden, resume on return
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      clearInterval(intervalId);
     } else {
-      isFetchingBg = false;
+      swap();
+      intervalId = setInterval(swap, CYCLE_MS);
     }
-  } catch (e) { 
-    isFetchingBg = false; 
-  }
-}
+  });
+})();
 
-// 2.5 second cycle
-setInterval(fetchAnimeBackground, 2500);
-
-/* ===== Typewriter ===== */
-async function typeTerminal(terminalEl, lines) {
-  terminalEl.textContent = '';
-  for (let i = 0; i < lines.length; i++) {
-    const lineEl = document.createElement('span');
-    lineEl.className = 'terminal-line';
-    terminalEl.appendChild(lineEl);
-    await new Promise(r => setTimeout(r, 80));
-    lineEl.textContent = lines[i];
-    terminalEl.scrollTop = terminalEl.scrollHeight;
-  }
-  const done = document.createElement('span');
-  done.className = 'terminal-line';
-  done.textContent = '> Done.';
-  terminalEl.appendChild(done);
-}
-
-/* ===== OSINT 1: IP Intelligence ===== */
+/* ============================================================
+   OSINT 1: IP Intelligence
+   ============================================================ */
 async function runIPScan() {
-  const term = document.getElementById('ipTerminal');
-  const card = document.getElementById('app-ip');
+  var term = document.getElementById('ipTerminal');
+  var card = document.getElementById('app-ip');
+  var btn = document.getElementById('ipScanBtn');
   card.classList.add('loading');
+  btn.disabled = true;
   term.textContent = '> Querying ipwho.is...';
   try {
-    const res = await fetch('https://ipwho.is/');
+    var res = await fetchWithTimeout('https://ipwho.is/', {}, 5000);
     if (!res.ok) throw new Error('Network error');
-    const data = await res.json();
+    var data = await res.json();
     if (!data.success) throw new Error('API Error');
-    const isHosting = (data.connection?.type || '').toLowerCase().includes('hosting');
+    var isHosting = (data.connection && data.connection.type || '').toLowerCase().indexOf('hosting') !== -1;
     await typeTerminal(term, [
-      `> IP: ${data.ip}`,
-      `> ISP: ${data.connection?.isp || 'Unknown'}`,
-      `> LOC: ${data.city || '?'}, ${data.country || '?'}`,
-      `> VPN: ${isHosting ? 'DETECTED ⚠️' : 'CLEAN ✅'}`
+      '> IP: ' + data.ip,
+      '> ISP: ' + (data.connection && data.connection.isp || 'Unknown'),
+      '> LOC: ' + (data.city || '?') + ', ' + (data.country || '?'),
+      '> VPN: ' + (isHosting ? 'DETECTED ⚠️' : 'CLEAN ✅')
     ]);
   } catch (e) {
-    term.textContent = '> ERROR: Scan failed.';
+    term.textContent = '> ERROR: Scan failed (' + e.message + ').';
   }
   card.classList.remove('loading');
+  btn.disabled = false;
 }
 document.getElementById('ipScanBtn').addEventListener('click', runIPScan);
 runIPScan();
 
-/* ===== OSINT 2: DNS Lookup ===== */
-document.getElementById('dnsLookupBtn').addEventListener('click', async () => {
-  const domain = document.getElementById('dnsInput').value.trim();
+/* ============================================================
+   OSINT 2: DNS Lookup
+   ============================================================ */
+document.getElementById('dnsLookupBtn').addEventListener('click', async function (ev) {
+  var domain = document.getElementById('dnsInput').value.trim();
   if (!domain) return;
-  const term = document.getElementById('dnsTerminal');
-  const card = document.getElementById('app-dns');
+  var term = document.getElementById('dnsTerminal');
+  var card = document.getElementById('app-dns');
+  var btn = ev.currentTarget;
   card.classList.add('loading');
+  btn.disabled = true;
   term.textContent = '> Fetching records...';
   try {
-    const types = ['A', 'MX', 'TXT', 'NS'];
-    const results = await Promise.all(types.map(t =>
-      fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=${t}`).then(r => r.json())
-    ));
-    const lines = [];
-    results.forEach((d, i) => {
+    var types = ['A', 'MX', 'TXT', 'NS'];
+    var results = await Promise.all(types.map(function (t) {
+      return fetchWithTimeout('https://dns.google/resolve?name=' + encodeURIComponent(domain) + '&type=' + t, {}, 5000).then(function (r) { return r.json(); });
+    }));
+    var lines = [];
+    results.forEach(function (d, i) {
       if (d.Answer) {
-        lines.push(`> ${types[i]}:`);
-        d.Answer.slice(0, 3).forEach(a => lines.push(`  ${a.data}`));
-      } else lines.push(`> ${types[i]}: None`);
+        lines.push('> ' + types[i] + ':');
+        d.Answer.slice(0, 3).forEach(function (a) { lines.push('  ' + a.data); });
+      } else {
+        lines.push('> ' + types[i] + ': None');
+      }
     });
     await typeTerminal(term, lines);
-  } catch (e) { term.textContent = '> ERROR: Lookup failed.'; }
+  } catch (e) {
+    term.textContent = '> ERROR: Lookup failed (' + e.message + ').';
+  }
   card.classList.remove('loading');
+  btn.disabled = false;
 });
 
-/* ===== OSINT 3: WHOIS ===== */
-document.getElementById('whoisLookupBtn').addEventListener('click', async () => {
-  const domain = document.getElementById('whoisInput').value.trim();
+/* ============================================================
+   OSINT 3: WHOIS
+   ============================================================ */
+document.getElementById('whoisLookupBtn').addEventListener('click', async function (ev) {
+  var domain = document.getElementById('whoisInput').value.trim();
   if (!domain) return;
-  const term = document.getElementById('whoisTerminal');
-  const card = document.getElementById('app-whois');
+  var term = document.getElementById('whoisTerminal');
+  var card = document.getElementById('app-whois');
+  var btn = ev.currentTarget;
   card.classList.add('loading');
+  btn.disabled = true;
   term.textContent = '> Querying RDAP...';
   try {
-    const res = await fetch(`https://rdap.org/domain/${encodeURIComponent(domain)}`);
+    var res = await fetchWithTimeout('https://rdap.org/domain/' + encodeURIComponent(domain), {}, 6000);
     if (!res.ok) throw new Error('Not found');
-    const data = await res.json();
-    const lines = [`> Domain: ${data.ldhName || domain}`, `> Status: ${(data.status || []).join(', ') || 'Unknown'}`];
-    const registrar = (data.entities || []).find(e => (e.roles || []).includes('registrar'));
-    if (registrar) {
-      const vcard = (registrar.vcardArray?.[1] || []).find(v => v[0] === 'fn');
-      if (vcard) lines.push(`> Registrar: ${vcard[3]}`);
+    var data = await res.json();
+    var lines = ['> Domain: ' + (data.ldhName || domain), '> Status: ' + ((data.status || []).join(', ') || 'Unknown')];
+    var registrar = (data.entities || []).find(function (e) { return (e.roles || []).indexOf('registrar') !== -1; });
+    if (registrar && registrar.vcardArray && registrar.vcardArray[1]) {
+      var vcard = registrar.vcardArray[1].find(function (v) { return v[0] === 'fn'; });
+      if (vcard) lines.push('> Registrar: ' + vcard[3]);
     }
-    (data.events || []).forEach(ev => {
-      if (ev.eventAction === 'registration') lines.push(`> Created: ${ev.eventDate.split('T')[0]}`);
+    (data.events || []).forEach(function (ev) {
+      if (ev.eventAction === 'registration') lines.push('> Created: ' + ev.eventDate.split('T')[0]);
     });
     await typeTerminal(term, lines);
-  } catch (e) { term.textContent = '> ERROR: WHOIS failed.'; }
+  } catch (e) {
+    term.textContent = '> ERROR: WHOIS failed (' + e.message + ').';
+  }
   card.classList.remove('loading');
+  btn.disabled = false;
 });
 
-/* ===== OSINT 4: Email Breach ===== */
-document.getElementById('emailLookupBtn').addEventListener('click', async () => {
-  const email = document.getElementById('emailInput').value.trim();
+/* ============================================================
+   OSINT 4: Email Breach
+   ============================================================ */
+document.getElementById('emailLookupBtn').addEventListener('click', async function (ev) {
+  var email = document.getElementById('emailInput').value.trim();
   if (!email) return;
-  const term = document.getElementById('emailTerminal');
-  const card = document.getElementById('app-email');
+  var term = document.getElementById('emailTerminal');
+  var card = document.getElementById('app-email');
+  var btn = ev.currentTarget;
   card.classList.add('loading');
+  btn.disabled = true;
   term.textContent = '> Checking breaches...';
   try {
-    const res = await fetch(`https://api.xposedornot.com/v1/check-email/${encodeURIComponent(email)}`);
+    var res = await fetchWithTimeout('https://api.xposedornot.com/v1/check-email/' + encodeURIComponent(email), {}, 6000);
     if (res.status === 404) {
       await typeTerminal(term, ['> No breaches found. ✅']);
     } else {
-      const data = await res.json();
-      const lines = (data.breaches && data.breaches.length)
-        ? [`> Found in ${data.breaches.length} breaches:`, ...data.breaches.slice(0, 3).map(b => `  - ${b}`)]
+      var data = await res.json();
+      var lines = (data.breaches && data.breaches.length)
+        ? ['> Found in ' + data.breaches.length + ' breaches:'].concat(data.breaches.slice(0, 3).map(function (b) { return '  - ' + b; }))
         : ['> No breaches found. ✅'];
       await typeTerminal(term, lines);
     }
-  } catch (e) { term.textContent = '> ERROR: API failed.'; }
+  } catch (e) {
+    term.textContent = '> ERROR: API failed (' + e.message + ').';
+  }
   card.classList.remove('loading');
+  btn.disabled = false;
 });
 
-/* ===== OSINT 5: Email OSINT ===== */
-document.getElementById('emailOsintBtn').addEventListener('click', async () => {
-  const email = document.getElementById('emailOsintInput').value.trim();
+/* ============================================================
+   OSINT 5: Email OSINT
+   ============================================================ */
+document.getElementById('emailOsintBtn').addEventListener('click', async function (ev) {
+  var email = document.getElementById('emailOsintInput').value.trim();
   if (!email) return;
-  const panel = document.getElementById('emailOsintResult');
-  const card = document.getElementById('app-email-osint');
+  var panel = document.getElementById('emailOsintResult');
+  var card = document.getElementById('app-email-osint');
+  var btn = ev.currentTarget;
   card.classList.add('loading');
+  btn.disabled = true;
   panel.innerHTML = '<div class="result-row"><span class="result-label">Status</span><span class="result-value">Analyzing...</span></div>';
 
   try {
-    const res = await fetch(`https://open.kickbox.com/v1/disposable/${encodeURIComponent(email)}`);
+    var res = await fetchWithTimeout('https://open.kickbox.com/v1/disposable/' + encodeURIComponent(email), {}, 5000);
     if (!res.ok) throw new Error('API Error');
-    const data = await res.json();
-
-    const isDisposable = data.disposable === true;
-    const disposableBadge = isDisposable 
-      ? '<span class="badge badge-warn">Disposable</span>' 
+    var data = await res.json();
+    var isDisposable = data.disposable === true;
+    var disposableBadge = isDisposable
+      ? '<span class="badge badge-warn">Disposable</span>'
       : '<span class="badge badge-ok">Clean</span>';
 
-    panel.innerHTML = `
-      <div class="result-row"><span class="result-label">Email</span><span class="result-value">${escapeHtml(email)}</span></div>
-      <div class="result-row"><span class="result-label">Disposable</span><span class="result-value">${disposableBadge}</span></div>
-      <div class="result-row"><span class="result-label">Status</span><span class="result-value" style="color:var(--text-2)">Validated</span></div>
-    `;
+    panel.innerHTML =
+      '<div class="result-row"><span class="result-label">Email</span><span class="result-value">' + escapeHtml(email) + '</span></div>' +
+      '<div class="result-row"><span class="result-label">Disposable</span><span class="result-value">' + disposableBadge + '</span></div>' +
+      '<div class="result-row"><span class="result-label">Status</span><span class="result-value" style="color:var(--text-2)">Validated</span></div>';
   } catch (e) {
     panel.innerHTML = '<div class="result-row"><span class="result-label">Error</span><span class="result-value" style="color:#ff5050">Analysis failed</span></div>';
   }
   card.classList.remove('loading');
+  btn.disabled = false;
 });
 
-/* ===== OSINT 6: MAC Lookup ===== */
-document.getElementById('macLookupBtn').addEventListener('click', async () => {
-  const mac = document.getElementById('macInput').value.trim();
+/* ============================================================
+   OSINT 6: MAC Lookup — FIXED (direct, no proxy, fast)
+   ============================================================ */
+document.getElementById('macLookupBtn').addEventListener('click', async function (ev) {
+  var mac = document.getElementById('macInput').value.trim();
   if (!mac) return;
-  const term = document.getElementById('macTerminal');
-  const card = document.getElementById('app-mac');
+  var term = document.getElementById('macTerminal');
+  var card = document.getElementById('app-mac');
+  var btn = ev.currentTarget;
   card.classList.add('loading');
-  term.textContent = '> Querying...';
+  btn.disabled = true;
+  term.textContent = '> Querying maclookup.app...';
   try {
-    const targetUrl = encodeURIComponent(`https://api.macvendors.com/${mac}`);
-    const res = await fetch(`https://api.allorigins.win/get?url=${targetUrl}`);
-    const data = await res.json();
-    let lines;
-    if (data.contents && !data.contents.includes('Not Found')) {
-      lines = [`> Vendor: ${data.contents}`];
+    var res = await fetchWithTimeout('https://api.maclookup.app/v2/macs/' + encodeURIComponent(mac), {}, 5000);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var data = await res.json();
+    var lines;
+    if (data.success && data.company) {
+      lines = [
+        '> Vendor: ' + data.company,
+        '> Block: ' + (data.macPrefix || '—'),
+        '> Country: ' + (data.country || '—')
+      ];
     } else {
       lines = ['> Vendor: Not found'];
     }
     await typeTerminal(term, lines);
-  } catch (e) { term.textContent = '> ERROR: Lookup failed.'; }
+  } catch (e) {
+    term.textContent = '> ERROR: Lookup failed (' + e.message + ').';
+  }
   card.classList.remove('loading');
+  btn.disabled = false;
 });
 
-/* ===== OSINT 7: URL Expander ===== */
-document.getElementById('urlLookupBtn').addEventListener('click', async () => {
-  const url = document.getElementById('urlInput').value.trim();
+/* ============================================================
+   OSINT 7: URL Expander
+   ============================================================ */
+document.getElementById('urlLookupBtn').addEventListener('click', async function (ev) {
+  var url = document.getElementById('urlInput').value.trim();
   if (!url) return;
-  const term = document.getElementById('urlTerminal');
-  const card = document.getElementById('app-url');
+  var term = document.getElementById('urlTerminal');
+  var card = document.getElementById('app-url');
+  var btn = ev.currentTarget;
   card.classList.add('loading');
+  btn.disabled = true;
   term.textContent = '> Expanding...';
   try {
-    const res = await fetch(`https://unshorten.me/api/v2/unshorten?url=${encodeURIComponent(url)}`);
-    const data = await res.json();
-    await typeTerminal(term, data.success ? [`> Original: ${data.real_url}`] : ['> Failed to expand.']);
-  } catch (e) { term.textContent = '> ERROR: Expansion failed.'; }
+    var res = await fetchWithTimeout('https://unshorten.me/api/v2/unshorten?url=' + encodeURIComponent(url), {}, 6000);
+    var data = await res.json();
+    await typeTerminal(term, data.success ? ['> Original: ' + data.real_url] : ['> Failed to expand.']);
+  } catch (e) {
+    term.textContent = '> ERROR: Expansion failed (' + e.message + ').';
+  }
   card.classList.remove('loading');
+  btn.disabled = false;
 });
 
-/* ===== OSINT 8: Subdomains ===== */
-document.getElementById('subLookupBtn').addEventListener('click', async () => {
-  const domain = document.getElementById('subInput').value.trim();
+/* ============================================================
+   OSINT 8: Subdomains
+   ============================================================ */
+document.getElementById('subLookupBtn').addEventListener('click', async function (ev) {
+  var domain = document.getElementById('subInput').value.trim();
   if (!domain) return;
-  const term = document.getElementById('subTerminal');
-  const card = document.getElementById('app-sub');
+  var term = document.getElementById('subTerminal');
+  var card = document.getElementById('app-sub');
+  var btn = ev.currentTarget;
   card.classList.add('loading');
+  btn.disabled = true;
   term.textContent = '> Querying crt.sh...';
   try {
-    const res = await fetch(`https://crt.sh/?q=%25.${encodeURIComponent(domain)}&output=json`);
-    const certs = await res.json();
-    const subs = new Set();
-    certs.forEach(c => (c.name_value || '').split('\n').forEach(n => {
-      const cl = n.trim().toLowerCase();
-      if (cl.includes(domain) && cl !== domain && !cl.startsWith('*')) subs.add(cl);
-    }));
-    const lines = subs.size
-      ? [`> Found ${subs.size} subdomains:`, ...Array.from(subs).slice(0, 8).map(s => `  ${s}`)]
+    var res = await fetchWithTimeout('https://crt.sh/?q=%25.' + encodeURIComponent(domain) + '&output=json', {}, 8000);
+    var certs = await res.json();
+    var subs = new Set();
+    certs.forEach(function (c) {
+      (c.name_value || '').split('\n').forEach(function (n) {
+        var cl = n.trim().toLowerCase();
+        if (cl.indexOf(domain) !== -1 && cl !== domain && cl.indexOf('*') !== 0) subs.add(cl);
+      });
+    });
+    var arr = Array.from(subs);
+    var lines = arr.length
+      ? ['> Found ' + arr.length + ' subdomains:'].concat(arr.slice(0, 8).map(function (s) { return '  ' + s; }))
       : ['> No subdomains found.'];
     await typeTerminal(term, lines);
-  } catch (e) { term.textContent = '> ERROR: crt.sh failed.'; }
+  } catch (e) {
+    term.textContent = '> ERROR: crt.sh failed (' + e.message + ').';
+  }
   card.classList.remove('loading');
+  btn.disabled = false;
 });
 
-/* ===== OSINT 9: Site Builder ===== */
-document.getElementById('builderLookupBtn').addEventListener('click', async () => {
-  const url = document.getElementById('builderInput').value.trim();
-  if (!url) return;
-  const term = document.getElementById('builderTerminal');
-  const card = document.getElementById('app-builder');
-  card.classList.add('loading');
-  term.textContent = '> Analyzing...';
-  try {
-    const res = await fetch(`https://api.techspy.dev/detect?url=${encodeURIComponent(url)}`);
-    const data = await res.json();
-    const lines = (data.technologies && data.technologies.length)
-      ? [`> Detected ${data.technologies.length} tech:`, ...data.technologies.slice(0, 5).map(t => `  - ${t.name}`)]
-      : ['> No tech detected.'];
-    await typeTerminal(term, lines);
-  } catch (e) { term.textContent = '> ERROR: Scan failed.'; }
-  card.classList.remove('loading');
-});
-
-/* ===== OSINT 10: Bug Finder ===== */
-document.getElementById('bugLookupBtn').addEventListener('click', async () => {
-  const host = document.getElementById('bugInput').value.trim();
+/* ============================================================
+   OSINT 9: Site Builder / CMS Detect — FIXED (fast, client-side)
+   ============================================================ */
+document.getElementById('builderLookupBtn').addEventListener('click', async function (ev) {
+  var host = document.getElementById('builderInput').value.trim();
   if (!host) return;
-  const term = document.getElementById('bugTerminal');
-  const card = document.getElementById('app-bug');
+  var term = document.getElementById('builderTerminal');
+  var card = document.getElementById('app-builder');
+  var btn = ev.currentTarget;
   card.classList.add('loading');
+  btn.disabled = true;
+  term.textContent = '> Fetching page...';
+  try {
+    if (!/^https?:\/\//i.test(host)) host = 'https://' + host;
+    var proxied = 'https://corsproxy.io/?' + encodeURIComponent(host);
+    var res = await fetchWithTimeout(proxied, {}, 6000);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var html = await res.text();
+    var hits = [];
+    if (/wp-content|wp-includes|wordpress/i.test(html)) hits.push('WordPress');
+    if (/cdn\.shopify\.com|Shopify\.theme/i.test(html)) hits.push('Shopify');
+    if (/\/_next\/static|__NEXT_DATA__/i.test(html)) hits.push('Next.js');
+    if (/__NUXT__/i.test(html)) hits.push('Nuxt');
+    if (/static\.wixstatic\.com/i.test(html)) hits.push('Wix');
+    if (/squarespace\.com/i.test(html)) hits.push('Squarespace');
+    if (/\/sites\/default\/files|Drupal\.settings/i.test(html)) hits.push('Drupal');
+    if (/joomla/i.test(html)) hits.push('Joomla');
+    if (/gtag\(|googletagmanager/i.test(html)) hits.push('Google Analytics');
+    var lines = hits.length
+      ? ['> Detected ' + hits.length + ' signature(s):'].concat(hits.map(function (h) { return '  • ' + h; }))
+      : ['> No common CMS detected.'];
+    await typeTerminal(term, lines);
+  } catch (e) {
+    term.textContent = '> ERROR: Scan failed (' + e.message + ').';
+  }
+  card.classList.remove('loading');
+  btn.disabled = false;
+});
+
+/* ============================================================
+   OSINT 10: Bug Finder
+   ============================================================ */
+document.getElementById('bugLookupBtn').addEventListener('click', async function (ev) {
+  var host = document.getElementById('bugInput').value.trim();
+  if (!host) return;
+  var term = document.getElementById('bugTerminal');
+  var card = document.getElementById('app-bug');
+  var btn = ev.currentTarget;
+  card.classList.add('loading');
+  btn.disabled = true;
   term.textContent = '> Scanning headers...';
   try {
-    const res = await fetch(`https://hackmyip.com/api/security-headers?host=${encodeURIComponent(host)}`);
-    const data = await res.json();
-    const lines = [`> Grade: ${data.grade || 'N/A'}`];
-    if (data.headers) Object.entries(data.headers).slice(0, 4).forEach(([k, v]) => lines.push(`  - ${k}: ${v}`));
+    var res = await fetchWithTimeout('https://hackmyip.com/api/security-headers?host=' + encodeURIComponent(host), {}, 6000);
+    var data = await res.json();
+    var lines = ['> Grade: ' + (data.grade || 'N/A')];
+    if (data.headers) Object.entries(data.headers).slice(0, 4).forEach(function (entry) { lines.push('  - ' + entry[0] + ': ' + entry[1]); });
     await typeTerminal(term, lines);
-  } catch (e) { term.textContent = '> ERROR: Scan failed.'; }
+  } catch (e) {
+    term.textContent = '> ERROR: Scan failed (' + e.message + ').';
+  }
   card.classList.remove('loading');
+  btn.disabled = false;
 });
 
-/* ===== Helpers ===== */
+/* ============================================================
+   Helpers
+   ============================================================ */
 function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  return String(str).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
 }
 </script>
 </body>
