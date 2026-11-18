@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      BRO GANG Studios — Ship or die
-    </title>
-    <meta name="theme-color" content="#050308" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet" />
-    <style>
-      :root {
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRO GANG Studios — Ship or die</title>
+<meta name="description" content="BRO GANG Studios. Experimental software, AI tools, and open-source engineering.">
+<meta name="theme-color" content="#050308">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
     --bg: #050308;
     --violet: #a78bfa;
     --violet-bright: #c4b5fd;
@@ -26,7 +25,7 @@
   html, body { scroll-behavior: auto; }
   body {
     background: var(--bg); color: var(--text);
-    font-family: &#39;Inter&#39;, system-ui, sans-serif; line-height: 1.6;
+    font-family: 'Inter', system-ui, sans-serif; line-height: 1.6;
     overflow-x: hidden; -webkit-font-smoothing: antialiased;
     min-height: 100vh;
   }
@@ -34,32 +33,23 @@
   a { color: inherit; text-decoration: none; }
   img { max-width: 100%; display: block; }
 
-  /* ===== Backgrounds ===== */
-  .energy-bg { position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden; }
-  .energy-bg::before {
-    content: &#39;&#39;; position: absolute; inset: -50%;
-    background:
-      radial-gradient(circle at 20% 30%, rgba(124,58,237,0.4), transparent 40%),
-      radial-gradient(circle at 80% 70%, rgba(232,121,249,0.3), transparent 40%),
-      radial-gradient(circle at 50% 50%, rgba(167,139,250,0.15), transparent 60%);
-    animation: energyPulse 8s ease-in-out infinite;
-    filter: blur(60px);
+  /* Cursor trail */
+  .cursor-trail {
+    position: fixed; top: 0; left: 0;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--violet);
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.2s;
+    box-shadow: 0 0 20px var(--violet), 0 0 40px rgba(167,139,250,0.5);
+    mix-blend-mode: screen;
   }
-  @keyframes energyPulse {
-    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
-    50% { transform: scale(1.15) rotate(10deg); opacity: 1; }
-  }
-  .grid-overlay {
-    position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    background-image:
-      linear-gradient(rgba(167,139,250,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(167,139,250,0.04) 1px, transparent 1px);
-    background-size: 60px 60px;
-    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
-    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
-  }
+  @media (pointer: coarse), (max-width: 768px) { .cursor-trail { display: none; } }
 
-  /* ===== Nav ===== */
+  /* Nav */
   .nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
     display: flex; align-items: center; justify-content: space-between;
@@ -73,7 +63,7 @@
     display: flex; align-items: center; gap: 0.6rem;
     font-weight: 900; font-size: 1rem;
     letter-spacing: 0.08em; text-transform: uppercase;
-    font-family: &#39;JetBrains Mono&#39;, monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
   .brand-avatar {
     width: 36px; height: 36px; border-radius: 50%;
@@ -86,92 +76,139 @@
     0%, 100% { box-shadow: 0 0 0 2px rgba(167,139,250,0.6), 0 0 20px rgba(167,139,250,0.5); }
     50% { box-shadow: 0 0 0 2px rgba(232,121,249,0.8), 0 0 30px rgba(232,121,249,0.7); }
   }
-  .nav-links { display: flex; gap: clamp(1rem, 3vw, 2rem); font-family: &#39;JetBrains Mono&#39;, monospace; font-size: 0.8rem; }
+  .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+  .nav-links { display: flex; gap: clamp(1rem, 3vw, 2rem); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
   .nav-links a { color: var(--text-2); transition: color .3s; }
   .nav-links a:hover { color: var(--violet-bright); }
 
-  /* ===== Hero ===== */
-  .hero {
-    min-height: 100vh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; text-align: center;
-    padding: 6rem 1.5rem; position: relative;
-  }
-  .hero-eyebrow {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    padding: 0.4rem 0.9rem;
+  /* Sound toggle */
+  .sound-toggle {
+    width: 36px; height: 36px;
+    border-radius: 50%;
     border: 1px solid rgba(167,139,250,0.4);
-    border-radius: 50px;
     background: rgba(167,139,250,0.1);
-    font-family: &#39;JetBrains Mono&#39;, monospace;
-    font-size: 0.7rem; letter-spacing: 0.15em;
-    text-transform: uppercase; color: var(--violet-bright);
-    margin-bottom: 2rem;
+    color: var(--violet-bright);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+    flex-shrink: 0;
   }
-  .hero-title {
-    font-size: clamp(3rem, 12vw, 9rem);
-    font-weight: 900; line-height: 0.9;
-    letter-spacing: -0.05em; margin-bottom: 1.5rem;
+  .sound-toggle:hover { background: rgba(167,139,250,0.2); transform: scale(1.1); }
+  .sound-toggle svg { width: 18px; height: 18px; }
+  .sound-toggle .icon-on { display: none; }
+  .sound-toggle.active .icon-on { display: block; }
+  .sound-toggle.active .icon-off { display: none; }
+
+  /* ===== 3D SCROLL HERO ===== */
+  .hero-container {
+    position: relative;
+    height: 400vh;
   }
-  .hero-title .word {
+  .sticky-canvas-wrapper {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  #hero-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     display: block;
-    background: linear-gradient(110deg, #ffffff 0%, #c4b5fd 50%, #ffffff 100%);
-    background-size: 300% 100%;
+    z-index: 1;
+  }
+  .hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 10;
+    pointer-events: none;
+    width: 90%;
+    max-width: 900px;
+    transition: opacity 0.3s linear, transform 0.3s linear;
+  }
+  .hero-content h1 {
+    font-size: clamp(2.5rem, 9vw, 7rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    margin-bottom: 1rem;
+    background: linear-gradient(110deg, #fff 0%, #c4b5fd 40%, #e879f9 60%, #fff 100%);
+    background-size: 250% 100%;
     -webkit-background-clip: text;
     background-clip: text;
-    color: transparent;
     -webkit-text-fill-color: transparent;
-    animation: titleSheen 5s ease-in-out infinite;
+    color: transparent;
+    animation: heroSheen 6s ease-in-out infinite;
   }
-  .hero-title .word.accent {
-    background: linear-gradient(110deg, #a78bfa 0%, #e879f9 50%, #a78bfa 100%);
-    background-size: 300% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    font-style: italic; font-weight: 400;
-  }
-  @keyframes titleSheen {
+  @keyframes heroSheen {
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
   }
-  .hero-sub { max-width: 55ch; color: var(--text-2); font-size: 1.1rem; line-height: 1.7; margin-bottom: 3rem; }
-  .hero-sub strong { color: var(--violet-bright); }
-  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
-
-  .btn {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    padding: 0.85rem 1.8rem; border-radius: 12px;
-    font-size: 0.9rem; font-weight: 600;
-    font-family: &#39;JetBrains Mono&#39;, monospace;
-    text-transform: uppercase; letter-spacing: 0.05em;
-    transition: transform 0.3s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth);
+  .hero-content p {
+    font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+    color: var(--text-2);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
-  .btn-primary {
-    background: linear-gradient(135deg, var(--violet), var(--magenta));
-    color: #fff;
-    box-shadow: 0 8px 30px rgba(167,139,250,0.4);
-  }
-  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(167,139,250,0.6); }
-  .btn-ghost {
+  .hero-content .scroll-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding: 0.5rem 1rem;
     border: 1px solid rgba(167,139,250,0.4);
+    border-radius: 50px;
+    background: rgba(167,139,250,0.1);
+    font-size: 0.7rem;
     color: var(--violet-bright);
-    background: rgba(167,139,250,0.05);
+    animation: hintPulse 2s ease-in-out infinite;
   }
-  .btn-ghost:hover { background: rgba(167,139,250,0.15); transform: translateY(-3px); }
-
-  .scroll-hint {
-    position: absolute; bottom: 2rem; left: 50%;
-    transform: translateX(-50%);
-    font-family: &#39;JetBrains Mono&#39;, monospace;
-    font-size: 0.7rem; color: var(--text-3);
-    text-transform: uppercase; letter-spacing: 0.2em;
-    animation: hintBounce 2s ease-in-out infinite;
+  @keyframes hintPulse {
+    0%, 100% { opacity: 0.7; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(5px); }
   }
-  @keyframes hintBounce {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(8px); }
+  @media (max-width: 768px) {
+    .hero-container { height: 250vh; }
   }
 
-  /* ===== Manifesto (blur-to-sharp reveal) ===== */
+  /* ===== SVG DRAW-ON LINE ===== */
+  .svg-tracer {
+    position: relative;
+    height: 200px;
+    overflow: visible;
+    pointer-events: none;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 800px;
+  }
+  .svg-tracer svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .svg-tracer path {
+    fill: none;
+    stroke: url(#tracerGradient);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    transition: stroke-dashoffset 1.5s var(--ease-smooth);
+  }
+  .svg-tracer.in path {
+    stroke-dashoffset: 0;
+  }
+
+  /* ===== Kinetic manifesto ===== */
   .manifesto {
     padding: 8rem 1.5rem;
     max-width: 800px;
@@ -183,16 +220,19 @@
     color: var(--text-2);
     margin-bottom: 1.5rem;
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateX(-40px) rotate(-1deg);
     filter: blur(6px);
     transition:
       opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
       transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
       filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
   }
+  .manifesto-line:nth-child(even) {
+    transform: translateX(40px) rotate(1deg);
+  }
   .manifesto-line.in {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0) rotate(0);
     filter: blur(0);
   }
   .manifesto-line strong { color: #fff; font-weight: 600; }
@@ -203,7 +243,7 @@
     padding-bottom: 1px;
   }
 
-  /* ===== Horizontal Scroll (OSPLY) ===== */
+  /* ===== Horizontal scroll ===== */
   .horizontal-wrap {
     position: relative;
     overflow: hidden;
@@ -226,10 +266,11 @@
     text-align: center;
     padding: 3rem;
     border-right: 1px solid rgba(167,139,250,0.1);
+    position: relative;
   }
   .hpanel:last-child { border-right: none; }
   .hpanel-num {
-    font-family: &#39;JetBrains Mono&#39;, monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 0.85rem;
     color: var(--violet);
     letter-spacing: 0.2em;
@@ -242,7 +283,24 @@
     line-height: 1.05;
     margin-bottom: 1.25rem;
     color: #fff;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.1em;
   }
+  /* Mask reveal for each letter */
+  .letter-mask {
+    display: inline-block;
+    overflow: hidden;
+    padding-bottom: 0.05em;
+  }
+  .letter-inner {
+    display: inline-block;
+    transform: translateY(110%);
+    transition: transform 0.8s var(--ease-smooth);
+  }
+  .hpanel.in .letter-inner { transform: translateY(0); }
+
   .hpanel-desc {
     font-size: 1.05rem;
     color: var(--text-2);
@@ -254,7 +312,7 @@
     padding: 0.4rem 1rem;
     border: 1px solid rgba(167,139,250,0.3);
     border-radius: 50px;
-    font-family: &#39;JetBrains Mono&#39;, monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 0.72rem;
     color: var(--violet-bright);
     background: rgba(167,139,250,0.1);
@@ -282,7 +340,7 @@
     transition: width 0.1s linear;
   }
 
-  /* ===== Stats ===== */
+  /* ===== Stats with per-digit animation ===== */
   .stats-section { padding: 6rem 1.5rem; max-width: 1100px; margin: 0 auto; }
   .stats-bar {
     display: grid;
@@ -302,17 +360,31 @@
     background-clip: text;
     color: transparent;
     -webkit-text-fill-color: transparent;
-    font-family: &#39;JetBrains Mono&#39;, monospace;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    justify-content: center;
+    gap: 0.05em;
   }
+  .digit {
+    display: inline-block;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.6s var(--ease-smooth), opacity 0.6s var(--ease-smooth);
+  }
+  .stat-num.in .digit { transform: translateY(0); opacity: 1; }
+  .stat-num.in .digit:nth-child(1) { transition-delay: 0.0s; }
+  .stat-num.in .digit:nth-child(2) { transition-delay: 0.08s; }
+  .stat-num.in .digit:nth-child(3) { transition-delay: 0.16s; }
+  .stat-num.in .digit:nth-child(4) { transition-delay: 0.24s; }
+
   .stat-label {
-    font-family: &#39;JetBrains Mono&#39;, monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 0.7rem;
     color: var(--text-3);
     text-transform: uppercase;
     letter-spacing: 0.15em;
     margin-top: 0.25rem;
   }
-
   .reveal-up {
     opacity: 0;
     transform: translateY(30px);
@@ -320,12 +392,12 @@
   }
   .reveal-up.in { opacity: 1; transform: translateY(0); }
 
-  /* ===== Footer ===== */
+  /* Footer */
   .footer {
     text-align: center;
     padding: 3rem 1.5rem 2rem;
     border-top: 1px solid rgba(167,139,250,0.2);
-    font-family: &#39;JetBrains Mono&#39;, monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-size: 0.8rem;
     color: var(--text-3);
   }
@@ -333,6 +405,7 @@
 
   @media (max-width: 768px) {
     .nav-links { display: none; }
+    .nav-right { gap: 0.5rem; }
     .horizontal-wrap { height: auto; }
     .horizontal-track {
       flex-direction: column;
@@ -348,219 +421,263 @@
       border-bottom: 1px solid rgba(167,139,250,0.1);
     }
     .h-progress { display: none; }
+    .svg-tracer { height: 100px; }
   }
-    </style>
-  </head>
-  <body>
-    <div class="energy-bg">
-    </div>
-    <div class="grid-overlay">
-    </div>
-    <nav class="nav">
-      <a class="brand" href="index.html">      <div class="brand-avatar">
-        <img src="https://avatars.githubusercontent.com/u/263923585?v=4" alt="BRO GANG" />
-      </div>
-      BRO GANG
-</a>
-      <div class="nav-links">
-        <a href="index.html">        ← Home
-</a>
-        <a href="d1m.html">        D1M
-</a>
-        <a href="https://github.com/BRO-GANG" rel="noopener" target="_blank">        GitHub ↗
-</a>
-      </div>
-    </nav>
-    <section class="hero">
-      <div class="hero-eyebrow">
-        ⚡ Shipping since 2022
-      </div>
-      <h1 class="hero-title">
-        <span class="word">        Ship or
-</span>
-        <span class="word accent">        Die
-</span>
-      </h1>
-      <p class="hero-sub">
-        We build
-        <strong>        experimental browsers
-</strong>
-        ,
-        <strong>        AI tools
-</strong>
-        , and
-        <strong>        open-source software
-</strong>
-        .
-    No roadmap, no committees — just code that ships.
-      </p>
-      <div class="hero-cta">
-        <a class="btn btn-primary" href="#projects">        See Projects ↓
-</a>
-        <a class="btn btn-ghost" href="https://github.com/BRO-GANG" rel="noopener" target="_blank">        GitHub ↗
-</a>
-      </div>
-      <div class="scroll-hint">
-        scroll
-      </div>
-    </section>
-    <section class="manifesto">
-      <div class="manifesto-line">
-        We don&#39;t do roadmaps. We do
-        <strong>        prototypes
-</strong>
-        .
-      </div>
-      <div class="manifesto-line">
-        A working sketch beats a confident take.
-        <em>        Every time.
-</em>
-      </div>
-      <div class="manifesto-line">
-        A bad first draft beats a brilliant unwritten one.
-      </div>
-      <div class="manifesto-line">
-        Make 50 things. Throw away 47. Talk about the 3.
-      </div>
-      <div class="manifesto-line">
-        AI is an
-        <strong>        amplifier
-</strong>
-        , not an equalizer.
-      </div>
-      <div class="manifesto-line">
-        If you&#39;re a spectator to your own output, you are not the author of your own output.
-      </div>
-      <div class="manifesto-line">
-        Get your hands in.
-        <em>        Ship or Die.
-</em>
-      </div>
-    </section>
-    <section class="horizontal-wrap" id="projects">
-      <div class="horizontal-track">
-        <div class="hpanel">
-          <div class="hpanel-num">
-            01
-          </div>
-          <h2 class="hpanel-title">
-            PGlove Browser
-          </h2>
-          <p class="hpanel-desc">
-            Experimental desktop browser built with Tauri 2 (Rust + WebView2). Lightweight, fast, and unapologetically different.
-          </p>
-          <span class="hpanel-tag">          Rust · Tauri
-</span>
-        </div>
-        <div class="hpanel">
-          <div class="hpanel-num">
-            02
-          </div>
-          <h2 class="hpanel-title">
-            Bro Gang AI CLI
-          </h2>
-          <p class="hpanel-desc">
-            Free AI coding agent for your terminal. No API keys, no signup — powered by Llama 3.3 70B.
-          </p>
-          <span class="hpanel-tag">          TypeScript · Llama
-</span>
-        </div>
-        <div class="hpanel">
-          <div class="hpanel-num">
-            03
-          </div>
-          <h2 class="hpanel-title">
-            Nexa Search
-          </h2>
-          <p class="hpanel-desc">
-            Privacy-first search engine. No ads, no tracking pixels, no sold history. Just the signal.
-          </p>
-          <span class="hpanel-tag">          JavaScript · Privacy
-</span>
-        </div>
-        <div class="hpanel">
-          <div class="hpanel-num">
-            04
-          </div>
-          <h2 class="hpanel-title">
-            Pro AI
-          </h2>
-          <p class="hpanel-desc">
-            Powered by Gemini 2.5 Pro. Chat, ask, explore — AI for everyone.
-          </p>
-          <span class="hpanel-tag">          AI · Gemini
-</span>
-        </div>
-      </div>
-    </section>
-    <div class="h-progress" id="hProgress">
-      <div class="h-progress-bar" id="hProgressBar">
-      </div>
-    </div>
-    <section class="stats-section">
-      <div class="stats-bar reveal-up">
-        <div class="stat">
-          <div class="stat-num">
-            2022
-          </div>
-          <div class="stat-label">
-            Founded
-          </div>
-        </div>
-        <div class="stat">
-          <div class="stat-num">
-            38+
-          </div>
-          <div class="stat-label">
-            Members
-          </div>
-        </div>
-        <div class="stat">
-          <div class="stat-num">
-            10+
-          </div>
-          <div class="stat-label">
-            Projects
-          </div>
-        </div>
-        <div class="stat">
-          <div class="stat-num">
-            ∞
-          </div>
-          <div class="stat-label">
-            Ship cycles
-          </div>
-        </div>
-      </div>
-    </section>
-    <div class="footer">
-      ©
-      <span id="year"></span>
-      BRO GANG Studios · Part of D1M × BRO GANG collaboration
-      <br />
-      <br />
-      <a href="index.html">      ← Back to home
-</a>
-      ·
-      <a href="d1m.html">      Visit D1M →
-</a>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js">
-    </script>
-    <script>
-      &#39;use strict&#39;;
-  document.getElementById(&#39;year&#39;).textContent = new Date().getFullYear();
+</style>
+</head>
+<body>
 
-  // 1) Lenis smooth scroll
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<nav class="nav">
+  <a href="index.html" class="brand">
+    <div class="brand-avatar">
+      <img src="https://avatars.githubusercontent.com/u/263923585?v=4" alt="BRO GANG">
+    </div>
+    BRO GANG
+  </a>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="index.html">← Home</a>
+      <a href="d1m.html">D1M</a>
+      <a href="https://github.com/BRO-GANG" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+    <button class="sound-toggle" id="soundToggle" aria-label="Toggle sound">
+      <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+        <line x1="23" y1="9" x2="17" y2="15"/>
+        <line x1="17" y1="9" x2="23" y2="15"/>
+      </svg>
+      <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- 3D scroll hero -->
+<section class="hero-container" id="hero">
+  <div class="sticky-canvas-wrapper">
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-content" id="heroContent">
+      <h1>Ship or Die</h1>
+      <p>Scroll to initiate sequence</p>
+      <div class="scroll-hint">↓ scroll</div>
+    </div>
+  </div>
+</section>
+
+<!-- SVG draw-on tracer between hero and manifesto -->
+<div class="svg-tracer" id="svgTracer">
+  <svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <linearGradient id="tracerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#a78bfa" stop-opacity="0"/>
+        <stop offset="50%" stop-color="#e879f9" stop-opacity="1"/>
+        <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="M 50 100 Q 200 30, 400 100 T 750 100"/>
+  </svg>
+</div>
+
+<!-- Kinetic manifesto -->
+<section class="manifesto">
+  <div class="manifesto-line">We don't do roadmaps. We do <strong>prototypes</strong>.</div>
+  <div class="manifesto-line">A working sketch beats a confident take. <em>Every time.</em></div>
+  <div class="manifesto-line">A bad first draft beats a brilliant unwritten one.</div>
+  <div class="manifesto-line">Make 50 things. Throw away 47. Talk about the 3.</div>
+  <div class="manifesto-line">AI is an <strong>amplifier</strong>, not an equalizer.</div>
+  <div class="manifesto-line">If you're a spectator to your own output, you are not the author of your own output.</div>
+  <div class="manifesto-line">Get your hands in. <em>Ship or Die.</em></div>
+</section>
+
+<!-- Horizontal scroll projects -->
+<section class="horizontal-wrap" id="projects">
+  <div class="horizontal-track">
+    <div class="hpanel">
+      <div class="hpanel-num">01</div>
+      <h2 class="hpanel-title" data-letters>PGlove Browser</h2>
+      <p class="hpanel-desc">Experimental desktop browser built with Tauri 2 (Rust + WebView2). Lightweight, fast, and unapologetically different.</p>
+      <span class="hpanel-tag">Rust · Tauri</span>
+    </div>
+    <div class="hpanel">
+      <div class="hpanel-num">02</div>
+      <h2 class="hpanel-title" data-letters>Bro Gang AI CLI</h2>
+      <p class="hpanel-desc">Free AI coding agent for your terminal. No API keys, no signup — powered by Llama 3.3 70B.</p>
+      <span class="hpanel-tag">TypeScript · Llama</span>
+    </div>
+    <div class="hpanel">
+      <div class="hpanel-num">03</div>
+      <h2 class="hpanel-title" data-letters>Nexa Search</h2>
+      <p class="hpanel-desc">Privacy-first search engine. No ads, no tracking pixels, no sold history. Just the signal.</p>
+      <span class="hpanel-tag">JavaScript · Privacy</span>
+    </div>
+    <div class="hpanel">
+      <div class="hpanel-num">04</div>
+      <h2 class="hpanel-title" data-letters>Pro AI</h2>
+      <p class="hpanel-desc">Powered by Gemini 2.5 Pro. Chat, ask, explore — AI for everyone.</p>
+      <span class="hpanel-tag">AI · Gemini</span>
+    </div>
+  </div>
+</section>
+
+<div class="h-progress" id="hProgress">
+  <div class="h-progress-bar" id="hProgressBar"></div>
+</div>
+
+<!-- Stats -->
+<section class="stats-section">
+  <div class="stats-bar reveal-up">
+    <div class="stat">
+      <div class="stat-num" data-digits="2022"></div>
+      <div class="stat-label">Founded</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-digits="38+"></div>
+      <div class="stat-label">Members</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-digits="10+"></div>
+      <div class="stat-label">Projects</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-digits="∞"></div>
+      <div class="stat-label">Ship cycles</div>
+    </div>
+  </div>
+</section>
+
+<div class="footer">
+  © <span id="year"></span> BRO GANG Studios · Part of D1M × BRO GANG collaboration
+  <br><br>
+  <a href="index.html">← Back to home</a> · <a href="d1m.html">Visit D1M →</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+  'use strict';
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  var isTouch = window.matchMedia('(pointer: coarse)').matches;
+
+  /* ============================================================
+     SOUND ENGINE — Web Audio API, no files, no network
+     ============================================================ */
+  var Sound = (function () {
+    var ctx = null;
+    var enabled = false;
+    var masterGain = null;
+
+    function ensureContext() {
+      if (ctx) return ctx;
+      try {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return null;
+        ctx = new AC();
+        masterGain = ctx.createGain();
+        masterGain.gain.value = 0.15;
+        masterGain.connect(ctx.destination);
+      } catch (e) {
+        return null;
+      }
+      return ctx;
+    }
+
+    function beep(freq, duration, type, vol) {
+      if (!enabled || !ensureContext()) return;
+      if (ctx.state === 'suspended') ctx.resume();
+      var osc = ctx.createOscillator();
+      var g = ctx.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.value = freq;
+      g.gain.value = 0;
+      g.gain.linearRampToValueAtTime(vol || 0.4, ctx.currentTime + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.connect(g);
+      g.connect(masterGain);
+      osc.start();
+      osc.stop(ctx.currentTime + duration + 0.02);
+    }
+
+    function sweep(freqStart, freqEnd, duration) {
+      if (!enabled || !ensureContext()) return;
+      if (ctx.state === 'suspended') ctx.resume();
+      var osc = ctx.createOscillator();
+      var g = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freqStart, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(freqEnd, ctx.currentTime + duration);
+      g.gain.value = 0;
+      g.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.connect(g);
+      g.connect(masterGain);
+      osc.start();
+      osc.stop(ctx.currentTime + duration + 0.02);
+    }
+
+    function toggle() {
+      if (!enabled) {
+        ensureContext();
+        if (ctx && ctx.state === 'suspended') ctx.resume();
+        enabled = true;
+        beep(660, 0.1, 'sine', 0.3);
+        setTimeout(function () { beep(880, 0.15, 'sine', 0.3); }, 80);
+      } else {
+        enabled = false;
+      }
+      return enabled;
+    }
+
+    return {
+      toggle: toggle,
+      hover: function () { beep(880, 0.04, 'sine', 0.15); },
+      click: function () {
+        beep(440, 0.06, 'triangle', 0.3);
+        setTimeout(function () { beep(660, 0.08, 'triangle', 0.25); }, 50);
+      },
+      whoosh: function () { sweep(200, 1200, 0.4); },
+      heroScroll: function () { sweep(150, 800, 0.6); },
+      isEnabled: function () { return enabled; }
+    };
+  })();
+
+  /* ============================================================
+     CURSOR TRAIL
+     ============================================================ */
+  if (!isTouch) {
+    var trail = document.getElementById('cursorTrail');
+    var tx = 0, ty = 0, trailX = 0, trailY = 0, trailRaf = null;
+    document.addEventListener('mousemove', function (e) {
+      tx = e.clientX;
+      ty = e.clientY;
+      trail.style.opacity = '1';
+      if (trailRaf === null) trailRaf = requestAnimationFrame(trailStep);
+    });
+    function trailStep() {
+      trailX += (tx - trailX) * 0.15;
+      trailY += (ty - trailY) * 0.15;
+      trail.style.transform = 'translate(' + trailX + 'px,' + trailY + 'px) translate(-50%,-50%)';
+      if (Math.abs(tx - trailX) > 0.5 || Math.abs(ty - trailY) > 0.5) {
+        trailRaf = requestAnimationFrame(trailStep);
+      } else {
+        trailRaf = null;
+      }
+    }
+    document.addEventListener('mouseleave', function () { trail.style.opacity = '0'; });
+  }
+
+  /* ============================================================
+     LENIS SMOOTH SCROLL
+     ============================================================ */
   var lenis = new Lenis({
     duration: 1.2,
     easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
-    smoothWheel: true,
-    touchMultiplier: 1.5
+    smoothWheel: true
   });
   function raf(time) {
     lenis.raf(time);
@@ -568,81 +685,279 @@
   }
   requestAnimationFrame(raf);
 
-  // 2) GSAP setup
+  /* ============================================================
+     GSAP + ScrollTrigger
+     ============================================================ */
   gsap.registerPlugin(ScrollTrigger);
-
-  // Hook Lenis to ScrollTrigger
-  lenis.on(&#39;scroll&#39;, ScrollTrigger.update);
+  lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
   gsap.ticker.lagSmoothing(0);
 
-  // 3) Manifesto line reveal
-  document.querySelectorAll(&#39;.manifesto-line&#39;).forEach(function (line, i) {
+  /* ============================================================
+     SOUND TOGGLE
+     ============================================================ */
+  var soundBtn = document.getElementById('soundToggle');
+  soundBtn.addEventListener('click', function () {
+    var on = Sound.toggle();
+    soundBtn.classList.toggle('active', on);
+  });
+
+  /* Attach sound to interactive elements */
+  document.querySelectorAll('a, button').forEach(function (el) {
+    el.addEventListener('mouseenter', function () { if (!isTouch) Sound.hover(); });
+    el.addEventListener('click', function () { Sound.click(); });
+  });
+
+  /* ============================================================
+     MANIFESTO REVEAL
+     ============================================================ */
+  document.querySelectorAll('.manifesto-line').forEach(function (line, i) {
     ScrollTrigger.create({
       trigger: line,
-      start: &#39;top 85%&#39;,
+      start: 'top 85%',
       onEnter: function () {
-        setTimeout(function () { line.classList.add(&#39;in&#39;); }, i * 60);
+        setTimeout(function () { line.classList.add('in'); }, i * 60);
       },
       once: true
     });
   });
 
-  // 4) Stats reveal
-  document.querySelectorAll(&#39;.reveal-up&#39;).forEach(function (el) {
+  /* SVG tracer draw-on */
+  var tracer = document.getElementById('svgTracer');
+  if (tracer) {
+    ScrollTrigger.create({
+      trigger: tracer,
+      start: 'top 80%',
+      onEnter: function () { tracer.classList.add('in'); },
+      once: true
+    });
+  }
+
+  /* Reveal-up */
+  document.querySelectorAll('.reveal-up').forEach(function (el) {
     ScrollTrigger.create({
       trigger: el,
-      start: &#39;top 85%&#39;,
-      onEnter: function () { el.classList.add(&#39;in&#39;); },
+      start: 'top 85%',
+      onEnter: function () { el.classList.add('in'); },
       once: true
     });
   });
 
-  // 5) Horizontal scroll — only on desktop
-  var mq = window.matchMedia(&#39;(min-width: 769px)&#39;);
+  /* ============================================================
+     LETTER MASK REVEAL in horizontal panels
+     ============================================================ */
+  document.querySelectorAll('[data-letters]').forEach(function (el) {
+    var text = el.textContent;
+    el.textContent = '';
+    el.setAttribute('aria-label', text);
+    text.split('').forEach(function (ch, i) {
+      var mask = document.createElement('span');
+      mask.className = 'letter-mask';
+      var inner = document.createElement('span');
+      inner.className = 'letter-inner';
+      inner.style.transitionDelay = (i * 0.03) + 's';
+      inner.textContent = ch === ' ' ? '\u00A0' : ch;
+      mask.appendChild(inner);
+      el.appendChild(mask);
+    });
+  });
+
+  /* Observe horizontal panels for letter reveal */
+  document.querySelectorAll('.hpanel').forEach(function (panel) {
+    ScrollTrigger.create({
+      trigger: panel,
+      start: 'top 70%',
+      onEnter: function () { panel.classList.add('in'); },
+      once: true
+    });
+  });
+
+  /* ============================================================
+     PER-DIGIT STAT ANIMATION
+     ============================================================ */
+  document.querySelectorAll('[data-digits]').forEach(function (el) {
+    var val = el.dataset.digits;
+    el.textContent = '';
+    val.split('').forEach(function (ch) {
+      var d = document.createElement('span');
+      d.className = 'digit';
+      d.textContent = ch;
+      el.appendChild(d);
+    });
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 90%',
+      onEnter: function () { el.classList.add('in'); },
+      once: true
+    });
+  });
+
+  /* ============================================================
+     HORIZONTAL SCROLL
+     ============================================================ */
+  var mq = window.matchMedia('(min-width: 769px)');
   var horizST;
 
   function setupHorizontal() {
     if (!mq.matches) return;
-    var track = document.querySelector(&#39;.horizontal-track&#39;);
-    var wrap = document.querySelector(&#39;.horizontal-wrap&#39;);
+    var track = document.querySelector('.horizontal-track');
+    var wrap = document.querySelector('.horizontal-wrap');
     if (!track || !wrap) return;
 
     var totalScroll = track.scrollWidth - window.innerWidth;
 
     horizST = gsap.to(track, {
       x: -totalScroll,
-      ease: &#39;none&#39;,
+      ease: 'none',
       scrollTrigger: {
         trigger: wrap,
         pin: true,
         scrub: 1,
-        start: &#39;top top&#39;,
-        end: function () { return &#39;+=&#39; + totalScroll; },
+        start: 'top top',
+        end: function () { return '+=' + totalScroll; },
         invalidateOnRefresh: true,
-        onEnter: function () { document.getElementById(&#39;hProgress&#39;).classList.add(&#39;active&#39;); },
-        onLeave: function () { document.getElementById(&#39;hProgress&#39;).classList.remove(&#39;active&#39;); },
-        onEnterBack: function () { document.getElementById(&#39;hProgress&#39;).classList.add(&#39;active&#39;); },
-        onLeaveBack: function () { document.getElementById(&#39;hProgress&#39;).classList.remove(&#39;active&#39;); },
+        onEnter: function () { document.getElementById('hProgress').classList.add('active'); },
+        onLeave: function () { document.getElementById('hProgress').classList.remove('active'); },
+        onEnterBack: function () { document.getElementById('hProgress').classList.add('active'); },
+        onLeaveBack: function () { document.getElementById('hProgress').classList.remove('active'); },
         onUpdate: function (self) {
-          document.getElementById(&#39;hProgressBar&#39;).style.width = (self.progress * 100) + &#39;%&#39;;
+          document.getElementById('hProgressBar').style.width = (self.progress * 100) + '%';
         }
       }
     });
   }
-
   setupHorizontal();
-
-  mq.addEventListener(&#39;change&#39;, function () {
+  mq.addEventListener('change', function () {
     if (horizST) { horizST.kill(); horizST = null; }
     ScrollTrigger.refresh();
     setupHorizontal();
   });
 
-  // 6) Refresh after fonts load
-  window.addEventListener(&#39;load&#39;, function () {
+  /* ============================================================
+     3D CANVAS HERO
+     ============================================================ */
+  (function initCanvasHero() {
+    var canvas = document.getElementById('hero-canvas');
+    var heroContainer = document.querySelector('.hero-container');
+    var heroContent = document.getElementById('heroContent');
+    if (!canvas || !heroContainer) return;
+
+    var ctx = canvas.getContext('2d');
+    var DPR = Math.min(window.devicePixelRatio || 1, 2);
+    var W = 0, H = 0;
+    var heroSoundPlayed = false;
+
+    function resize() {
+      W = canvas.clientWidth;
+      H = canvas.clientHeight;
+      canvas.width = W * DPR;
+      canvas.height = H * DPR;
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function drawScene(p) {
+      ctx.clearRect(0, 0, W, H);
+      var cx = W / 2;
+      var cy = H / 2;
+      var alpha = 0.15 + p * 0.85;
+      var maxR = Math.min(W, H) * 0.45;
+      var baseR = 40 + p * maxR;
+
+      var glow = ctx.createRadialGradient(cx, cy, baseR * 0.1, cx, cy, baseR * 1.4);
+      glow.addColorStop(0, 'rgba(232,121,249,' + (0.15 * alpha) + ')');
+      glow.addColorStop(0.5, 'rgba(167,139,250,' + (0.08 * alpha) + ')');
+      glow.addColorStop(1, 'rgba(124,58,237,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(cx, cy, baseR * 1.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      for (var i = 0; i < 4; i++) {
+        var ringP = Math.min(1, Math.max(0, p * 1.4 - i * 0.1));
+        if (ringP <= 0) continue;
+        var r = 40 + ringP * maxR * (1 - i * 0.15);
+        var ringAlpha = alpha * (1 - i * 0.2);
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(196,181,253,' + ringAlpha + ')';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      var ticks = 36;
+      var tickInner = baseR * 0.95;
+      var tickOuter = baseR * 1.08 + 20 * p;
+      for (var j = 0; j < ticks; j++) {
+        var angle = (j / ticks) * Math.PI * 2 + p * Math.PI * 0.5;
+        var x1 = cx + Math.cos(angle) * tickInner;
+        var y1 = cy + Math.sin(angle) * tickInner;
+        var x2 = cx + Math.cos(angle) * tickOuter;
+        var y2 = cy + Math.sin(angle) * tickOuter;
+        var isMajor = j % 9 === 0;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = isMajor
+          ? 'rgba(232,121,249,' + (alpha * 0.9) + ')'
+          : 'rgba(167,139,250,' + (alpha * 0.4) + ')';
+        ctx.lineWidth = isMajor ? 2 : 1;
+        ctx.stroke();
+      }
+
+      var coreR = 6 + p * 10;
+      var coreGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreR * 4);
+      coreGlow.addColorStop(0, 'rgba(255,255,255,' + alpha + ')');
+      coreGlow.addColorStop(0.3, 'rgba(232,121,249,' + (alpha * 0.8) + ')');
+      coreGlow.addColorStop(1, 'rgba(232,121,249,0)');
+      ctx.fillStyle = coreGlow;
+      ctx.beginPath();
+      ctx.arc(cx, cy, coreR * 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, coreR, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+      ctx.fill();
+
+      if (heroContent) {
+        var textOpacity = Math.max(0, 1 - p * 1.8);
+        heroContent.style.opacity = textOpacity;
+        heroContent.style.transform = 'translate(-50%, -50%) scale(' + (1 - p * 0.15) + ')';
+      }
+    }
+
+    function update() {
+      var rect = heroContainer.getBoundingClientRect();
+      var heroHeight = heroContainer.offsetHeight - window.innerHeight;
+      var scrolled = -rect.top;
+      var p = Math.min(1, Math.max(0, scrolled / heroHeight));
+
+      drawScene(p);
+
+      /* Play hero whoosh once when p crosses 0.4 */
+      if (!heroSoundPlayed && p > 0.4) {
+        Sound.heroScroll();
+        heroSoundPlayed = true;
+      }
+      if (p < 0.1) {
+        heroSoundPlayed = false;
+      }
+    }
+
+    drawScene(0);
+    lenis.on('scroll', update);
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+  })();
+
+  /* ============================================================
+     REFRESH after load
+     ============================================================ */
+  window.addEventListener('load', function () {
     ScrollTrigger.refresh();
   });
-    </script>
-  </body>
+</script>
+</body>
 </html>
