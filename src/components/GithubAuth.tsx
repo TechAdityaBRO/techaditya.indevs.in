@@ -1,113 +1,165 @@
 import React, { useEffect, useState } from 'react';
-import { Github, LogOut, User } from 'lucide-react';
+import { Github, LogOut, User, Globe, ChevronDown, Check } from 'lucide-react';
+import { auth, googleProvider, githubProvider, db, handleFirestoreError } from '../lib/firebase';
+import { signInWithPopup, signOut, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { uiSound } from '../utils/sound';
 
-export interface GithubUser {
-  login: string;
-  name: string;
-  avatar_url: string;
-  html_url: string;
-  public_repos: number;
-  followers: number;
-  following: number;
-}
-
 export function GithubAuth() {
-  const [user, setUser] = useState<GithubUser | null>(null);
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [loadingProvider, setLoadingProvider] = useState<'google' | 'github' | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem('techaditya_github_user');
-      if (stored) {
-        setUser(JSON.parse(stored));
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setUser(firebaseUser);
+      if (firebaseUser) {
+        try {
+          const userRef = doc(db, 'users', firebaseUser.uid);
+          await setDoc(userRef, {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email || '',
+            displayName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
+            photoURL: firebaseUser.photoURL || '',
+            provider: firebaseUser.providerData[0]?.providerId || 'password',
+            lastLogin: serverTimestamp(),
+            createdAt: serverTimestamp(),
+          }, { merge: true });
+        } catch (err) {
+          handleFirestoreError(err, 'write', `users/${firebaseUser.uid}`);
+        }
       }
-    } catch {
-      // Ignore
-    }
+    });
+    return () => unsubscribe();
   }, []);
 
-  const handleLogin = () => {
+  const handleLogin = async (providerType: 'google' | 'github') => {
     uiSound.play('click');
-    // Pure static client-side simulation or direct GitHub OAuth redirect
-    const clientId = 'Iv1.demo_github_client_id';
-    const redirectUri = `${window.location.origin}/`;
-    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=read:user`;
-    
-    // Open popup or simulate demo login if popup blocked
-    const authWindow = window.open(githubAuthUrl, 'github_oauth', 'width=600,height=700');
-    if (!authWindow) {
-      // Fallback demo user if popup blocked
-      const demoUser: GithubUser = {
-        login: 'TechAdityaBRO',
-        name: 'Aditya Kumar Sethi',
-        avatar_url: 'https://avatars.githubusercontent.com/u/273487397?v=4',
-        html_url: 'https://github.com/TechAdityaBRO',
-        public_repos: 12,
-        followers: 48,
-        following: 19,
-      };
-      setUser(demoUser);
-      try {
-        window.localStorage.setItem('techaditya_github_user', JSON.stringify(demoUser));
-      } catch {
-        // Ignore
-      }
+    setLoadingProvider(providerType);
+    setErrorMsg(null);
+    setIsOpen(false);
+    try {
+      const provider = providerType === 'google' ? googleProvider : githubProvider;
+      await signInWithPopup(auth, provider);
       uiSound.play('success');
+    } catch (err: any) {
+      console.error('Auth error:', err);
+      setErrorMsg(err.message || 'Authentication failed');
+      uiSound.play('switch');
+    } finally {
+      setLoadingProvider(null);
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     uiSound.play('switch');
-    setUser(null);
     try {
-      window.localStorage.removeItem('techaditya_github_user');
-    } catch {
-      // Ignore
+      await signOut(auth);
+      setIsOpen(false);
+    } catch (err: any) {
+      console.error('Signout error:', err);
     }
   };
 
   if (user) {
     return (
-      <div className="flex items-center gap-3 rounded-xl border border-white/12 bg-[#0E0E12] px-3.5 py-1.5 shadow-md">
-        <a
-          href={user.html_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onMouseEnter={() => uiSound.play('hover')}
-          className="flex items-center gap-2 text-xs font-medium text-white hover:text-[#60A5FA] transition-colors"
-        >
-          {user.avatar_url ? (
-            <img src={user.avatar_url} alt={user.login} className="h-6 w-6 rounded-full border border-white/20 object-cover" />
-          ) : (
-            <User className="h-4 w-4" />
-          )}
-          <span className="font-mono">{user.login}</span>
-        </a>
-
-        <div className="h-4 w-px bg-white/15" />
-
+      <div className="relative">
         <button
           type="button"
-          onClick={handleLogout}
+          onClick={() => {
+            uiSound.play('click');
+            setIsOpen(!isOpen);
+          }}
           onMouseEnter={() => uiSound.play('hover')}
-          title="Sign out"
-          className="text-zinc-400 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]"
+          className="flex items-center gap-2.5 rounded-xl border border-white/14 bg-[#14141C] px-3.5 py-1.5 shadow-md hover:border-white/25 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]"
         >
-          <LogOut className="h-3.5 w-3.5" />
+          {user.photoURL ? (
+            <img src={user.photoURL} alt={user.displayName || 'User'} className="h-6 w-6 rounded-full border border-white/20 object-cover" />
+          ) : (
+            <User className="h-4 w-4 text-zinc-300" />
+          )}
+          <span className="text-xs font-medium text-white max-w-[100px] truncate font-mono">{user.displayName || user.email}</span>
+          <ChevronDown className={`h-3.5 w-3.5 text-zinc-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
+
+        {isOpen && (
+          <div className="absolute right-0 mt-2 w-56 rounded-xl border border-white/15 bg-[#0E0E12]/95 p-2 shadow-2xl backdrop-blur-xl z-50">
+            <div className="px-3 py-2 border-b border-white/10">
+              <p className="text-xs font-semibold text-white truncate">{user.displayName || 'Authenticated User'}</p>
+              <p className="text-[10px] font-mono text-zinc-400 truncate">{user.email}</p>
+              <div className="mt-1 inline-flex items-center gap-1 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-mono text-emerald-400">
+                <Check className="h-2.5 w-2.5" />
+                <span>Connected via Firebase</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              onMouseEnter={() => uiSound.play('hover')}
+              className="mt-2 w-full flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-red-400 hover:bg-red-500/10 transition-colors"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        )}
       </div>
     );
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleLogin}
-      onMouseEnter={() => uiSound.play('hover')}
-      className="inline-flex items-center gap-2 rounded-lg border border-white/14 bg-[#14141C] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-white/10 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]"
-    >
-      <Github className="h-3.5 w-3.5" />
-      <span>Sign in with GitHub</span>
-    </button>
+    <div className="relative">
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            uiSound.play('click');
+            setIsOpen(!isOpen);
+          }}
+          onMouseEnter={() => uiSound.play('hover')}
+          disabled={loadingProvider !== null}
+          className="inline-flex items-center gap-2 rounded-lg border border-white/14 bg-[#14141C] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-white/10 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]"
+        >
+          <Github className="h-3.5 w-3.5 text-[#38BDF8]" />
+          <span>{loadingProvider ? 'Signing in...' : 'Sign In'}</span>
+          <ChevronDown className="h-3 w-3 text-zinc-400" />
+        </button>
+      </div>
+
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-48 rounded-xl border border-white/15 bg-[#0E0E12]/95 p-2 shadow-2xl backdrop-blur-xl z-50">
+          <p className="px-3 py-1.5 text-[10px] font-mono text-zinc-400 uppercase tracking-wider border-b border-white/10">Select Provider</p>
+          
+          <button
+            type="button"
+            onClick={() => handleLogin('github')}
+            onMouseEnter={() => uiSound.play('hover')}
+            className="mt-1.5 w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-white hover:bg-white/10 transition-colors"
+          >
+            <Github className="h-4 w-4 text-white" />
+            <span>GitHub Auth</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleLogin('google')}
+            onMouseEnter={() => uiSound.play('hover')}
+            className="w-full flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-white hover:bg-white/10 transition-colors"
+          >
+            <Globe className="h-4 w-4 text-blue-400" />
+            <span>Google Auth</span>
+          </button>
+        </div>
+      )}
+
+      {errorMsg && (
+        <div className="absolute right-0 top-full mt-2 w-64 rounded-lg border border-red-500/30 bg-red-950/80 p-2 text-[11px] text-red-200 z-50 backdrop-blur-md">
+          <p className="font-semibold">Authentication Error</p>
+          <p className="mt-0.5 text-[10px] opacity-90">{errorMsg}</p>
+        </div>
+      )}
+    </div>
   );
 }

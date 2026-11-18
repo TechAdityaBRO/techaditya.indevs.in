@@ -19,6 +19,7 @@ import { VideosSection } from '../components/VideosSection';
 import { GithubActivity } from '../components/GithubActivity';
 import { BroGangPage, type SiteRoute } from '../components/BroGangPage';
 import { D1mPage } from '../components/D1mPage';
+import { ContactMessageForm } from '../components/ContactMessageForm';
 import { MaskedReveal, OSPLY_EASE, RevealBlock, ScrollProgressBar } from '../components/KineticText';
 import { EditorialMarquee, TiltCard3D } from '../components/MotionGraphics';
 import { uiSound } from '../utils/sound';
@@ -414,35 +415,8 @@ export default function HomeClient() {
                         Reach out directly for collaborations, BRO GANG community partnerships, or open-source software ideas.
                       </p>
 
-                      <div className="mt-8 flex flex-wrap items-center gap-3">
-                        <a
-                          href={`mailto:${CONTACT_INFO.email}`}
-                          onClick={() => uiSound.play('click')}
-                          onMouseEnter={() => uiSound.play('hover')}
-                          className="inline-flex items-center gap-2 rounded-lg bg-[#2563EB] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1D4ED8] whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#60A5FA]"
-                        >
-                          <Mail className="h-4 w-4" />
-                          <span>Email Aditya</span>
-                        </a>
-
-                        <button
-                          type="button"
-                          onClick={() => void handleCopyEmail()}
-                          onMouseEnter={() => uiSound.play('hover')}
-                          className="inline-flex items-center gap-2 rounded-lg border border-white/14 px-4 py-2.5 font-mono text-xs text-zinc-200 transition-colors hover:bg-white/5 hover:text-white whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]"
-                        >
-                          {copiedEmail ? (
-                            <>
-                              <Check className="h-3.5 w-3.5 text-emerald-400" />
-                              <span>Copied address</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="h-3.5 w-3.5 text-zinc-400" />
-                              <span>{CONTACT_INFO.email}</span>
-                            </>
-                          )}
-                        </button>
+                      <div className="mt-8">
+                        <ContactMessageForm />
                       </div>
                     </div>
                   </RevealBlock>
