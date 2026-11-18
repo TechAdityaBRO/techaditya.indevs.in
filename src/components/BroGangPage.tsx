@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { MaskedReveal, OSPLY_EASE, RevealBlock } from './KineticText';
+import { TiltCard3D } from './MotionGraphics';
 import { uiSound } from '../utils/sound';
 
 export type SiteRoute = 'home' | 'brogang' | 'd1m';
@@ -191,26 +192,27 @@ export function BroGangPage({ onNavigate }: { onNavigate: (route: SiteRoute) => 
           >
             {BROGANG_PANELS.map((panel, idx) => (
               <RevealBlock key={panel.num} delay={idx * 0.06}>
-                <a
-                  href={panel.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => uiSound.play('click')}
-                  onMouseEnter={() => uiSound.play('hover')}
-                  className="group flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-[#0E0E12] p-6 transition-colors duration-200 hover:border-white/25"
-                >
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs text-[#60A5FA] tabular-nums">{panel.num}</span>
-                      <ArrowUpRight className="h-4 w-4 text-zinc-500 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white" />
+                <TiltCard3D onMouseEnter={() => uiSound.play('hover')}>
+                  <a
+                    href={panel.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => uiSound.play('click')}
+                    className="group flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-[#0E0E12] p-6 transition-colors duration-200 hover:border-white/25"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-xs text-[#60A5FA] tabular-nums">{panel.num}</span>
+                        <ArrowUpRight className="h-4 w-4 text-zinc-500 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white" />
+                      </div>
+                      <h3 className="mt-4 font-display text-xl font-bold text-white">{panel.title}</h3>
+                      <p className="mt-2.5 text-sm leading-relaxed text-zinc-400">{panel.desc}</p>
                     </div>
-                    <h3 className="mt-4 font-display text-xl font-bold text-white">{panel.title}</h3>
-                    <p className="mt-2.5 text-sm leading-relaxed text-zinc-400">{panel.desc}</p>
-                  </div>
-                  <div className="mt-6 border-t border-white/10 pt-4 font-mono text-xs text-zinc-500">
-                    {panel.tag}
-                  </div>
-                </a>
+                    <div className="mt-6 border-t border-white/10 pt-4 font-mono text-xs text-zinc-500">
+                      {panel.tag}
+                    </div>
+                  </a>
+                </TiltCard3D>
               </RevealBlock>
             ))}
           </motion.div>

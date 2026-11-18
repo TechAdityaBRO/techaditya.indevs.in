@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, MotionConfig, motion, useScroll, useTransform } from 'motion/react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
+import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -7,7 +7,6 @@ import {
   Copy,
   Layers,
   Mail,
-  Terminal,
   Volume2,
   VolumeX,
 } from 'lucide-react';
@@ -19,6 +18,7 @@ import { GithubActivity } from './components/GithubActivity';
 import { BroGangPage, type SiteRoute } from './components/BroGangPage';
 import { D1mPage } from './components/D1mPage';
 import { MaskedReveal, OSPLY_EASE, RevealBlock, ScrollProgressBar } from './components/KineticText';
+import { EditorialMarquee, TiltCard3D } from './components/MotionGraphics';
 import { uiSound } from './utils/sound';
 import {
   ALL_PROJECTS,
@@ -28,6 +28,10 @@ import {
   KEY_METRICS,
   type FeaturedProject,
 } from './data/portfolio';
+
+const HeroScene3D = lazy(() =>
+  import('./components/HeroScene3D').then((m) => ({ default: m.HeroScene3D }))
+);
 
 function parseRouteFromPath(pathname: string): SiteRoute {
   const clean = pathname.toLowerCase();
@@ -47,18 +51,9 @@ export default function App() {
     typeof window !== 'undefined' ? parseRouteFromPath(window.location.pathname) : 'home'
   );
   const [selectedProject, setSelectedProject] = useState<FeaturedProject | null>(null);
-  const [heroImgFailed, setHeroImgFailed] = useState(false);
   const [failedCards, setFailedCards] = useState<Record<string, boolean>>({});
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(() => uiSound.isEnabled());
-
-  const heroMediaRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: heroProgress } = useScroll({
-    target: heroMediaRef,
-    offset: ['start start', 'end start'],
-  });
-  const heroMediaY = useTransform(heroProgress, [0, 1], ['0%', '10%']);
-  const heroMediaScale = useTransform(heroProgress, [0, 1], [1, 1.05]);
 
   useEffect(() => {
     const onPopState = () => {
@@ -138,8 +133,8 @@ export default function App() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.38, ease: OSPLY_EASE }}
             >
-              {/* Split-Screen Editorial Hero */}
-              <section className="mx-auto max-w-[1200px] px-6 pt-12 pb-20 sm:pt-16">
+              {/* Split-Screen Editorial Hero with Interactive 3D Core */}
+              <section className="mx-auto max-w-[1200px] px-6 pt-12 pb-16 sm:pt-16">
                 <div className="grid grid-cols-1 items-stretch gap-10 lg:grid-cols-12">
                   <div className="flex flex-col justify-between lg:col-span-6 lg:py-4">
                     <div>
@@ -224,40 +219,25 @@ export default function App() {
                   </div>
 
                   <motion.div
-                    ref={heroMediaRef}
                     initial={{ opacity: 0, scale: 0.97 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.72, delay: 0.1, ease: OSPLY_EASE }}
-                    className="relative min-h-[280px] overflow-hidden rounded-2xl border border-white/10 bg-[#0E0E12] lg:col-span-6"
+                    className="min-h-[380px] lg:col-span-6"
                   >
-                    {!heroImgFailed ? (
-                      <motion.img
-                        style={{ y: heroMediaY, scale: heroMediaScale }}
-                        src={HERO_MEDIA.image}
-                        alt={HERO_MEDIA.alt}
-                        referrerPolicy="no-referrer"
-                        onError={() => setHeroImgFailed(true)}
-                        className="h-full w-full object-cover lg:h-full"
-                      />
-                    ) : (
-                      <div className="flex h-full min-h-[320px] flex-col items-center justify-center gap-3 bg-gradient-to-br from-[#14141F] to-[#09090D] p-8 text-center">
-                        <Terminal className="h-9 w-9 text-[#3B82F6]" />
-                        <p className="font-display text-lg font-semibold text-white">
-                          Aditya Kumar Sethi
-                        </p>
-                        <p className="text-xs text-zinc-400">Developer &amp; Founder · BRO GANG</p>
-                      </div>
-                    )}
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"
-                    />
-                    <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 p-5 text-xs text-zinc-300">
-                      <span className="font-medium text-white">
-                        PGlove · Bro Gang AI CLI · Nexa Search
-                      </span>
-                      <span className="font-mono text-zinc-400">TechAdityaBRO</span>
-                    </div>
+                    <Suspense
+                      fallback={
+                        <div className="relative h-full min-h-[380px] w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0E0E12]">
+                          <img
+                            src={HERO_MEDIA.image}
+                            alt={HERO_MEDIA.alt}
+                            referrerPolicy="no-referrer"
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      }
+                    >
+                      <HeroScene3D />
+                    </Suspense>
                   </motion.div>
                 </div>
 
@@ -276,8 +256,10 @@ export default function App() {
                 </RevealBlock>
               </section>
 
+              <EditorialMarquee />
+
               {/* 01 · Selected Work */}
-              <section id="work" className="mx-auto max-w-[1200px] px-6 py-20 border-t border-white/10">
+              <section id="work" className="mx-auto max-w-[1200px] px-6 py-20">
                 <div className="mb-10 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <p className="font-mono text-xs text-zinc-400 tabular-nums">01 · Selected Work</p>
@@ -297,10 +279,8 @@ export default function App() {
                     const imgBroken = Boolean(failedCards[project.id]);
                     return (
                       <RevealBlock key={project.id} delay={idx * 0.06}>
-                        <article
-                          onMouseEnter={() => uiSound.play('hover')}
-                          className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0E0E12] transition-colors duration-200 hover:border-white/22"
-                        >
+                        <TiltCard3D onMouseEnter={() => uiSound.play('hover')}>
+                          <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0E0E12] transition-colors duration-200 hover:border-white/22">
                           <button
                             type="button"
                             onClick={() => setSelectedProject(project)}
@@ -373,6 +353,7 @@ export default function App() {
                             </div>
                           </div>
                         </article>
+                        </TiltCard3D>
                       </RevealBlock>
                     );
                   })}

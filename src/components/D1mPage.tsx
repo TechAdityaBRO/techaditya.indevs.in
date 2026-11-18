@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Check, Copy, Mail, Send } from 'lucide-react';
 import { MaskedReveal, OSPLY_EASE, RevealBlock } from './KineticText';
+import { FloatingPlanesStage, TiltCard3D } from './MotionGraphics';
 import type { SiteRoute } from './BroGangPage';
 import { uiSound } from '../utils/sound';
 
@@ -90,7 +91,9 @@ export function D1mPage({ onNavigate }: { onNavigate: (route: SiteRoute) => void
   return (
     <div className="min-h-screen bg-[#060608] text-[#F4F4F6]">
       {/* Hero */}
-      <section className="mx-auto max-w-[1200px] px-6 pt-14 pb-20 sm:pt-20">
+      <section className="relative overflow-hidden">
+        <FloatingPlanesStage />
+        <div className="relative z-10 mx-auto max-w-[1200px] px-6 pt-14 pb-20 sm:pt-20">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <button
             type="button"
@@ -171,6 +174,7 @@ export function D1mPage({ onNavigate }: { onNavigate: (route: SiteRoute) => void
             </a>
           </motion.div>
         </div>
+        </div>
       </section>
 
       {/* 01 · Capabilities */}
@@ -183,16 +187,15 @@ export function D1mPage({ onNavigate }: { onNavigate: (route: SiteRoute) => void
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {CAPABILITIES.map((cap, idx) => (
             <RevealBlock key={cap.num} delay={idx * 0.05}>
-              <article
-                onMouseEnter={() => uiSound.play('hover')}
-                className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-[#0E0E12] p-6 transition-colors duration-200 hover:border-white/25"
-              >
-                <div>
-                  <p className="font-mono text-xs text-[#60A5FA] tabular-nums">{cap.num}</p>
-                  <h3 className="mt-3 font-display text-xl font-bold text-white">{cap.title}</h3>
-                  <p className="mt-2.5 text-sm leading-relaxed text-zinc-400">{cap.desc}</p>
-                </div>
-              </article>
+              <TiltCard3D onMouseEnter={() => uiSound.play('hover')}>
+                <article className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-[#0E0E12] p-6 transition-colors duration-200 hover:border-white/25">
+                  <div>
+                    <p className="font-mono text-xs text-[#60A5FA] tabular-nums">{cap.num}</p>
+                    <h3 className="mt-3 font-display text-xl font-bold text-white">{cap.title}</h3>
+                    <p className="mt-2.5 text-sm leading-relaxed text-zinc-400">{cap.desc}</p>
+                  </div>
+                </article>
+              </TiltCard3D>
             </RevealBlock>
           ))}
         </div>
