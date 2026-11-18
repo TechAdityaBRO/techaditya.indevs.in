@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      D1M Studios — Design with intent
+    </title>
+    <meta name="theme-color" content="#0a0806" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet" />
+    <style>
+      :root {
+    --bg: #0a0806;
+    --gold: #fbbf24;
+    --gold-bright: #fcd34d;
+    --amber: #fb923c;
+    --text: #ffffff;
+    --text-2: rgba(255,255,255,0.7);
+    --text-3: rgba(255,255,255,0.4);
+    --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { scroll-behavior: auto; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: &#39;Inter&#39;, system-ui, sans-serif; line-height: 1.6;
+    overflow-x: hidden; -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  ::selection { background: rgba(251,191,36,0.3); color: #fff; }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+
+  /* ===== Planes background ===== */
+  .planes-bg {
+    position: fixed; inset: 0; z-index: -2;
+    pointer-events: none; overflow: hidden;
+    perspective: 800px; perspective-origin: 50% 50%;
+  }
+  .plane {
+    position: absolute;
+    width: 80px; height: 8px;
+    background: linear-gradient(90deg, transparent, #fbbf24, transparent);
+    opacity: 0.4;
+    animation: planeFly linear infinite;
+    filter: blur(0.5px);
+  }
+  .plane::before, .plane::after {
+    content: &#39;&#39;;
+    position: absolute;
+    background: linear-gradient(90deg, transparent, #fcd34d, transparent);
+    height: 1px;
+  }
+  .plane::before { top: -2px; left: 10%; width: 80%; }
+  .plane::after { top: 9px; left: 20%; width: 60%; }
+  @keyframes planeFly {
+    0% { transform: translate3d(-100px, 0, -500px) rotateX(45deg); opacity: 0; }
+    10% { opacity: 0.5; }
+    90% { opacity: 0.5; }
+    100% { transform: translate3d(calc(100vw + 100px), 0, 100px) rotateX(45deg); opacity: 0; }
+  }
+  .plane:nth-child(1) { top: 10%; animation-duration: 18s; }
+  .plane:nth-child(2) { top: 25%; animation-duration: 22s; animation-delay: 2s; width: 120px; }
+  .plane:nth-child(3) { top: 40%; animation-duration: 16s; animation-delay: 4s; }
+  .plane:nth-child(4) { top: 55%; animation-duration: 25s; animation-delay: 1s; width: 60px; }
+  .plane:nth-child(5) { top: 70%; animation-duration: 20s; animation-delay: 3s; width: 140px; }
+  .plane:nth-child(6) { top: 85%; animation-duration: 19s; animation-delay: 5s; }
+  .plane:nth-child(7) { top: 15%; animation-duration: 28s; animation-delay: 6s; width: 100px; }
+  .plane:nth-child(8) { top: 50%; animation-duration: 24s; animation-delay: 7s; }
+  .plane:nth-child(9) { top: 75%; animation-duration: 21s; animation-delay: 8s; width: 70px; }
+  .plane:nth-child(10) { top: 35%; animation-duration: 26s; animation-delay: 9s; width: 110px; }
+  @media (pointer: coarse), (max-width: 768px) { .planes-bg { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .plane { animation: none; } }
+
+  .grid-bg {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(251,191,36,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(251,191,36,0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+  }
+
+  /* ===== Nav ===== */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem clamp(1.5rem, 5vw, 3rem);
+    background: rgba(10, 8, 6, 0.75);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(251,191,36,0.2);
+  }
+  .brand {
+    display: flex; align-items: center; gap: 0.6rem;
+    font-weight: 900; font-size: 1rem;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    font-family: &#39;JetBrains Mono&#39;, monospace;
+    color: var(--gold-bright);
+  }
+  .brand-mark {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, #fbbf24, #fb923c);
+    display: grid; place-items: center;
+    font-size: 1rem; color: #0a0806;
+    box-shadow: 0 0 20px rgba(251,191,36,0.5);
+    animation: brandPulse 3s ease-in-out infinite;
+  }
+  @keyframes brandPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(251,191,36,0.5); }
+    50% { box-shadow: 0 0 35px rgba(251,191,36,0.9); }
+  }
+  .nav-links { display: flex; gap: clamp(1rem, 3vw, 2rem); font-family: &#39;JetBrains Mono&#39;, monospace; font-size: 0.8rem; }
+  .nav-links a { color: var(--text-2); transition: color .3s; }
+  .nav-links a:hover { color: var(--gold-bright); }
+
+  /* ===== Hero ===== */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 6rem 1.5rem;
+  }
+  .hero-eyebrow {
+    padding: 0.4rem 0.9rem;
+    border: 1px solid rgba(251,191,36,0.4);
+    border-radius: 50px;
+    background: rgba(251,191,36,0.08);
+    font-family: &#39;JetBrains Mono&#39;, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    margin-bottom: 2rem;
+  }
+  .hero-title {
+    font-size: clamp(3rem, 12vw, 9rem);
+    font-weight: 900; line-height: 0.9;
+    letter-spacing: -0.05em;
+    margin-bottom: 1.5rem;
+  }
+  .hero-title .word {
+    display: block;
+    background: linear-gradient(110deg, #ffffff 0%, #fcd34d 50%, #ffffff 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: titleSheen 5s ease-in-out infinite;
+  }
+  .hero-title .word.accent {
+    background: linear-gradient(110deg, #fbbf24 0%, #fb923c 50%, #fbbf24 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    font-style: italic;
+    font-weight: 400;
+  }
+  @keyframes titleSheen {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .hero-sub {
+    max-width: 55ch;
+    color: var(--text-2);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+  }
+  .hero-sub strong { color: var(--gold-bright); }
+
+  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.85rem 1.8rem;
+    border-radius: 12px;
+    font-size: 0.9rem; font-weight: 600;
+    font-family: &#39;JetBrains Mono&#39;, monospace;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    transition: transform 0.3s var(--ease-smooth), box-shadow 0.3s var(--ease-smooth);
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #fbbf24, #fb923c);
+    color: #0a0806;
+    box-shadow: 0 8px 30px rgba(251,191,36,0.4);
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(251,191,36,0.6); }
+  .btn-ghost {
+    border: 1px solid rgba(251,191,36,0.4);
+    color: var(--gold-bright);
+    background: rgba(251,191,36,0.05);
+  }
+  .btn-ghost:hover { background: rgba(251,191,36,0.15); transform: translateY(-3px); }
+
+  /* ===== Section headings ===== */
+  .section {
+    padding: 6rem 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .section-head { margin-bottom: 3rem; text-align: center; }
+  .section-num {
+    font-family: &#39;JetBrains Mono&#39;, monospace;
+    font-size: 0.75rem;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .section-head h2 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+  }
+
+  /* ===== Reveal animations ===== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    filter: blur(8px);
+    transition:
+      opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal.in {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  /* Stagger children */
+  .stagger &gt; * {
+    opacity: 0;
+    transform: translateY(30px);
+    transition:
+      opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .stagger.in &gt; *:nth-child(1) { transition-delay: 0.05s; }
+  .stagger.in &gt; *:nth-child(2) { transition-delay: 0.15s; }
+  .stagger.in &gt; *:nth-child(3) { transition-delay: 0.25s; }
+  .stagger.in &gt; *:nth-child(4) { transition-delay: 0.35s; }
+  .stagger.in &gt; *:nth-child(5) { transition-delay: 0.45s; }
+  .stagger.in &gt; *:nth-child(6) { transition-delay: 0.55s; }
+  .stagger.in &gt; * {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ===== Cards grid ===== */
+  .graphics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .graphic-card {
+    aspect-ratio: 4 / 3;
+    background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(251,146,60,0.05));
+    border: 1px solid rgba(251,191,36,0.25);
+    border-radius: 20px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s var(--ease-smooth), border-color 0.4s;
+  }
+  .graphic-card:hover {
+    border-color: #fbbf24;
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(251,191,36,0.2);
+  }
+  .graphic-card .num {
+    font-family: &#39;JetBrains Mono&#39;, monospace;
+    font-size: 0.7rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+  .graphic-card h3 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #fff;
+  }
+  .graphic-card p {
+    font-size: 0.85rem;
+    color: var(--text-2);
+  }
+
+  /* ===== Zapdos ===== */
+  .zapdos-section {
+    padding: 6rem 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .zapdos-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    padding: clamp(2rem, 6vw, 4rem);
+    background: linear-gradient(135deg, rgba(251,191,36,0.08), rgba(251,146,60,0.04));
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  @media (max-width: 768px) {
+    .zapdos-card { grid-template-columns: 1fr; }
+  }
+  .zapdos-badge {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.3rem 0.75rem;
+    background: rgba(251,191,36,0.15);
+    border: 1px solid rgba(251,191,36,0.4);
+    border-radius: 50px;
+    font-family: &#39;JetBrains Mono&#39;, monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gold-bright);
+    margin-bottom: 1rem;
+  }
+  .live-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 8px #4ade80;
+    animation: livePulse 2s ease-in-out infinite;
+  }
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+  .zapdos-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin-bottom: 1rem;
+  }
+  .zapdos-title .bolt {
+    background: linear-gradient(135deg, #fcd34d, #fb923c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+  .zapdos-desc {
+    color: var(--text-2);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+  .zapdos-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-family: &#39;JetBrains Mono&#39;, monospace;
+    font-size: 0.72rem;
+    color: var(--text-3);
+    margin-bottom: 2rem;
+  }
+  .chat-window {
+    background: rgba(10, 8, 6, 0.85);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  .chat-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(251,191,36,0.1);
+    border-bottom: 1px solid rgba(251,191,36,0.2);
+  }
+  .chat-dots { display: flex; gap: 0.35rem; }
+  .chat-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .chat-dot.r { background: #ff5f57; }
+  .chat-dot.y { background: #febc2e; }
+  .chat-dot.g { background: #28c840; }
+  .chat-title {
+    font-family: &#39;JetBrains Mono&#39;, monospace;
+    font-size: 0.72rem;
+    color: var(--text-2);
+    margin-left: 0.5rem;
+  }
+  .chat-body {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: 220px;
+  }
+  .chat-msg {
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    max-width: 90%;
+  }
+  .chat-msg.bot {
+    background: rgba(251,191,36,0.12);
+    border: 1px solid rgba(251,191,36,0.2);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .chat-msg.user {
+    background: rgba(167,139,250,0.15);
+    border: 1px solid rgba(167,139,250,0.3);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+
+  /* ===== Contact ===== */
+  .contact-section {
+    padding: 6rem 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .contact-card {
+    padding: clamp(2rem, 6vw, 4rem);
+    background: rgba(251,191,36,0.04);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 20px;
+  }
+  .contact-card h2 {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.75rem;
+  }
+  .contact-card p {
+    color: var(--text-2);
+    margin-bottom: 2rem;
+  }
+  .contact-email {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1rem 1.6rem;
+    background: rgba(251,191,36,0.08);
+    border: 1px solid rgba(251,191,36,0.4);
+    border-radius: 12px;
+    font-family: &#39;JetBrains Mono&#39;, monospace;
+    font-size: clamp(0.8rem, 2vw, 1rem);
+    color: var(--gold-bright);
+    transition: transform 0.3s var(--ease-smooth), background 0.3s;
+    word-break: break-all;
+  }
+  .contact-email:hover {
+    background: rgba(251,191,36,0.15);
+    transform: translateY(-2px);
+  }
+  .contact-email svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  /* ===== Footer ===== */
+  .footer {
+    text-align: center;
+    padding: 3rem 1.5rem 2rem;
+    border-top: 1px solid rgba(251,191,36,0.2);
+    font-family: &#39;JetBrains Mono&#39;, monospace;
+    font-size: 0.8rem;
+    color: var(--text-3);
+  }
+  .footer a { color: var(--gold); }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .hero { padding: 5rem 1rem; }
+  }
+    </style>
+  </head>
+  <body>
+    <div class="planes-bg">
+      <div class="plane">
+      </div>
+      <div class="plane">
+      </div>
+      <div class="plane">
+      </div>
+      <div class="plane">
+      </div>
+      <div class="plane">
+      </div>
+      <div class="plane">
+      </div>
+      <div class="plane">
+      </div>
+      <div class="plane">
+      </div>
+      <div class="plane">
+      </div>
+      <div class="plane">
+      </div>
+    </div>
+    <div class="grid-bg">
+    </div>
+    <nav class="nav">
+      <a class="brand" href="index.html">      <div class="brand-mark">
+        ◆
+      </div>
+      D1M
+</a>
+      <div class="nav-links">
+        <a href="index.html">        ← Home
+</a>
+        <a href="brogang.html">        BRO GANG
+</a>
+        <a href="#zapdos">        Zapdos
+</a>
+        <a href="#contact">        Contact
+</a>
+      </div>
+    </nav>
+    <section class="hero">
+      <div class="hero-eyebrow">
+        ✦ Design with intent
+      </div>
+      <h1 class="hero-title">
+        <span class="word">        Make it
+</span>
+        <span class="word accent">        Iconic
+</span>
+      </h1>
+      <p class="hero-sub">
+        D1M Studios is a
+        <strong>        graphic design
+</strong>
+        and
+        <strong>        motion
+</strong>
+        studio founded by
+        <strong>        Darshil
+</strong>
+        .
+    Every pixel is intentional. Every frame is a statement.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#work">        See Work ↓
+</a>
+        <a class="btn btn-ghost" href="index.html">        ← Back home
+</a>
+      </div>
+    </section>
+    <section class="section" id="work">
+      <div class="section-head reveal">
+        <div class="section-num">
+          01 — Work
+        </div>
+        <h2>
+          What we do
+        </h2>
+      </div>
+      <div class="graphics-grid stagger">
+        <div class="graphic-card">
+          <div class="num">
+            01 / BRANDING
+          </div>
+          <h3>
+            Identity systems
+          </h3>
+          <p>
+            Logos, type systems, color, and rules that scale from favicon to billboard.
+          </p>
+        </div>
+        <div class="graphic-card">
+          <div class="num">
+            02 / MOTION
+          </div>
+          <h3>
+            Motion design
+          </h3>
+          <p>
+            Cinematic intros, UI micro-interactions, and loops that feel alive.
+          </p>
+        </div>
+        <div class="graphic-card">
+          <div class="num">
+            03 / 3D
+          </div>
+          <h3>
+            3D &amp; renders
+          </h3>
+          <p>
+            Product renders, abstract visuals, and environments built from scratch.
+          </p>
+        </div>
+        <div class="graphic-card">
+          <div class="num">
+            04 / UI
+          </div>
+          <h3>
+            Interface design
+          </h3>
+          <p>
+            Clean, usable interfaces with personality — dark mode first.
+          </p>
+        </div>
+        <div class="graphic-card">
+          <div class="num">
+            05 / ILLUSTRATION
+          </div>
+          <h3>
+            Custom illustration
+          </h3>
+          <p>
+            One-off artwork and mascots built to fit a brand&#39;s voice.
+          </p>
+        </div>
+        <div class="graphic-card">
+          <div class="num">
+            06 / ART DIRECTION
+          </div>
+          <h3>
+            Visual strategy
+          </h3>
+          <p>
+            The full picture — mood boards, direction, and final delivery.
+          </p>
+        </div>
+      </div>
+    </section>
+    <section class="zapdos-section" id="zapdos">
+      <div class="zapdos-card reveal">
+        <div class="zapdos-left">
+          <div class="zapdos-badge">
+            <span class="live-dot"></span>
+            Online · Research assistant
+          </div>
+          <h2 class="zapdos-title">
+            <span class="bolt">            Zapdos AI
+</span>
+            ⚡
+          </h2>
+          <p class="zapdos-desc">
+            Built by
+            <strong>            BRO SOFTWARE × D1M Studios
+</strong>
+            . A research assistant that searches public web sources and answers with linked citations — so you can check the source, every time.
+          </p>
+          <div class="zapdos-meta">
+            <span>            ⚡ Powered by BRO SOFTWARE
+</span>
+            <span>            🔍 Public web search
+</span>
+            <span>            🔗 Linked sources
+</span>
+          </div>
+          <a class="btn btn-primary" href="https://d1mstudios-brosoftware-join.oneapp.dev/" rel="noopener noreferrer" target="_blank">          Open Zapdos AI →
+</a>
+        </div>
+        <div class="zapdos-right">
+          <div class="chat-window">
+            <div class="chat-header">
+              <div class="chat-dots">
+                <span class="chat-dot r"></span>
+                <span class="chat-dot y"></span>
+                <span class="chat-dot g"></span>
+              </div>
+              <span class="chat-title">              zapdos-ai · online
+</span>
+            </div>
+            <div class="chat-body">
+              <div class="chat-msg bot">
+                Hi, I am
+                <strong>                ZAPDOS AI
+</strong>
+                ⚡ How can I help you today?
+              </div>
+              <div class="chat-msg user">
+                What can you do?
+              </div>
+              <div class="chat-msg bot">
+                I search public web sources and answer with linked citations. Check the source before trusting any claim — accuracy matters.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="contact-section" id="contact">
+      <div class="contact-card reveal">
+        <h2>
+          Get in touch
+        </h2>
+        <p>
+          Reach Darshil directly for projects, collabs, or anything design.
+        </p>
+        <a class="contact-email" href="mailto:CharmenderCharmender6@gmail.com">        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+          </path>
+          <polyline points="22,6 12,13 2,6">
+          </polyline>
+        </svg>
+        CharmenderCharmender6@gmail.com
+</a>
+      </div>
+    </section>
+    <div class="footer">
+      ©
+      <span id="year"></span>
+      D1M Studios · Founded by Darshil
+      <br />
+      <br />
+      <a href="index.html">      ← Back to home
+</a>
+      ·
+      <a href="brogang.html">      Visit BRO GANG →
+</a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js">
+    </script>
+    <script>
+      &#39;use strict&#39;;
+  document.getElementById(&#39;year&#39;).textContent = new Date().getFullYear();
+
+  // 1) Lenis smooth scroll
+  var lenis = new Lenis({
+    duration: 1.2,
+    easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+    smoothWheel: true
+  });
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+
+  // 2) GSAP setup + hook Lenis
+  gsap.registerPlugin(ScrollTrigger);
+  lenis.on(&#39;scroll&#39;, ScrollTrigger.update);
+  gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
+  gsap.ticker.lagSmoothing(0);
+
+  // 3) Reveal animations using ScrollTrigger
+  document.querySelectorAll(&#39;.reveal&#39;).forEach(function (el) {
+    ScrollTrigger.create({
+      trigger: el,
+      start: &#39;top 85%&#39;,
+      onEnter: function () { el.classList.add(&#39;in&#39;); },
+      once: true
+    });
+  });
+
+  document.querySelectorAll(&#39;.stagger&#39;).forEach(function (el) {
+    ScrollTrigger.create({
+      trigger: el,
+      start: &#39;top 80%&#39;,
+      onEnter: function () { el.classList.add(&#39;in&#39;); },
+      once: true
+    });
+  });
+
+  // 4) Refresh on load (for fonts)
+  window.addEventListener(&#39;load&#39;, function () {
+    ScrollTrigger.refresh();
+  });
+    </script>
+  </body>
+</html>
