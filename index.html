@@ -16,47 +16,111 @@
     --glass-tint: rgba(255, 255, 255, 0.04);
     --glass-tint-hover: rgba(255, 255, 255, 0.08);
     --glass-border: rgba(255, 255, 255, 0.18);
+    --glass-edge-light: rgba(255, 255, 255, 0.5);
+    --glass-edge-dark: rgba(0, 0, 0, 0.4);
     --text: #ffffff;
     --text-2: rgba(255,255,255,0.7);
     --text-3: rgba(255,255,255,0.4);
+    --radius: 24px;
     --ease: cubic-bezier(0.34, 1.56, 0.64, 1);
     --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+    --ok: #4ade80;
+    --warn: #fbbf24;
+    --bad: #f87171;
     --accent: #a78bfa;
     --accent-2: #60a5fa;
   }
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
   body {
     background: var(--bg); color: var(--text);
     font-family: 'Inter', system-ui, sans-serif; line-height: 1.6;
-    overflow-x: hidden; -webkit-font-smoothing: antialiased;
+    overflow-x: hidden; -webkit-font-smoothing: antialiased; cursor: none;
     position: relative; min-height: 100vh;
   }
+  @media (pointer: coarse) { body { cursor: auto; } }
   ::selection { background: rgba(167,139,250,0.3); color: #fff; }
   a { color: inherit; text-decoration: none; }
-  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  button { font-family: inherit; cursor: none; border: none; background: none; color: inherit; }
+  @media (pointer: coarse) { button { cursor: pointer; } }
   img, iframe { max-width: 100%; display: block; }
   input, button, a { -webkit-tap-highlight-color: transparent; }
 
-  /* ===== ANIME BACKGROUND (waifu.im, minimal) ===== */
-  .anime-bg {
-    position: fixed; inset: 0; z-index: 0;
-    background-size: cover; background-position: center;
-    transition: background-image 1.2s ease-in-out;
-    opacity: 0.9;
+  /* Ambient orbs */
+  body::before, body::after {
+    content: ''; position: fixed; border-radius: 50%;
+    filter: blur(120px); pointer-events: none; z-index: -3; opacity: 0.35;
+    will-change: transform;
   }
-  .anime-overlay {
-    position: fixed; inset: 0; z-index: 1; pointer-events: none;
-    background: radial-gradient(circle at 50% 20%, transparent 0%, rgba(10,10,10,0.1) 60%, rgba(10,10,10,0.4) 100%);
+  body::before {
+    width: 520px; height: 520px;
+    background: radial-gradient(circle, #a78bfa 0%, transparent 70%);
+    top: -10%; left: -10%; animation: drift1 22s ease-in-out infinite;
+  }
+  body::after {
+    width: 640px; height: 640px;
+    background: radial-gradient(circle, #60a5fa 0%, transparent 70%);
+    bottom: -20%; right: -15%; opacity: 0.25;
+    animation: drift2 28s ease-in-out infinite;
+  }
+  @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(80px,120px) scale(1.15)} }
+  @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-100px,-80px) scale(1.2)} }
+  @media (pointer: coarse), (max-width: 768px) {
+    body::before, body::after { animation: none; opacity: 0.15; }
   }
 
-  /* ===== NAV ===== */
+  /* Anime background */
+  .anime-bg-container { position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden; }
+  .anime-bg-layer {
+    position: absolute; inset: 0; background-size: cover; background-position: center;
+    opacity: 0; transition: opacity 0.8s ease-in-out; transform: scale(1.02);
+  }
+  .anime-bg-layer.active { opacity: 0.55; }
+  .anime-overlay {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(circle at 50% 0%, transparent 0%, rgba(10,10,10,0.55) 60%, #0a0a0a 100%);
+  }
+
+  /* Cursor */
+  .cursor-dot {
+    position: fixed; top: 0; left: 0; width: 8px; height: 8px; background: #fff;
+    border-radius: 50%; pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s var(--ease), height 0.3s var(--ease), background 0.3s;
+  }
+  .cursor-outline {
+    position: fixed; top: 0; left: 0; width: 40px; height: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 50%;
+    pointer-events: none; z-index: 9998; transform: translate(-50%, -50%);
+    transition: width 0.3s var(--ease), height 0.3s var(--ease), border-color 0.3s;
+  }
+  .cursor-dot.hover { width: 60px; height: 60px; background: rgba(167,139,250,0.2); }
+  .cursor-outline.hover { width: 80px; height: 80px; border-color: var(--accent); border-width: 2px; }
+
+  .cursor-glow {
+    position: fixed; top: 0; left: 0; width: 300px; height: 300px;
+    border-radius: 50%; pointer-events: none; z-index: 9997;
+    background: radial-gradient(circle, rgba(167,139,250,0.15) 0%, transparent 60%);
+    transform: translate(-50%, -50%); opacity: 0;
+    transition: opacity 0.4s ease; mix-blend-mode: screen;
+  }
+  @media (pointer: coarse), (max-width: 768px) { .cursor-glow { display: none; } }
+
+  /* Nav */
   #progress {
     position: fixed; top: 0; left: 0; height: 2px; width: 100%;
     background: linear-gradient(90deg, var(--accent), var(--accent-2));
     z-index: 2000; transform-origin: 0 50%; transform: scaleX(0);
     transition: transform 0.1s linear;
   }
+  #progress.near-end {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent));
+    background-size: 200% 100%;
+    animation: progressGlow 2s ease infinite;
+    box-shadow: 0 0 12px var(--accent);
+  }
+  @keyframes progressGlow { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
   .nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
     display: flex; align-items: center; justify-content: space-between;
@@ -65,47 +129,93 @@
     backdrop-filter: blur(20px) saturate(160%);
     -webkit-backdrop-filter: blur(20px) saturate(160%);
     border-bottom: 1px solid var(--glass-border);
+    transition: transform .5s var(--ease-smooth);
     padding-top: max(0.85rem, env(safe-area-inset-top));
   }
+  .nav.hidden { transform: translateY(-100%); }
   .brand { display: flex; align-items: center; gap: .5rem; font-size: 0.95rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
   .brand-dot { width: 8px; height: 8px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px rgba(255,255,255,0.5); flex-shrink: 0; }
   .nav-links { display: flex; align-items: center; gap: clamp(0.75rem, 2vw, 2rem); font-size: 0.78rem; font-weight: 500; }
-  .nav-links a { color: var(--text-2); font-family: 'JetBrains Mono', monospace; white-space: nowrap; transition: color 0.3s; }
+  .nav-links a { color: var(--text-2); position: relative; padding: .35rem 0; transition: color .3s; font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px;
+    background: var(--accent); transform: scaleX(0); transform-origin: right;
+    transition: transform 0.4s var(--ease-smooth);
+  }
   .nav-links a:hover { color: #fff; }
+  .nav-links a:hover::after { transform: scaleX(1); transform-origin: left; }
 
   main { position: relative; z-index: 2; }
   .wrap { max-width: 1100px; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 2.5rem); }
 
-  /* ===== HERO ===== */
+  /* Hero */
   .hero {
     padding: clamp(7rem, 18vh, 12rem) 0 clamp(4rem, 10vh, 7rem);
     display: flex; flex-direction: column; align-items: center; text-align: center;
     position: relative;
   }
+  .hero-glow {
+    position: absolute; inset: -20%; pointer-events: none; z-index: -1;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%),
+      rgba(167,139,250,0.35), rgba(96,165,250,0.2) 30%, transparent 60%);
+    filter: blur(80px);
+    transition: background 0.4s ease;
+    animation: glowDrift 12s ease-in-out infinite;
+  }
+  @keyframes glowDrift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.1); }
+    66% { transform: translate(-20px, 30px) scale(1.05); }
+  }
+  .hero-particles {
+    position: absolute; inset: 0; overflow: hidden;
+    pointer-events: none; z-index: -1;
+  }
+  .hero-particle {
+    position: absolute; width: 3px; height: 3px;
+    background: var(--accent); border-radius: 50%;
+    opacity: 0; filter: blur(0.5px);
+    animation: particleFloat 12s linear infinite;
+  }
+  @keyframes particleFloat {
+    0%   { opacity: 0; transform: translate(0, 0) scale(0.6); }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.6; }
+    100% { opacity: 0; transform: translate(var(--dx, 20px), -300px) scale(1); }
+  }
+  @media (pointer: coarse), (max-width: 768px) { .hero-particles { display: none; } }
+
   .hero-eyebrow {
     display: inline-flex; align-items: center; gap: .4rem;
     font-family: 'JetBrains Mono', monospace; font-size: .62rem;
     letter-spacing: .12em; text-transform: uppercase; color: var(--text-2);
     padding: .35rem .75rem; border: 1px solid var(--glass-border); border-radius: 50px;
     background: var(--glass-tint); margin-bottom: 1.75rem;
+    box-shadow: inset 0 1px 0 var(--glass-edge-light), 0 4px 12px rgba(0,0,0,0.4);
   }
   .hero-title {
     font-size: clamp(2.5rem, 11vw, 7rem);
     font-weight: 900; line-height: 0.95;
-    letter-spacing: -0.04em; width: 100%;
+    letter-spacing: -0.04em; text-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    position: relative; width: 100%;
   }
-  .hero-title .line { display: block; }
+  .hero-title .line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
   .hero-title .word {
     display: inline-block;
+    transform: translateY(110%);
+    transition: transform 1.1s var(--ease-smooth);
     background: linear-gradient(110deg, #ffffff 0%, #ffffff 40%, #c4b5fd 50%, #ffffff 60%, #ffffff 100%);
     background-size: 250% 100%;
     -webkit-background-clip: text; background-clip: text;
     -webkit-text-fill-color: transparent; color: transparent;
     animation: heroSheen 8s ease-in-out infinite;
   }
+  .hero-title.in .word { transform: translateY(0); }
+  .hero-title.in .line:nth-child(1) .word { transition-delay: 0.15s; }
+  .hero-title.in .line:nth-child(2) .word { transition-delay: 0.35s; }
   .hero-title .accent {
     -webkit-text-fill-color: transparent;
-    background: linear-gradient(110deg, #a78bfa 0%, #60a5fa 50%, #a78bfa 100%);
+    background: linear-gradient(110deg, rgba(167,139,250,1) 0%, rgba(96,165,250,1) 50%, rgba(167,139,250,1) 100%);
     background-size: 200% 100%;
     -webkit-background-clip: text; background-clip: text;
     animation: heroSheen 6s ease-in-out infinite reverse;
@@ -119,96 +229,187 @@
   .hero-sub strong { color: #fff; font-weight: 600; }
   .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: 2rem; width: 100%; }
 
+  /* Buttons */
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
     padding: .8rem 1.5rem; border-radius: 12px; font-size: .88rem; font-weight: 600;
     border: 1px solid var(--glass-border); background: var(--glass-tint); color: #fff;
-    transition: all .3s var(--ease); white-space: nowrap;
+    transition: all .3s var(--ease); font-family: 'Inter', sans-serif;
+    box-shadow: inset 0 1px 0 var(--glass-edge-light), inset 0 -1px 0 var(--glass-edge-dark), 0 4px 12px rgba(0,0,0,0.4);
+    position: relative; overflow: hidden;
+    white-space: nowrap;
   }
+  .btn::before {
+    content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s var(--ease-smooth);
+  }
+  .btn:hover::before { left: 100%; }
+  .btn:hover { filter: brightness(1.15); }
   .btn-primary { background: #fff; color: #000; border-color: #fff; }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
+  .btn-primary:hover {
+    transform: translateY(-2px); filter: brightness(1.05);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 0 24px rgba(167,139,250,0.35), 0 10px 30px rgba(255,255,255,0.15);
+  }
   .btn-ghost:hover { background: var(--glass-tint-hover); border-color: rgba(167,139,250,0.5); transform: translateY(-2px); }
+  .btn .arrow { transition: transform .4s var(--ease); }
+  .btn:hover .arrow { transform: translateX(4px); }
 
-  /* ===== SECTIONS ===== */
-  .section { padding: clamp(3.5rem, 10vh, 7rem) 0; }
+  /* Sections */
+  .section { padding: clamp(3.5rem, 10vh, 7rem) 0; position: relative; will-change: transform; }
   .section-head { margin-bottom: 2rem; }
   .section-num {
     font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: var(--text-3);
     letter-spacing: .12em; text-transform: uppercase; margin-bottom: 0.4rem; display: block;
+    position: relative; padding-left: 0;
+    opacity: 0; transform: translateX(-20px);
+    transition: opacity 0.6s var(--ease-smooth) 0.1s, transform 0.6s var(--ease-smooth) 0.1s,
+                padding-left 0.8s var(--ease-smooth);
   }
+  .section-num::before {
+    content: ''; position: absolute; left: 0; top: 50%; width: 0; height: 1px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    transition: width 0.8s var(--ease-smooth) 0.2s;
+  }
+  .section-head.in .section-num { padding-left: 30px; opacity: 1; transform: translateX(0); }
+  .section-head.in .section-num::before { width: 22px; }
   .section-head h2 {
     font-size: clamp(1.5rem, 5vw, 2.5rem); font-weight: 800;
     letter-spacing: -0.03em; line-height: 1.15;
+    position: relative; display: inline-block;
   }
+  .section-head h2::after {
+    content: ''; position: absolute; left: 0; bottom: -8px; height: 2px; width: 0;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    border-radius: 2px;
+    transition: width 1.2s var(--ease-smooth); transition-delay: 0.3s;
+  }
+  .section-head.in h2::after { width: 50px; }
 
-  /* ===== LIQUID GLASS BENTO ===== */
+  .word-mask { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.05em; }
+  .word-inner {
+    display: inline-block;
+    transform: translateY(110%);
+    transition: transform 0.9s var(--ease-smooth);
+    transition-delay: calc(var(--i, 0) * 0.06s);
+  }
+  .section-head.in .word-inner { transform: translateY(0); }
+
+  /* Bento Grid */
   .bento-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1rem; }
   .bento-item {
-    background: var(--glass-tint);
-    border: 1px solid var(--glass-border);
-    border-radius: 18px;
-    padding: 1.1rem;
+    background: var(--glass-tint); border: 1px solid var(--glass-border);
+    border-radius: 16px; padding: 1.1rem;
     display: flex; flex-direction: column; gap: 0.9rem;
-    position: relative; overflow: hidden; min-width: 0;
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.15),
-      inset 0 -1px 0 rgba(0,0,0,0.2),
-      0 8px 24px rgba(0,0,0,0.25);
-    transition: background 0.4s var(--ease-smooth), border-color 0.4s var(--ease-smooth);
+    position: relative; overflow: hidden;
+    box-shadow: inset 0 1px 0 var(--glass-edge-light), inset 0 -2px 4px var(--glass-edge-dark), 0 8px 24px rgba(0,0,0,0.4);
+    transition: all 0.3s var(--ease-smooth);
+    --gx: 50%; --gy: 50%;
+    min-width: 0;
   }
-  .bento-item:hover { background: var(--glass-tint-hover); border-color: rgba(167,139,250,0.35); }
+  .bento-item::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: 16px;
+    background:
+      radial-gradient(circle 300px at var(--gx) var(--gy), rgba(167,139,250,0.10), transparent 60%),
+      linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 35%, transparent 65%, rgba(255,255,255,0.06) 100%);
+    z-index: 0;
+    transition: background 0.2s ease;
+  }
   .span-12 { grid-column: span 12; }
   .span-6 { grid-column: span 6; }
   .span-4 { grid-column: span 4; }
+  .bento-item:hover { background: var(--glass-tint-hover); border-color: rgba(167,139,250,0.3); }
 
-  .app-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.7rem; }
+  .app-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.7rem; position: relative; z-index: 1; }
   .app-title { font-family: 'JetBrains Mono', monospace; font-size: .78rem; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 0.5rem; }
-  .app-title::before { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; box-shadow: 0 0 8px var(--accent); }
+  .app-title::before { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 
-  .terminal-wrapper { border-radius: 12px; overflow: hidden; }
+  .terminal-wrapper { position: relative; border-radius: 10px; overflow: hidden; }
   .terminal {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 0.75rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem; color: var(--text-2);
+    background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+    padding: 0.75rem; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-2);
     height: 110px; overflow-y: auto; line-height: 1.5;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.5); position: relative; z-index: 1;
+    -webkit-overflow-scrolling: touch;
     word-wrap: break-word;
   }
+  .terminal::-webkit-scrollbar { width: 4px; }
+  .terminal::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
   .terminal-line { display: block; margin-bottom: 2px; word-break: break-word; overflow-wrap: anywhere; }
+  .terminal-line span { color: #fff; font-weight: 600; }
+  .terminal-line a { color: #fff; text-decoration: underline; }
 
   .osint-input {
-    width: 100%; padding: 0.6rem 0.8rem;
-    background: rgba(0,0,0,0.35);
-    border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #fff;
+    width: 100%; padding: 0.6rem 0.8rem; background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff;
     font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; outline: none;
+    transition: border-color 0.3s; position: relative; z-index: 1;
     -webkit-appearance: none; appearance: none;
   }
   .osint-input:focus { border-color: rgba(167,139,250,0.6); background: rgba(0,0,0,0.5); }
   .osint-btn {
     padding: 0.6rem 1rem; font-size: 0.78rem; font-weight: 600;
-    font-family: 'Inter', sans-serif; border-radius: 10px;
+    font-family: 'Inter', sans-serif; border-radius: 8px;
     border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); color: #fff;
     cursor: pointer; transition: all .3s var(--ease); width: 100%;
+    position: relative; z-index: 1;
+    box-shadow: inset 0 1px 0 var(--glass-edge-light);
+    -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
   .osint-btn:hover { background: rgba(167,139,250,0.15); border-color: rgba(167,139,250,0.5); }
   .osint-btn:disabled { opacity: 0.5; cursor: wait; }
 
-  /* ===== CARDS ===== */
+  .skeleton {
+    position: absolute; inset: 0; border-radius: 10px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    background-size: 200% 100%; animation: shimmer 1.2s infinite;
+    z-index: 10; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+  }
+  .loading .skeleton { opacity: 1; }
+  @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+
+  .result-panel { display: flex; flex-direction: column; gap: 0.4rem; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; position: relative; z-index: 1; }
+  .result-row { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.4rem 0.65rem; background: rgba(0,0,0,0.3); border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); }
+  .result-label { color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.62rem; flex-shrink: 0; }
+  .result-value { font-weight: 600; color: #fff; text-align: right; overflow: hidden; text-overflow: ellipsis; }
+  .badge { padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; white-space: nowrap; }
+  .badge-ok { background: rgba(74,222,128,0.12); color: var(--ok); border: 1px solid rgba(74,222,128,0.3); }
+  .badge-warn { background: rgba(251,191,36,0.12); color: var(--warn); border: 1px solid rgba(251,191,36,0.3); }
+
+  .social-link-item {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.35rem 0.55rem; margin-bottom: 4px; border-radius: 6px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    text-decoration: none; transition: all 0.2s; cursor: pointer;
+    font-size: 0.68rem; min-width: 0;
+  }
+  .social-link-item:hover { background: rgba(167,139,250,0.1); border-color: rgba(167,139,250,0.3); }
+  .social-link-item .status-ok { color: var(--ok); font-size: 0.65rem; flex-shrink: 0; }
+  .social-link-item .status-unknown { color: var(--text-3); font-size: 0.65rem; flex-shrink: 0; }
+  .social-link-item .platform-name { color: #fff; font-weight: 600; font-size: 0.7rem; min-width: 70px; flex-shrink: 0; }
+  .social-link-item .platform-url { color: var(--text-3); font-size: 0.65rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+  .social-link-item .platform-extra { color: var(--text-2); font-size: 0.62rem; display: none; }
+
+  /* Cards */
   .projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 1rem; }
   .card {
     background: var(--glass-tint); border: 1px solid var(--glass-border);
-    border-radius: 18px; padding: 1.25rem;
+    border-radius: 16px; padding: 1.25rem;
     display: flex; flex-direction: column; gap: 0.9rem;
+    position: relative; overflow: hidden;
+    box-shadow: inset 0 1px 0 var(--glass-edge-light), inset 0 -2px 4px var(--glass-edge-dark), 0 8px 24px rgba(0,0,0,0.4);
+    transition: background 0.3s var(--ease-smooth), border-color 0.3s var(--ease-smooth);
+    --gx: 50%; --gy: 50%;
     min-width: 0;
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 8px 24px rgba(0,0,0,0.25);
-    transition: background 0.4s var(--ease-smooth), border-color 0.4s var(--ease-smooth);
+  }
+  .card::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(circle 300px at var(--gx) var(--gy), rgba(167,139,250,0.10), transparent 60%),
+      linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 35%, transparent 65%, rgba(255,255,255,0.06) 100%);
+    border-radius: 16px; z-index: 0;
+    transition: background 0.2s ease;
   }
   .card:hover { background: var(--glass-tint-hover); border-color: rgba(167,139,250,0.3); }
   .card-badge {
@@ -216,143 +417,231 @@
     text-transform: uppercase; letter-spacing: .08em;
     color: #000; background: #fff; padding: .18rem .55rem;
     border-radius: 4px; align-self: flex-start;
+    position: relative; z-index: 1;
   }
-  .card h3 { font-size: 1.15rem; font-weight: 700; color: #fff; }
-  .card p { font-size: 0.85rem; color: var(--text-2); line-height: 1.55; flex-grow: 1; }
-  .card-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: auto; }
+  .card h3 { font-size: 1.15rem; font-weight: 700; color: #fff; position: relative; z-index: 1; }
+  .card p { font-size: 0.85rem; color: var(--text-2); line-height: 1.55; flex-grow: 1; position: relative; z-index: 1; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: auto; position: relative; z-index: 1; }
   .tag { font-family: 'JetBrains Mono', monospace; font-size: .6rem; color: var(--text-3); border: 1px solid var(--glass-border); padding: .18rem .45rem; border-radius: 4px; }
 
-  .card-d1m {
-    border-color: rgba(251,191,36,0.35);
-    background: linear-gradient(135deg, rgba(251,191,36,0.08), rgba(251,146,60,0.04));
-  }
-  .card-d1m:hover { border-color: #fbbf24; box-shadow: 0 15px 40px rgba(251,191,36,0.15); }
-  .card-d1m .card-badge { background: linear-gradient(135deg, #fbbf24, #fb923c); color: #0a0806; }
-  .card-d1m h3 { color: #fcd34d; }
-
-  /* ===== VIDEOS ===== */
+  /* Videos */
   .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 1rem; }
   .video-card {
     background: var(--glass-tint); border: 1px solid var(--glass-border);
-    border-radius: 18px; overflow: hidden;
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border-radius: 16px; overflow: hidden; position: relative;
+    box-shadow: inset 0 1px 0 var(--glass-edge-light), inset 0 -2px 4px var(--glass-edge-dark), 0 8px 24px rgba(0,0,0,0.4);
+    transition: all 0.3s var(--ease-smooth);
   }
+  .video-card:hover { background: var(--glass-tint-hover); border-color: rgba(167,139,250,0.4); }
   .video-thumb { position: relative; padding-bottom: 56.25%; background: #111; overflow: hidden; cursor: pointer; }
-  .video-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-  .video-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(10,10,10,0.3); }
-  .video-play-icon { width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; }
+  .video-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s var(--ease-smooth); }
+  .video-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(10,10,10,0.3); transition: background 0.3s; }
+  .video-play-icon { width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(0,0,0,0.5); transition: transform 0.3s var(--ease); }
   .video-play-icon svg { width: 22px; height: 22px; fill: #0a0a0a; margin-left: 3px; }
   .video-body { padding: 1rem; }
   .video-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem; }
   .video-desc { font-size: 0.78rem; color: var(--text-2); line-height: 1.5; }
+  .video-meta { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--text-3); flex-wrap: wrap; }
+  .video-badge { padding: 0.12rem 0.45rem; border-radius: 4px; font-size: 0.58rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(167,139,250,0.15); color: var(--accent); border: 1px solid rgba(167,139,250,0.3); white-space: nowrap; }
   .video-iframe { width: 100%; aspect-ratio: 16/9; border: none; display: block; }
 
-  /* ===== GITHUB ===== */
+  /* GitHub Stats */
   .gh-stats { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1rem; }
   .gh-card {
     background: var(--glass-tint); border: 1px solid var(--glass-border);
-    border-radius: 18px; padding: 0.75rem; min-width: 0;
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border-radius: 16px; padding: 0.75rem;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 1px 0 var(--glass-edge-light), 0 8px 24px rgba(0,0,0,0.4);
+    min-width: 0;
+    overflow: hidden;
   }
-  .gh-card img { width: 100%; height: auto; display: block; border-radius: 8px; }
+  .gh-card img { width: 100%; height: auto; display: block; border-radius: 6px; }
   .gh-span-6 { grid-column: span 6; }
   .gh-span-12 { grid-column: span 12; }
 
-  /* ===== CONNECT ===== */
+  /* Connect */
   .socials { display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .social-btn {
     display: inline-flex; align-items: center; gap: 0.4rem;
     padding: 0.55rem 0.85rem; border-radius: 10px;
     border: 1px solid var(--glass-border); background: var(--glass-tint); color: var(--text);
     font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 500;
+    transition: all 0.3s var(--ease);
+    box-shadow: inset 0 1px 0 var(--glass-edge-light), 0 4px 12px rgba(0,0,0,0.4);
+    --gx: 50%; --gy: 50%;
     white-space: nowrap;
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
   }
-  .social-btn:hover { background: var(--glass-tint-hover); border-color: rgba(167,139,250,0.4); }
+  .social-btn:hover { background: var(--glass-tint-hover); border-color: rgba(167,139,250,0.4); transform: translateY(-2px); }
   .social-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .social-btn .handle { color: var(--text-2); }
 
-  /* ===== ABOUT ===== */
+  /* About */
   .about-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
   .about-list li { display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.85rem; color: var(--text-2); line-height: 1.5; padding: 0.55rem 0.75rem; border-radius: 10px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.08); }
   .about-list li strong { color: #fff; font-weight: 600; }
+  .about-list .emoji { flex-shrink: 0; font-size: 0.95rem; }
+  .count-num { font-variant-numeric: tabular-nums; font-family: 'JetBrains Mono', monospace; color: var(--accent); font-weight: 700; }
 
-  /* ===== TABLE ===== */
+  /* Table */
   .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -0.5rem; padding: 0 0.5rem; }
-  .proj-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 400px; }
+  .proj-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 480px; }
   .proj-table th, .proj-table td { text-align: left; padding: 0.55rem 0.65rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
-  .proj-table th { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; text-transform: uppercase; color: var(--text-3); white-space: nowrap; }
+  .proj-table th { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); font-weight: 600; white-space: nowrap; }
   .proj-table td a { color: #fff; text-decoration: underline; word-break: break-all; }
+  .proj-table tr:hover td { background: rgba(167,139,250,0.05); }
 
-  /* ===== COLLAB ===== */
+  /* Dialog */
+  dialog {
+    background: #1a1a1a; color: #fff;
+    border: 1px solid var(--glass-border); border-radius: 16px;
+    padding: 1.5rem; max-width: 420px; width: calc(100% - 2rem);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+    opacity: 0; transform: scale(0.95);
+    transition: opacity 0.4s var(--ease-smooth), transform 0.4s var(--ease-smooth);
+  }
+  dialog::backdrop { background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.4s; }
+  dialog:open { opacity: 1; transform: scale(1); }
+  dialog:open::backdrop { opacity: 1; }
+
+  /* Collab strip */
   .collab-strip-section { padding: 0 0 clamp(2rem, 6vh, 4rem); }
   .collab-strip {
     display: flex; align-items: center; justify-content: center;
     gap: clamp(0.75rem, 2vw, 1.5rem);
     padding: clamp(1.25rem, 4vw, 2rem);
     background: var(--glass-tint); border: 1px solid var(--glass-border);
-    border-radius: 18px; flex-wrap: wrap; text-align: center;
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border-radius: 16px;
+    box-shadow: inset 0 1px 0 var(--glass-edge-light), 0 8px 24px rgba(0,0,0,0.4);
+    flex-wrap: wrap; text-align: center; position: relative; overflow: hidden;
+    transition: all 0.3s var(--ease-smooth);
   }
+  .collab-strip:hover { border-color: rgba(167,139,250,0.4); background: var(--glass-tint-hover); }
   .collab-logo {
     font-family: 'JetBrains Mono', monospace;
     font-size: clamp(0.75rem, 2.5vw, 1rem);
     font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
     padding: clamp(0.5rem, 1.5vw, 0.8rem) clamp(0.8rem, 2vw, 1.3rem);
-    border-radius: 10px; background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(255,255,255,0.15); white-space: nowrap;
-    transition: transform 0.3s var(--ease);
+    border-radius: 10px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.15);
+    position: relative; z-index: 1;
+    white-space: nowrap; transition: transform 0.3s var(--ease);
   }
   .collab-logo:hover { transform: translateY(-3px); }
-  .collab-logo.brogang { color: #a78bfa; border-color: rgba(167,139,250,0.4); }
-  .collab-logo.d1m { color: #fbbf24; border-color: rgba(251,191,36,0.4); }
-  .collab-logo.hub { color: #fbbf24; border-color: rgba(251,191,36,0.5); background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(251,146,60,0.08)); }
-  .collab-x { font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 300; color: var(--text-3); }
-  .collab-text { width: 100%; font-family: 'JetBrains Mono', monospace; font-size: clamp(0.68rem, 1.8vw, 0.8rem); color: var(--text-2); margin-top: 0.4rem; }
+  .collab-logo.brogang { color: #a78bfa; border-color: rgba(167,139,250,0.4); box-shadow: 0 0 20px rgba(167,139,250,0.15); }
+  .collab-logo.d1m { color: #fbbf24; border-color: rgba(251,191,36,0.4); box-shadow: 0 0 20px rgba(251,191,36,0.15); }
+  .collab-x { font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 300; color: var(--text-3); position: relative; z-index: 1; animation: collabPulse 2.5s ease-in-out infinite; }
+  @keyframes collabPulse { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.15); color: #fff; } }
+  .collab-text { width: 100%; font-family: 'JetBrains Mono', monospace; font-size: clamp(0.68rem, 1.8vw, 0.8rem); color: var(--text-2); margin-top: 0.4rem; position: relative; z-index: 1; line-height: 1.5; }
   .collab-text strong { color: #fff; font-weight: 600; }
+  .collab-links { display: flex; gap: 0.5rem; margin-top: 0.75rem; position: relative; z-index: 1; flex-wrap: wrap; justify-content: center; }
+  .collab-links a {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    padding: 0.35rem 0.75rem; border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15); color: var(--text-2);
+    transition: all 0.25s var(--ease);
+  }
+  .collab-links a:hover { color: #fff; border-color: rgba(167,139,250,0.5); background: rgba(167,139,250,0.1); }
+  .collab-links a.d1m-link:hover { border-color: rgba(251,191,36,0.5); background: rgba(251,191,36,0.1); }
 
-  /* ===== FOOTER ===== */
+  /* Footer */
   .footer { border-top: 1px solid var(--glass-border); padding: 1.5rem 0; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: var(--text-3); gap: 0.5rem; }
   .footer a { color: #fff; text-decoration: underline; }
+
+  /* Reveal */
+  .reveal {
+    opacity: 0; transform: translateY(30px); filter: blur(8px);
+    transition: opacity 0.9s var(--ease-smooth),
+                transform 0.9s var(--ease-smooth),
+                filter 0.9s var(--ease-smooth);
+  }
+  .reveal.in { opacity: 1; transform: none; filter: blur(0); }
+  .reveal[data-d="1"] { transition-delay: 0.1s; }
+  .reveal[data-d="2"] { transition-delay: 0.2s; }
+  .reveal[data-d="3"] { transition-delay: 0.3s; }
+  @media (pointer: coarse) { .reveal { filter: none; } }
+
+  /* Liquid glass — desktop only */
+  @media (hover: hover) and (pointer: fine) {
+    .bento-item, .card, .gh-card, .social-btn, .btn, .video-card {
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    .bento-item::after, .card::after, .gh-card::after, .video-card::after {
+      content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(167,139,250,0.15), rgba(96,165,250,0.15), rgba(255,255,255,0.5));
+      background-size: 200% 200%;
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none; opacity: 0; transition: opacity 0.4s;
+      animation: borderShift 6s ease infinite;
+    }
+    .bento-item:hover::after, .card:hover::after, .gh-card:hover::after, .video-card:hover::after { opacity: 1; }
+    @keyframes borderShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+  }
+
+  .tilt-card { transform-style: preserve-3d; will-change: transform; }
+  @media (pointer: coarse), (max-width: 768px) { .tilt-card { transform: none !important; } }
 
   /* ===== RESPONSIVE ===== */
   @media (max-width: 1024px) {
     .span-6, .gh-span-6 { grid-column: span 12; }
     .span-4 { grid-column: span 6; }
   }
+
   @media (max-width: 768px) {
     .nav-links { display: none; }
     .bento-grid { grid-template-columns: 1fr; gap: 0.75rem; }
     .span-12, .span-6, .span-4 { grid-column: span 1; }
     .gh-stats { grid-template-columns: 1fr; gap: 0.75rem; }
     .gh-span-6, .gh-span-12 { grid-column: span 1; }
+    body { cursor: auto; }
+    .cursor-dot, .cursor-outline { display: none; }
     .section { padding: 2.5rem 0; }
-    .bento-item, .card { padding: 1rem; }
+    .section-head { margin-bottom: 1.25rem; }
+    .bento-item, .card { padding: 1rem; border-radius: 14px; }
     .terminal { height: 100px; font-size: 0.68rem; padding: 0.6rem; }
+    .social-link-item .platform-name { min-width: 60px; font-size: 0.65rem; }
+    .social-link-item .platform-url { font-size: 0.6rem; }
     .hero-actions .btn { flex: 1 1 auto; min-width: 130px; }
     .footer { flex-direction: column; text-align: center; }
     .wrap { padding: 0 1rem; }
+    .section-head h2 { font-size: clamp(1.4rem, 5.5vw, 2rem); }
   }
+
   @media (max-width: 380px) {
     .hero-title { font-size: clamp(2rem, 10vw, 2.5rem); }
     .collab-logo { font-size: 0.65rem; padding: 0.4rem 0.65rem; }
+    .collab-x { font-size: 1rem; }
     .btn { font-size: 0.8rem; padding: 0.7rem 1.2rem; }
+    .brand { font-size: 0.85rem; }
+    .bento-item, .card { padding: 0.85rem; }
   }
+
+  /* Mobile battery savers */
   @media (pointer: coarse), (max-width: 768px) {
-    .bento-item, .card, .btn, .gh-card, .hero-eyebrow, .osint-btn, .nav, .social-btn, .video-card, .collab-strip {
-      backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+    .bento-item, .card, .btn, .gh-card, .hero-eyebrow, .osint-btn, .nav, .social-btn, .video-card {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
     }
+    .anime-bg-layer { transform: none; }
+    .cursor-dot, .cursor-outline { display: none; }
     .nav { background: rgba(10, 10, 10, 0.95); }
   }
 </style>
 </head>
 <body>
 
-<!-- Anime background (waifu.im, minimal, no anime boys) -->
-<div class="anime-bg" id="animeBg"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-outline" id="cursorOutline"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<div class="anime-bg-container" id="bgContainer">
+  <div class="anime-bg-layer active" id="bgLayer1" style="background-image: url('https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=2000');"></div>
+  <div class="anime-bg-layer" id="bgLayer2"></div>
+</div>
 <div class="anime-overlay"></div>
 
 <div id="progress"></div>
@@ -363,162 +652,178 @@
     <a href="#work">Work</a>
     <a href="#apps">OSINT</a>
     <a href="#videos">Videos</a>
+    <a href="#stats">Stats</a>
     <a href="#connect">Connect</a>
-    <a href="brogang.html">BRO GANG</a>
-    <a href="d1m.html">D1M</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
   </div>
 </nav>
 
 <main id="top">
   <header class="hero wrap">
-    <div class="hero-eyebrow"><span class="brand-dot" style="width:5px;height:5px"></span> Available for collabs</div>
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-particles" id="heroParticles" aria-hidden="true"></div>
+    <div class="hero-eyebrow reveal"><span class="brand-dot" style="width:5px;height:5px"></span> Available for collabs</div>
     <h1 class="hero-title" id="heroTitle">
       <span class="line"><span class="word">Developer</span></span>
       <span class="line"><span class="word accent">&amp; Founder</span></span>
     </h1>
-    <p class="hero-sub">
+    <p class="hero-sub reveal" data-d="2">
       I make experimental browsers, AI tools, and open-source software.
       Currently running <strong>BRO GANG</strong>, a community I started in 2022.
     </p>
-    <div class="hero-actions">
-      <a href="#work" class="btn btn-primary">View work →</a>
-      <a href="https://github.com/TechAdityaBRO" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">GitHub ↗</a>
+    <div class="hero-actions reveal" data-d="3">
+      <a href="#work" class="btn btn-primary magnetic wobble-hover">View work <span class="arrow">→</span></a>
+      <a href="https://github.com/TechAdityaBRO" target="_blank" rel="noopener noreferrer" class="btn btn-ghost magnetic wobble-hover">GitHub ↗</a>
     </div>
   </header>
 
   <section class="section wrap" id="work">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="section-num">01 — Selected work</div>
-      <h2>Things I've built</h2>
+      <h2 data-split-words>Things I've built</h2>
     </div>
     <div class="projects">
-      <a class="card" href="https://pglove.jo3.org" target="_blank" rel="noopener noreferrer">
+      <a class="card reveal wobble-hover" href="https://pglove.jo3.org" target="_blank" rel="noopener noreferrer">
         <span class="card-badge">Browser</span>
         <h3>PGlove</h3>
-        <p>Experimental desktop browser built with Tauri 2 (Rust + WebView2). Lightweight and unapologetically different.</p>
+        <p>An experimental desktop browser built with Tauri 2 (Rust + WebView2). Lightweight, fast, and unapologetically different.</p>
         <div class="card-tags"><span class="tag">Rust</span><span class="tag">Tauri</span></div>
       </a>
-      <a class="card" href="https://brogangaicli.pages.dev/" target="_blank" rel="noopener noreferrer">
+      <a class="card reveal wobble-hover" data-d="1" href="https://brogangaicli.pages.dev/" target="_blank" rel="noopener noreferrer">
         <span class="card-badge">CLI · AI</span>
         <h3>Bro Gang AI CLI</h3>
-        <p>Free AI coding agent for the terminal. No API keys, no signup — powered by Llama 3.3 70B.</p>
+        <p>A free-forever AI coding agent for the terminal. No API keys, no signup — powered by Llama 3.3 70B on Cloudflare Workers.</p>
         <div class="card-tags"><span class="tag">TypeScript</span><span class="tag">Llama</span></div>
       </a>
-      <a class="card" href="https://nexasearch.pages.dev/" target="_blank" rel="noopener noreferrer">
+      <a class="card reveal wobble-hover" data-d="2" href="https://nexasearch.pages.dev/" target="_blank" rel="noopener noreferrer">
         <span class="card-badge">Search</span>
         <h3>Nexa Search</h3>
-        <p>Privacy-first search engine. No ads, no tracking pixels, no sold history. Just the signal.</p>
+        <p>A privacy-first search engine. No ads in results, no tracking pixels, no sold browsing history. Just the signal.</p>
         <div class="card-tags"><span class="tag">JavaScript</span><span class="tag">Privacy</span></div>
       </a>
-      <a class="card card-d1m" href="https://d1mstudios-all-apps-hub.oneapp.dev/" target="_blank" rel="noopener noreferrer">
-        <span class="card-badge">D1M Studios</span>
-        <h3>D1M Studios Hub</h3>
-        <p>All D1M Studios apps in one place. Built by Darshil, powered by BRO SOFTWARE.</p>
-        <div class="card-tags"><span class="tag">Apps</span><span class="tag">Design</span></div>
-      </a>
+      <div class="card reveal wobble-hover" onclick="document.getElementById('demo-dialog').showModal()" style="cursor: pointer;" data-d="3">
+        <span class="card-badge">Native HTML</span>
+        <h3>Native Dialog</h3>
+        <p>Click to open a native HTML <code>&lt;dialog&gt;</code> element. Built-in modal functionality without external libraries.</p>
+        <div class="card-tags"><span class="tag">HTML</span><span class="tag">Dialog</span></div>
+      </div>
     </div>
   </section>
 
   <section class="section wrap" id="apps">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="section-num">02 — Playground</div>
-      <h2>OSINT Tools</h2>
+      <h2 data-split-words>OSINT Tools</h2>
     </div>
 
     <div class="bento-grid">
-      <div class="bento-item span-6" id="app-ip">
+      <div class="bento-item span-6 reveal" id="app-ip">
         <div class="app-header"><span class="app-title">IP Intelligence</span></div>
         <div class="terminal-wrapper">
           <div class="terminal" id="ipTerminal"><span class="terminal-line">&gt; Awaiting scan...</span></div>
+          <div class="skeleton"></div>
         </div>
         <button class="osint-btn" id="ipScanBtn">Run Scan ↻</button>
       </div>
 
-      <div class="bento-item span-6" id="app-dns">
+      <div class="bento-item span-6 reveal" data-d="1" id="app-dns">
         <div class="app-header"><span class="app-title">DNS Lookup</span></div>
         <input type="text" class="osint-input" id="dnsInput" placeholder="e.g. github.com" value="github.com" inputmode="url" autocapitalize="none" autocorrect="off">
         <div class="terminal-wrapper">
           <div class="terminal" id="dnsTerminal" style="height: 90px;"><span class="terminal-line">&gt; Ready</span></div>
+          <div class="skeleton"></div>
         </div>
         <button class="osint-btn" id="dnsLookupBtn">Lookup</button>
       </div>
 
-      <div class="bento-item span-4" id="app-whois">
+      <div class="bento-item span-4 reveal" data-d="2" id="app-whois">
         <div class="app-header"><span class="app-title">WHOIS (RDAP)</span></div>
         <input type="text" class="osint-input" id="whoisInput" placeholder="e.g. google.com" value="google.com" inputmode="url" autocapitalize="none" autocorrect="off">
         <div class="terminal-wrapper">
           <div class="terminal" id="whoisTerminal" style="height: 90px;"><span class="terminal-line">&gt; Ready</span></div>
+          <div class="skeleton"></div>
         </div>
         <button class="osint-btn" id="whoisLookupBtn">Lookup</button>
       </div>
 
-      <div class="bento-item span-4" id="app-email">
+      <div class="bento-item span-4 reveal" data-d="3" id="app-email">
         <div class="app-header"><span class="app-title">Email Breach</span></div>
         <input type="email" class="osint-input" id="emailInput" placeholder="e.g. test@example.com" value="test@example.com" inputmode="email" autocapitalize="none" autocorrect="off">
         <div class="terminal-wrapper">
           <div class="terminal" id="emailTerminal" style="height: 90px;"><span class="terminal-line">&gt; Ready</span></div>
+          <div class="skeleton"></div>
         </div>
         <button class="osint-btn" id="emailLookupBtn">Check Breaches</button>
       </div>
 
-      <div class="bento-item span-4" id="app-email-osint">
+      <div class="bento-item span-4 reveal" id="app-email-osint">
         <div class="app-header"><span class="app-title">Email OSINT</span></div>
         <input type="email" class="osint-input" id="emailOsintInput" placeholder="e.g. test@example.com" value="test@example.com" inputmode="email" autocapitalize="none" autocorrect="off">
-        <div class="terminal" id="emailOsintTerminal" style="height: 90px;"><span class="terminal-line">&gt; Ready</span></div>
-        <button class="osint-btn" id="emailOsintBtn">Analyze</button>
-        <a href="https://epieos.com/" target="_blank" rel="noopener" class="osint-btn" id="epieosBtn" style="display:block;text-align:center;text-decoration:none;margin-top:0.5rem;background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.3)">🔍 Epieos (600+)</a>
+        <div class="result-panel" id="emailOsintResult">
+          <div class="result-row"><span class="result-label">Status</span><span class="result-value" style="color:var(--text-3)">Awaiting input</span></div>
+        </div>
+        <div class="skeleton"></div>
+        <button class="osint-btn" id="emailOsintBtn">Analyze Email</button>
+        <a href="https://epieos.com/?q=test@example.com" target="_blank" rel="noopener" class="osint-btn" id="epieosBtn" style="display:block;text-align:center;text-decoration:none;margin-top:0.5rem;background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.3)">🔍 Epieos (600+)</a>
       </div>
 
-      <div class="bento-item span-6" id="app-mac">
+      <div class="bento-item span-6 reveal" data-d="1" id="app-mac">
         <div class="app-header"><span class="app-title">MAC Address</span></div>
         <input type="text" class="osint-input" id="macInput" placeholder="e.g. 00:1A:2B" value="00:1A:2B" autocapitalize="characters" autocorrect="off">
         <div class="terminal-wrapper">
           <div class="terminal" id="macTerminal" style="height: 80px;"><span class="terminal-line">&gt; Ready</span></div>
+          <div class="skeleton"></div>
         </div>
         <button class="osint-btn" id="macLookupBtn">Lookup Vendor</button>
       </div>
 
-      <div class="bento-item span-6" id="app-url">
+      <div class="bento-item span-6 reveal" data-d="2" id="app-url">
         <div class="app-header"><span class="app-title">URL Expander</span></div>
         <input type="text" class="osint-input" id="urlInput" placeholder="Short URL" value="https://bit.ly/3x..." inputmode="url" autocapitalize="none" autocorrect="off">
         <div class="terminal-wrapper">
           <div class="terminal" id="urlTerminal" style="height: 80px;"><span class="terminal-line">&gt; Ready</span></div>
+          <div class="skeleton"></div>
         </div>
         <button class="osint-btn" id="urlLookupBtn">Expand</button>
       </div>
 
-      <div class="bento-item span-12" id="app-sub">
+      <div class="bento-item span-12 reveal" data-d="3" id="app-sub">
         <div class="app-header"><span class="app-title">Subdomain Checker</span></div>
         <input type="text" class="osint-input" id="subInput" placeholder="e.g. google.com" value="google.com" inputmode="url" autocapitalize="none" autocorrect="off">
         <div class="terminal-wrapper">
           <div class="terminal" id="subTerminal" style="height: 90px;"><span class="terminal-line">&gt; Ready</span></div>
+          <div class="skeleton"></div>
         </div>
         <button class="osint-btn" id="subLookupBtn">Find Subdomains (crt.sh)</button>
       </div>
 
-      <div class="bento-item span-6" id="app-builder">
+      <div class="bento-item span-6 reveal" id="app-builder">
         <div class="app-header"><span class="app-title">Site Builder</span></div>
         <input type="text" class="osint-input" id="builderInput" placeholder="e.g. wordpress.org" value="wordpress.org" inputmode="url" autocapitalize="none" autocorrect="off">
         <div class="terminal-wrapper">
           <div class="terminal" id="builderTerminal" style="height: 90px;"><span class="terminal-line">&gt; Ready</span></div>
+          <div class="skeleton"></div>
         </div>
         <button class="osint-btn" id="builderLookupBtn">Detect CMS</button>
       </div>
 
-      <div class="bento-item span-6" id="app-bug">
+      <div class="bento-item span-6 reveal" data-d="1" id="app-bug">
         <div class="app-header"><span class="app-title">Bug Finder</span></div>
         <input type="text" class="osint-input" id="bugInput" placeholder="e.g. github.com" value="github.com" inputmode="url" autocapitalize="none" autocorrect="off">
         <div class="terminal-wrapper">
           <div class="terminal" id="bugTerminal" style="height: 90px;"><span class="terminal-line">&gt; Ready</span></div>
+          <div class="skeleton"></div>
         </div>
         <button class="osint-btn" id="bugLookupBtn">Scan Headers</button>
       </div>
 
-      <div class="bento-item span-12" id="app-social">
+      <div class="bento-item span-12 reveal" data-d="2" id="app-social">
         <div class="app-header"><span class="app-title">Social Media OSINT</span></div>
         <input type="text" class="osint-input" id="socialInput" placeholder="e.g. TechAdityaBRO or email" autocapitalize="none" autocorrect="off">
         <div class="terminal-wrapper">
           <div class="terminal" id="socialTerminal" style="height: 200px;"><span class="terminal-line">&gt; Ready — enter a username or email</span></div>
+          <div class="skeleton"></div>
         </div>
         <button class="osint-btn" id="socialLookupBtn">Find Profiles</button>
       </div>
@@ -526,123 +831,142 @@
   </section>
 
   <section class="section wrap" id="videos">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="section-num">03 — Watch</div>
-      <h2>Videos</h2>
+      <h2 data-split-words>Videos</h2>
     </div>
     <div class="video-grid">
-      <div class="video-card">
+      <div class="video-card reveal">
         <div class="video-thumb" data-video-id="lo3fC0ZkDc8">
-          <img src="https://img.youtube.com/vi/lo3fC0ZkDc8/hqdefault.jpg" alt="Bro Gang SMP" loading="lazy">
+          <img src="https://img.youtube.com/vi/lo3fC0ZkDc8/maxresdefault.jpg" alt="Bro Gang SMP" loading="lazy" onerror="this.src='https://img.youtube.com/vi/lo3fC0ZkDc8/hqdefault.jpg'">
           <div class="video-play"><div class="video-play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
         </div>
         <div class="video-body">
           <div class="video-title">Bro Gang SMP</div>
           <div class="video-desc">Our Minecraft survival multiplayer server.</div>
+          <div class="video-meta"><span class="video-badge">Minecraft</span><span>BRO GANG</span></div>
         </div>
       </div>
-      <div class="video-card">
+
+      <div class="video-card reveal" data-d="1">
         <div class="video-thumb" data-video-id="6ZvRoPs4BkI">
-          <img src="https://img.youtube.com/vi/6ZvRoPs4BkI/hqdefault.jpg" alt="Speed Tester" loading="lazy">
+          <img src="https://img.youtube.com/vi/6ZvRoPs4BkI/maxresdefault.jpg" alt="Speed Tester" loading="lazy" onerror="this.src='https://img.youtube.com/vi/6ZvRoPs4BkI/hqdefault.jpg'">
           <div class="video-play"><div class="video-play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
         </div>
         <div class="video-body">
           <div class="video-title">Speed Tester</div>
           <div class="video-desc">Quick demo of the speed tester tool.</div>
+          <div class="video-meta"><span class="video-badge">Short</span><span>Demo</span></div>
         </div>
       </div>
-      <div class="video-card">
+
+      <div class="video-card reveal" data-d="2">
         <div class="video-thumb" data-video-id="jasPPPTPy1Q">
-          <img src="https://img.youtube.com/vi/jasPPPTPy1Q/hqdefault.jpg" alt="Bro Gang AI CLI" loading="lazy">
+          <img src="https://img.youtube.com/vi/jasPPPTPy1Q/maxresdefault.jpg" alt="Bro Gang AI CLI" loading="lazy" onerror="this.src='https://img.youtube.com/vi/jasPPPTPy1Q/hqdefault.jpg'">
           <div class="video-play"><div class="video-play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
         </div>
         <div class="video-body">
           <div class="video-title">Bro Gang AI CLI</div>
           <div class="video-desc">Free AI coding agent for your terminal.</div>
+          <div class="video-meta"><span class="video-badge">Short</span><span>AI · CLI</span></div>
+        </div>
+      </div>
+
+      <div class="video-card reveal" data-d="3">
+        <div class="video-thumb" data-video-id="edev5DkwGW8">
+          <img src="https://img.youtube.com/vi/edev5DkwGW8/maxresdefault.jpg" alt="Old Logo" loading="lazy" onerror="this.src='https://img.youtube.com/vi/edev5DkwGW8/hqdefault.jpg'">
+          <div class="video-play"><div class="video-play-icon"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+        </div>
+        <div class="video-body">
+          <div class="video-title">Old Logo</div>
+          <div class="video-desc">The original BRO GANG logo — before the redesign.</div>
+          <div class="video-meta"><span class="video-badge">Archive</span><span>Legacy</span></div>
         </div>
       </div>
     </div>
   </section>
 
   <section class="section wrap" id="stats">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="section-num">04 — GitHub</div>
-      <h2>Live activity</h2>
+      <h2 data-split-words>Live activity</h2>
     </div>
     <div class="gh-stats">
-      <div class="gh-card gh-span-6">
+      <div class="gh-card gh-span-6 reveal">
         <img src="https://gh-stats.com/api/TechAdityaBRO?theme=dark&show_icons=true&hide_border=true&title_color=ffffff&icon_color=ffffff&text_color=aaaaaa&bg_color=0a0a0a" alt="GitHub Stats" loading="lazy">
       </div>
-      <div class="gh-card gh-span-6">
+      <div class="gh-card gh-span-6 reveal" data-d="1">
         <img src="https://gh-stats.com/api/top-langs/TechAdityaBRO?theme=dark&layout=compact&hide_border=true&title_color=ffffff&text_color=aaaaaa&bg_color=0a0a0a" alt="Top Languages" loading="lazy">
       </div>
-      <div class="gh-card gh-span-12">
+      <div class="gh-card gh-span-12 reveal" data-d="2">
         <img src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=TechAdityaBRO&theme=github_dark" alt="GitHub Profile Summary" loading="lazy">
       </div>
     </div>
   </section>
 
   <section class="section wrap" id="connect">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="section-num">05 — Connect</div>
-      <h2>Find me online</h2>
+      <h2 data-split-words>Find me online</h2>
     </div>
-    <div class="socials">
+    <div class="socials reveal">
       <a class="social-btn" href="https://x.com/ProGroupBroGang" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         <span>X</span>
       </a>
       <a class="social-btn" href="https://www.instagram.com/@progroup_24" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
         <span>Instagram</span>
       </a>
       <a class="social-btn" href="https://discord.gg/TSWg34Zets" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.369a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.009c.12.099.246.198.373.292a.077.077 0 01-.006.127 12.3 12.3 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.84 19.84 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 00-.031-.03zM8.02 15.331c-.998 0-1.82-.918-1.82-2.045 0-1.128.805-2.045 1.82-2.045 1.023 0 1.836.925 1.82 2.045 0 1.127-.806 2.045-1.82 2.045zm6.975 0c-.997 0-1.82-.918-1.82-2.045 0-1.128.806-2.045 1.82-2.045 1.023 0 1.836.925 1.82 2.045 0 1.127-.797 2.045-1.82 2.045z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.009c.12.099.246.198.373.292a.077.077 0 01-.006.127 12.3 12.3 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.84 19.84 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 00-.031-.03zM8.02 15.331c-.998 0-1.82-.918-1.82-2.045 0-1.128.805-2.045 1.82-2.045 1.023 0 1.836.925 1.82 2.045 0 1.127-.806 2.045-1.82 2.045zm6.975 0c-.997 0-1.82-.918-1.82-2.045 0-1.128.806-2.045 1.82-2.045 1.023 0 1.836.925 1.82 2.045 0 1.127-.797 2.045-1.82 2.045z"/></svg>
         <span>Discord</span>
       </a>
       <a class="social-btn" href="mailto:chairmanaditya@brogang.jo3.org">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.5 4.5h21A1.5 1.5 0 0124 6v12a1.5 1.5 0 01-1.5 1.5h-21A1.5 1.5 0 010 18V6a1.5 1.5 0 011.5-1.5zM12 13.06L2.4 7.5v10.5h19.2V7.5z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M1.5 4.5h21A1.5 1.5 0 0124 6v12a1.5 1.5 0 01-1.5 1.5h-21A1.5 1.5 0 010 18V6a1.5 1.5 0 011.5-1.5zM12 13.06L2.4 7.5v10.5h19.2V7.5z"/></svg>
         <span>Email</span>
       </a>
       <a class="social-btn" href="https://github.com/TechAdityaBRO" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.73.5.5 5.73.5 12a11.5 11.5 0 007.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.75.41-1.27.74-1.56-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.2-3.1-.12-.3-.52-1.48.12-3.08 0 0 .97-.31 3.18 1.18a11 11 0 015.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.6.24 2.78.12 3.08.75.81 1.2 1.84 1.2 3.1 0 4.43-2.7 5.4-5.26 5.69.42.36.79 1.07.79 2.16v3.2c0 .31.21.67.8.56A11.5 11.5 0 0023.5 12C23.5 5.73 18.27.5 12 .5z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.73.5.5 5.73.5 12a11.5 11.5 0 007.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.75.41-1.27.74-1.56-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.2-3.1-.12-.3-.52-1.48.12-3.08 0 0 .97-.31 3.18 1.18a11 11 0 015.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.6.24 2.78.12 3.08.75.81 1.2 1.84 1.2 3.1 0 4.43-2.7 5.4-5.26 5.69.42.36.79 1.07.79 2.16v3.2c0 .31.21.67.8.56A11.5 11.5 0 0023.5 12C23.5 5.73 18.27.5 12 .5z"/></svg>
         <span>GitHub</span>
       </a>
     </div>
   </section>
 
   <section class="section wrap" id="about">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="section-num">06 — About</div>
-      <h2>What I'm building</h2>
+      <h2 data-split-words>What I'm building</h2>
     </div>
-    <ul class="about-list">
-      <li><span>🔭</span><span>Building <strong>PGlove Browser</strong></span></li>
-      <li><span>⚡</span><span>Founder of <strong>BRO GANG</strong> — 38 members since 2022</span></li>
-      <li><span>🤖</span><span>Working on <strong>Pro AI</strong> — Gemini 2.5 Pro</span></li>
-      <li><span>🔍</span><span>Building <strong>Nexa Search</strong></span></li>
-      <li><span>⌨️</span><span>Building <strong>Bro Gang AI CLI</strong></span></li>
-      <li><span>🎨</span><span>Collab with <strong>D1M Studios</strong> (Darshil)</span></li>
-      <li><span>📫</span><span>Reach me at <strong>chairmanaditya@brogang.jo3.org</strong></span></li>
+    <ul class="about-list reveal">
+      <li><span class="emoji">🔭</span><span>Building <strong>PGlove Browser</strong></span></li>
+      <li><span class="emoji">⚡</span><span>Founder of <strong>BRO GANG</strong> — <span class="count-num" data-count="38">0</span> members</span></li>
+      <li><span class="emoji">🤖</span><span>Working on <strong>Pro AI</strong> — Gemini 2.5 Pro</span></li>
+      <li><span class="emoji">🔍</span><span>Building <strong>Nexa Search</strong></span></li>
+      <li><span class="emoji">🧠</span><span>Running <strong>BRO GANG AI</strong> — Llama 3.3 70B</span></li>
+      <li><span class="emoji">⌨️</span><span>Building <strong>Bro Gang AI CLI</strong></span></li>
+      <li><span class="emoji">🎮</span><span>Running <strong>BroGangMC</strong></span></li>
+      <li><span class="emoji">📫</span><span>Reach me at <strong>chairmanaditya@brogang.jo3.org</strong></span></li>
     </ul>
   </section>
 
   <section class="section wrap" id="featured">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="section-num">07 — Featured</div>
-      <h2>All projects</h2>
+      <h2 data-split-words>All projects</h2>
     </div>
-    <div class="card" style="padding: 0.75rem;">
+    <div class="card reveal" style="padding: 0.75rem;">
       <div class="table-wrap">
         <table class="proj-table">
-          <thead><tr><th>Project</th><th>Link</th></tr></thead>
+          <thead><tr><th>Project</th><th>Link</th><th>Description</th></tr></thead>
           <tbody>
-            <tr><td><strong>PGlove</strong></td><td><a href="https://pglove.jo3.org" target="_blank" rel="noopener">pglove.jo3.org</a></td></tr>
-            <tr><td><strong>BRO GANG</strong></td><td><a href="https://brogang.techaditya.workers.dev" target="_blank" rel="noopener">brogang.techaditya.workers.dev</a></td></tr>
-            <tr><td><strong>AI CLI</strong></td><td><a href="https://brogangaicli.pages.dev/" target="_blank" rel="noopener">brogangaicli.pages.dev</a></td></tr>
-            <tr><td><strong>Nexa Search</strong></td><td><a href="https://nexasearch.pages.dev/" target="_blank" rel="noopener">nexasearch.pages.dev</a></td></tr>
-            <tr><td><strong>BroGangMC SMP</strong></td><td><a href="https://brogangsmp.site.je/" target="_blank" rel="noopener">brogangsmp.site.je</a></td></tr>
-            <tr><td><strong>D1M Hub</strong></td><td><a href="https://d1mstudios-all-apps-hub.oneapp.dev/" target="_blank" rel="noopener">d1mstudios-all-apps-hub</a></td></tr>
+            <tr><td><strong>PGlove</strong></td><td><a href="https://pglove.jo3.org" target="_blank" rel="noopener">pglove.jo3.org</a></td><td>Desktop browser (Tauri 2 / Rust)</td></tr>
+            <tr><td><strong>BRO GANG</strong></td><td><a href="https://brogang.techaditya.workers.dev" target="_blank" rel="noopener">brogang.techaditya.workers.dev</a></td><td>Community of 38</td></tr>
+            <tr><td><strong>AI CLI</strong></td><td><a href="https://brogangaicli.pages.dev/" target="_blank" rel="noopener">brogangaicli.pages.dev</a></td><td>Free AI coding agent</td></tr>
+            <tr><td><strong>Nexa Search</strong></td><td><a href="https://nexasearch.pages.dev/" target="_blank" rel="noopener">nexasearch.pages.dev</a></td><td>Privacy-first search</td></tr>
+            <tr><td><strong>CODEWEBSITE</strong></td><td><a href="https://code.oops.wtf" target="_blank" rel="noopener">code.oops.wtf</a></td><td>Code playground</td></tr>
+            <tr><td><strong>TickTackToe</strong></td><td><a href="https://ticktacktoe.site.je" target="_blank" rel="noopener">ticktacktoe.site.je</a></td><td>Tic-tac-toe game</td></tr>
+            <tr><td><strong>BroGangMC</strong></td><td><a href="https://brogangmc.minefort.com" target="_blank" rel="noopener">brogangmc.minefort.com</a></td><td>Minecraft SMP server</td></tr>
           </tbody>
         </table>
       </div>
@@ -650,23 +974,28 @@
   </section>
 
   <section class="section wrap" id="contact">
-    <div style="text-align: center; padding: 2.5rem 1.5rem; background: var(--glass-tint); border-radius: 18px; border: 1px solid var(--glass-border);">
-      <h2 style="font-size: clamp(1.8rem, 6vw, 3rem); margin-bottom: 1rem; font-weight: 900; letter-spacing: -.03em; line-height: 1.15; color: #fff;">Let's build <br><span style="color: transparent; -webkit-text-stroke: 2px rgba(167,139,250,0.6);">something.</span></h2>
-      <p style="color: var(--text-2); margin-bottom: 1.75rem; max-width: 45ch; margin-inline: auto; font-size: 0.9rem;">Open to collabs, weird ideas, and anything that ships.</p>
-      <div style="display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap;">
-        <a href="mailto:chairmanaditya@brogang.jo3.org" class="btn btn-primary">Email me</a>
-        <a href="https://discord.gg/TSWg34Zets" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Discord</a>
+    <div class="reveal" style="text-align: center; padding: 2.5rem 1.5rem; background: var(--glass-tint); border-radius: 16px; box-shadow: inset 0 1px 0 var(--glass-edge-light), inset 0 -2px 4px var(--glass-edge-dark), 0 8px 24px rgba(0,0,0,0.4); border: 1px solid var(--glass-border); position: relative; overflow: hidden;">
+      <h2 style="font-size: clamp(1.8rem, 6vw, 3rem); margin-bottom: 1rem; font-weight: 900; letter-spacing: -.03em; line-height: 1.15; color: #fff; position: relative;">Let's build <br><span style="color: transparent; -webkit-text-stroke: 2px rgba(167,139,250,0.6);">something.</span></h2>
+      <p style="color: var(--text-2); margin-bottom: 1.75rem; max-width: 45ch; margin-inline: auto; font-size: 0.9rem; position: relative;">Open to collabs, weird ideas, and anything that ships.</p>
+      <div style="display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; position: relative;">
+        <a href="mailto:chairmanaditya@brogang.jo3.org" class="btn btn-primary magnetic wobble-hover">Email me</a>
+        <a href="https://discord.gg/TSWg34Zets" target="_blank" rel="noopener noreferrer" class="btn btn-ghost magnetic wobble-hover">Discord</a>
       </div>
     </div>
   </section>
 
   <section class="collab-strip-section wrap">
-    <div class="collab-strip">
-      <a href="brogang.html" class="collab-logo brogang">BRO GANG</a>
+    <div class="collab-strip reveal">
+      <a href="brogang.html" class="collab-logo brogang">BRO GANG Studios</a>
       <span class="collab-x">×</span>
-      <a href="d1m.html" class="collab-logo d1m">D1M</a>
-      <a href="https://d1mstudios-all-apps-hub.oneapp.dev/" target="_blank" rel="noopener" class="collab-logo hub">D1M Hub</a>
-      <p class="collab-text">Collaborating with <strong>Darshil</strong> (D1M Studios) — design meets engineering.</p>
+      <a href="d1m.html" class="collab-logo d1m">D1M Studios</a>
+      <p class="collab-text">
+        Collaborating with <strong>Darshil</strong> (D1M Studios) — design meets engineering.
+      </p>
+      <div class="collab-links">
+        <a href="brogang.html">BRO GANG site →</a>
+        <a href="d1m.html" class="d1m-link">D1M site →</a>
+      </div>
     </div>
   </section>
 
@@ -676,256 +1005,539 @@
   </div>
 </main>
 
+<dialog id="demo-dialog">
+  <h3 style="margin-bottom: 0.75rem; font-size: 1.4rem; font-weight: 800;">Native Modal</h3>
+  <p style="color: var(--text-2); margin-bottom: 1.25rem; line-height: 1.6; font-size: 0.9rem;">This dialog is created with the HTML <code>&lt;dialog&gt;</code> element.</p>
+  <button class="btn btn-primary" onclick="document.getElementById('demo-dialog').close()">Close</button>
+</dialog>
+
 <script>
 'use strict';
 document.getElementById('year').textContent = new Date().getFullYear();
 
-/* ============================================================
-   HELPERS
-   ============================================================ */
+var isTouch = window.matchMedia('(pointer: coarse)').matches;
+
 function fetchWithTimeout(url, opts, ms) {
-  opts = opts || {}; ms = ms || 8000;
+  opts = opts || {};
+  ms = ms || 6000;
   var ctrl = new AbortController();
   var timer = setTimeout(function () { ctrl.abort(); }, ms);
   return fetch(url, Object.assign({}, opts, { signal: ctrl.signal }))
     .finally(function () { clearTimeout(timer); });
 }
-async function safeFetchJSON(url, opts, ms) {
-  var res = await fetchWithTimeout(url, opts, ms);
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  var ct = res.headers.get('content-type') || '';
-  if (!ct.includes('application/json')) throw new Error('Non-JSON response');
-  return await res.json();
-}
-function typeTerminal(el, lines) {
-  el.textContent = '';
+
+function typeTerminal(terminalEl, lines) {
+  terminalEl.textContent = '';
   var i = 0;
   return new Promise(function (resolve) {
     function step() {
       if (i >= lines.length) {
-        var d = document.createElement('span');
-        d.className = 'terminal-line';
-        d.textContent = '> Done.';
-        el.appendChild(d);
-        el.scrollTop = el.scrollHeight;
+        var done = document.createElement('span');
+        done.className = 'terminal-line';
+        done.textContent = '> Done.';
+        terminalEl.appendChild(done);
+        terminalEl.scrollTop = terminalEl.scrollHeight;
         resolve(); return;
       }
       var s = document.createElement('span');
       s.className = 'terminal-line';
       s.textContent = lines[i];
-      el.appendChild(s);
-      el.scrollTop = el.scrollHeight;
+      terminalEl.appendChild(s);
+      terminalEl.scrollTop = terminalEl.scrollHeight;
       i++; setTimeout(step, 40);
     }
     step();
   });
 }
 
-/* ============================================================
-   SCROLL PROGRESS
-   ============================================================ */
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+/* Cursor */
+if (!isTouch) {
+  var cursorDot = document.getElementById('cursorDot');
+  var cursorOutline = document.getElementById('cursorOutline');
+  var mouseX = 0, mouseY = 0, outlineX = 0, outlineY = 0, rafId = null;
+  window.addEventListener('mousemove', function (e) {
+    mouseX = e.clientX; mouseY = e.clientY;
+    cursorDot.style.transform = 'translate(' + mouseX + 'px,' + mouseY + 'px) translate(-50%,-50%)';
+    if (rafId === null) rafId = requestAnimationFrame(tick);
+  });
+  function tick() {
+    outlineX += (mouseX - outlineX) * 0.18;
+    outlineY += (mouseY - outlineY) * 0.18;
+    cursorOutline.style.transform = 'translate(' + outlineX + 'px,' + outlineY + 'px) translate(-50%,-50%)';
+    if (Math.abs(mouseX - outlineX) > 0.1 || Math.abs(mouseY - outlineY) > 0.1) rafId = requestAnimationFrame(tick);
+    else rafId = null;
+  }
+  document.querySelectorAll('a, button, .bento-item, .card, input, .video-thumb').forEach(function (el) {
+    el.addEventListener('mouseenter', function () { cursorDot.classList.add('hover'); cursorOutline.classList.add('hover'); });
+    el.addEventListener('mouseleave', function () { cursorDot.classList.remove('hover'); cursorOutline.classList.remove('hover'); });
+  });
+}
+
+/* Magnetic */
+document.querySelectorAll('.magnetic').forEach(function (btn) {
+  btn.addEventListener('mousemove', function (e) {
+    if (isTouch) return;
+    var rect = btn.getBoundingClientRect();
+    var x = e.clientX - rect.left - rect.width / 2;
+    var y = e.clientY - rect.top - rect.height / 2;
+    btn.style.transform = 'translate(' + (x * 0.2) + 'px,' + (y * 0.2) + 'px)';
+  });
+  btn.addEventListener('mouseleave', function () {
+    btn.style.transform = 'translate(0,0)';
+    btn.style.transition = 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+  });
+  btn.addEventListener('mouseenter', function () { btn.style.transition = 'transform 0.1s ease'; });
+});
+
+/* Nav & progress */
+var lastY = 0;
+var nav = document.getElementById('nav');
 window.addEventListener('scroll', function () {
   var y = window.scrollY;
+  nav.classList.toggle('hidden', y > 100 && y > lastY);
+  lastY = y;
   var h = document.documentElement.scrollHeight - window.innerHeight;
   var pct = h > 0 ? y / h : 0;
   document.getElementById('progress').style.transform = 'scaleX(' + pct + ')';
+  document.getElementById('progress').classList.toggle('near-end', pct > 0.85);
 }, { passive: true });
 
-/* ============================================================
-   VIDEO CLICK
-   ============================================================ */
-document.querySelectorAll('.video-thumb').forEach(function (thumb) {
-  thumb.addEventListener('click', function () {
-    var id = thumb.dataset.videoId;
-    if (!id) return;
-    var iframe = document.createElement('iframe');
-    iframe.className = 'video-iframe';
-    iframe.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
-    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-    iframe.allowFullscreen = true;
-    thumb.replaceWith(iframe);
+/* Reveal */
+var io = new IntersectionObserver(function (entries) {
+  entries.forEach(function (e) {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
   });
-});
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+document.querySelectorAll('.section-head').forEach(function (el) { io.observe(el); });
 
-/* ============================================================
-   OSINT TOOLS
-   ============================================================ */
+/* Motion */
+(function initMotion() {
+  void document.body.offsetWidth;
+  requestAnimationFrame(function () {
+    var ht = document.getElementById('heroTitle');
+    if (ht) ht.classList.add('in');
+  });
+  setTimeout(function () {
+    var ht = document.getElementById('heroTitle');
+    if (ht) ht.classList.add('in');
+  }, 100);
 
-// IP Intelligence (HackMyIP)
+  document.querySelectorAll('h2[data-split-words]').forEach(function (el) {
+    var words = el.textContent.trim().split(/\s+/);
+    el.textContent = '';
+    words.forEach(function (w, i) {
+      var mask = document.createElement('span');
+      mask.className = 'word-mask';
+      var inner = document.createElement('span');
+      inner.className = 'word-inner';
+      inner.style.setProperty('--i', i);
+      inner.textContent = w;
+      mask.appendChild(inner);
+      el.appendChild(mask);
+      if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
+    });
+  });
+
+  if (!isTouch) {
+    document.querySelectorAll('.card, .bento-item, .video-card').forEach(function (card) {
+      card.classList.add('tilt-card');
+      card.addEventListener('mousemove', function (e) {
+        var rect = card.getBoundingClientRect();
+        var x = (e.clientX - rect.left) / rect.width - 0.5;
+        var y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = 'perspective(900px) rotateY(' + (x * 5) + 'deg) rotateX(' + (-y * 5) + 'deg)';
+      });
+      card.addEventListener('mouseleave', function () { card.style.transform = ''; });
+    });
+  }
+
+  var heroGlow = document.querySelector('.hero-glow');
+  if (heroGlow && !isTouch) {
+    document.addEventListener('mousemove', function (e) {
+      heroGlow.style.setProperty('--mx', (e.clientX / window.innerWidth * 100) + '%');
+      heroGlow.style.setProperty('--my', (e.clientY / window.innerHeight * 100) + '%');
+    });
+  }
+
+  if (!isTouch) {
+    var sections = document.querySelectorAll('.section');
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      requestAnimationFrame(function () {
+        sections.forEach(function (s) {
+          var rect = s.getBoundingClientRect();
+          var dist = (rect.top + rect.height / 2 - window.innerHeight / 2) / window.innerHeight;
+          s.style.transform = 'translateY(' + (dist * 20) + 'px)';
+        });
+        ticking = false;
+      });
+      ticking = true;
+    }, { passive: true });
+  }
+
+  var container = document.getElementById('heroParticles');
+  if (container && !isTouch) {
+    for (var i = 0; i < 24; i++) {
+      var p = document.createElement('div');
+      p.className = 'hero-particle';
+      p.style.left = (Math.random() * 100) + '%';
+      p.style.bottom = (Math.random() * 40) + '%';
+      p.style.animationDelay = (Math.random() * 12) + 's';
+      p.style.animationDuration = (8 + Math.random() * 8) + 's';
+      p.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px');
+      p.style.background = Math.random() > 0.5 ? 'var(--accent)' : 'var(--accent-2)';
+      container.appendChild(p);
+    }
+  }
+
+  if (!isTouch) {
+    var glow = document.getElementById('cursorGlow');
+    if (glow) {
+      var gx = 0, gy = 0, cx = 0, cy = 0, raf = null;
+      document.addEventListener('mousemove', function (e) {
+        gx = e.clientX; gy = e.clientY;
+        glow.style.opacity = '1';
+        if (raf === null) raf = requestAnimationFrame(step);
+      });
+      document.addEventListener('mouseleave', function () { glow.style.opacity = '0'; });
+      function step() {
+        cx += (gx - cx) * 0.1;
+        cy += (gy - cy) * 0.1;
+        glow.style.transform = 'translate(' + (cx - 150) + 'px,' + (cy - 150) + 'px)';
+        if (Math.abs(gx - cx) > 0.5 || Math.abs(gy - cy) > 0.5) raf = requestAnimationFrame(step);
+        else raf = null;
+      }
+    }
+  }
+
+  if (!isTouch) {
+    document.querySelectorAll('.bento-item, .card, .social-btn').forEach(function (card) {
+      card.addEventListener('mousemove', function (e) {
+        var rect = card.getBoundingClientRect();
+        card.style.setProperty('--gx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+        card.style.setProperty('--gy', ((e.clientY - rect.top) / rect.height * 100) + '%');
+      });
+    });
+  }
+
+  var counters = document.querySelectorAll('[data-count]');
+  var cobs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      var el = entry.target;
+      var target = parseInt(el.dataset.count, 10) || 0;
+      var duration = 1400;
+      var start = null;
+      function step(t) {
+        if (!start) start = t;
+        var p = Math.min((t - start) / duration, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.floor(eased * target).toString();
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = target.toString();
+      }
+      requestAnimationFrame(step);
+      cobs.unobserve(el);
+    });
+  }, { threshold: 0.6 });
+  counters.forEach(function (el) { cobs.observe(el); });
+
+  document.querySelectorAll('.video-thumb').forEach(function (thumb) {
+    thumb.addEventListener('click', function () {
+      var id = thumb.dataset.videoId;
+      if (!id) return;
+      var iframe = document.createElement('iframe');
+      iframe.className = 'video-iframe';
+      iframe.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
+      iframe.title = 'YouTube video';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      thumb.replaceWith(iframe);
+    });
+  });
+})();
+
+/* Anime background */
+(function initAnimeBackground() {
+  var bgLayer1 = document.getElementById('bgLayer1');
+  var bgLayer2 = document.getElementById('bgLayer2');
+  if (!bgLayer1 || !bgLayer2) return;
+
+  var CYCLE_MS = isTouch ? 15000 : 5000;
+  var currentLayer = bgLayer1, nextLayer = bgLayer2;
+  var isFetching = false, fallbackIndex = 0;
+  var FALLBACKS = [
+    'https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=2000',
+    'https://images.unsplash.com/photo-1613376023733-0a73315d9b06?q=80&w=2000',
+    'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=2000',
+    'https://images.unsplash.com/photo-1601850494422-3cf14624b0b3?q=80&w=2000'
+  ];
+
+  function fromWaifuIm() {
+    var tag = Math.random() > 0.5 ? 'husbando' : 'waifu';
+    return fetchWithTimeout('https://api.waifu.im/search?included_tags=' + tag + '&is_nsfw=false&limit=1', { mode: 'cors' }, 5000)
+      .then(function (r) { if (!r.ok) throw new Error('waifu.im'); return r.json(); })
+      .then(function (d) { return (d && d.images && d.images[0] && d.images[0].url) || null; });
+  }
+  function fromWaifuPics() {
+    var tag = Math.random() > 0.5 ? 'waifu' : 'husbando';
+    return fetchWithTimeout('https://api.waifu.pics/sfw/' + tag, { mode: 'cors' }, 5000)
+      .then(function (r) { if (!r.ok) throw new Error('waifu.pics'); return r.json(); })
+      .then(function (d) { return (d && d.url) || null; });
+  }
+  function fromNekosBest() {
+    return fetchWithTimeout('https://nekos.best/api/v2/neko?amount=1', { mode: 'cors' }, 5000)
+      .then(function (r) { if (!r.ok) throw new Error('nekos.best'); return r.json(); })
+      .then(function (d) { return (d && d.results && d.results[0] && d.results[0].url) || null; });
+  }
+
+  function resolveImageUrl() {
+    var sources = [fromWaifuIm, fromWaifuPics, fromNekosBest];
+    var idx = 0;
+    function tryNext() {
+      if (idx >= sources.length) {
+        var fb = FALLBACKS[fallbackIndex % FALLBACKS.length]; fallbackIndex++;
+        return Promise.resolve(fb);
+      }
+      var src = sources[idx++];
+      return src().then(function (url) { return url || tryNext(); }).catch(function () { return tryNext(); });
+    }
+    return tryNext();
+  }
+
+  function preload(url) {
+    return new Promise(function (resolve, reject) {
+      var img = new Image();
+      img.onload = function () { resolve(url); };
+      img.onerror = function () { reject(new Error('img')); };
+      img.src = url;
+    });
+  }
+
+  function swap() {
+    if (isFetching) return;
+    isFetching = true;
+    resolveImageUrl()
+      .then(function (url) {
+        return preload(url).then(function () { return url; }).catch(function () {
+          var fb = FALLBACKS[fallbackIndex % FALLBACKS.length]; fallbackIndex++;
+          return preload(fb).then(function () { return fb; });
+        });
+      })
+      .then(function (url) {
+        nextLayer.style.backgroundImage = 'url("' + url + '")';
+        void nextLayer.offsetWidth;
+        nextLayer.classList.add('active');
+        currentLayer.classList.remove('active');
+        var tmp = currentLayer; currentLayer = nextLayer; nextLayer = tmp;
+      })
+      .catch(function () {})
+      .finally(function () { isFetching = false; });
+  }
+
+  swap();
+  var intervalId = setInterval(swap, CYCLE_MS);
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) clearInterval(intervalId);
+    else { swap(); intervalId = setInterval(swap, CYCLE_MS); }
+  });
+})();
+
+/* OSINT handlers */
 async function runIPScan() {
   var term = document.getElementById('ipTerminal');
+  var card = document.getElementById('app-ip');
   var btn = document.getElementById('ipScanBtn');
-  btn.disabled = true;
+  card.classList.add('loading'); btn.disabled = true;
   term.textContent = '> Querying...';
   try {
-    var data = await safeFetchJSON('https://hackmyip.com/api/v1/ip', {}, 5000);
-    if (!data.success) throw new Error('API error');
-    var d = data.data;
-    var loc = d.location || {};
-    var net = d.network || {};
-    var privacy = d.privacy || {};
+    var res = await fetchWithTimeout('https://ipwho.is/', {}, 5000);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var data = await res.json();
+    if (!data.success) throw new Error('API');
+    var hosting = (data.connection && data.connection.type || '').toLowerCase().indexOf('hosting') !== -1;
     await typeTerminal(term, [
-      '> IP: ' + d.ip,
-      '> ISP: ' + (net.isp || 'Unknown'),
-      '> LOC: ' + (loc.city || '?') + ', ' + (loc.country || '?'),
-      '> VPN: ' + (privacy.is_vpn ? 'DETECTED' : 'CLEAN')
+      '> IP: ' + data.ip,
+      '> ISP: ' + (data.connection && data.connection.isp || 'Unknown'),
+      '> LOC: ' + (data.city || '?') + ', ' + (data.country || '?'),
+      '> VPN: ' + (hosting ? 'DETECTED ⚠️' : 'CLEAN ✅')
     ]);
   } catch (e) {
-    term.textContent = '> ⚠ Could not fetch. Service may be rate-limited. Try again in a minute.';
+    try {
+      var res2 = await fetchWithTimeout('https://ipapi.co/json/', {}, 5000);
+      if (!res2.ok) throw new Error('fallback');
+      var d = await res2.json();
+      await typeTerminal(term, [
+        '> IP: ' + (d.ip || '?'),
+        '> ISP: ' + (d.org || 'Unknown'),
+        '> LOC: ' + (d.city || '?') + ', ' + (d.country_name || '?'),
+        '> VPN: CLEAN ✅ (fallback)'
+      ]);
+    } catch (e2) { term.textContent = '> ERROR: ' + e.message; }
   }
-  btn.disabled = false;
+  card.classList.remove('loading'); btn.disabled = false;
 }
 document.getElementById('ipScanBtn').addEventListener('click', runIPScan);
 runIPScan();
 
-// DNS Lookup (Cloudflare DoH)
 document.getElementById('dnsLookupBtn').addEventListener('click', async function (ev) {
   var domain = document.getElementById('dnsInput').value.trim();
   if (!domain) return;
   var term = document.getElementById('dnsTerminal');
+  var card = document.getElementById('app-dns');
   var btn = ev.currentTarget;
-  btn.disabled = true;
+  card.classList.add('loading'); btn.disabled = true;
   term.textContent = '> Fetching...';
   try {
     var types = ['A', 'MX', 'TXT', 'NS'];
-    var results = await Promise.allSettled(types.map(function (t) {
-      return safeFetchJSON('https://cloudflare-dns.com/dns-query?name=' + encodeURIComponent(domain) + '&type=' + t, {
-        headers: { 'Accept': 'application/dns-json' }
-      }, 5000);
+    var results = await Promise.all(types.map(function (t) {
+      return fetchWithTimeout('https://dns.google/resolve?name=' + encodeURIComponent(domain) + '&type=' + t, {}, 5000).then(function (r) { return r.json(); });
     }));
     var lines = [];
-    results.forEach(function (r, i) {
-      if (r.status === 'fulfilled' && r.value.Answer) {
-        lines.push('> ' + types[i] + ':');
-        r.value.Answer.slice(0, 3).forEach(function (a) { lines.push('  ' + a.data); });
-      } else {
-        lines.push('> ' + types[i] + ': None');
-      }
+    results.forEach(function (d, i) {
+      if (d.Answer) { lines.push('> ' + types[i] + ':'); d.Answer.slice(0, 3).forEach(function (a) { lines.push('  ' + a.data); }); }
+      else lines.push('> ' + types[i] + ': None');
     });
     await typeTerminal(term, lines);
-  } catch (e) {
-    term.textContent = '> ⚠ Could not fetch. Service may be rate-limited. Try again in a minute.';
-  }
-  btn.disabled = false;
+  } catch (e) { term.textContent = '> ERROR: ' + e.message; }
+  card.classList.remove('loading'); btn.disabled = false;
 });
 
-// WHOIS (HackMyIP)
 document.getElementById('whoisLookupBtn').addEventListener('click', async function (ev) {
   var domain = document.getElementById('whoisInput').value.trim();
   if (!domain) return;
   var term = document.getElementById('whoisTerminal');
+  var card = document.getElementById('app-whois');
   var btn = ev.currentTarget;
-  btn.disabled = true;
+  card.classList.add('loading'); btn.disabled = true;
   term.textContent = '> Querying RDAP...';
   try {
-    var data = await safeFetchJSON('https://hackmyip.com/api/whois?domain=' + encodeURIComponent(domain), {}, 6000);
-    if (!data.success) throw new Error('API error');
-    var d = data.data;
-    var lines = ['> Domain: ' + (d.domain || domain), '> Registrar: ' + (d.registrar || 'Unknown')];
-    if (d.creation_date) lines.push('> Created: ' + d.creation_date.split('T')[0]);
-    if (d.expiration_date) lines.push('> Expires: ' + d.expiration_date.split('T')[0]);
+    var res = await fetchWithTimeout('https://rdap.org/domain/' + encodeURIComponent(domain), {}, 6000);
+    if (!res.ok) throw new Error('Not found');
+    var data = await res.json();
+    var lines = ['> Domain: ' + (data.ldhName || domain), '> Status: ' + ((data.status || []).join(', ') || 'Unknown')];
+    var reg = (data.entities || []).find(function (e) { return (e.roles || []).indexOf('registrar') !== -1; });
+    if (reg && reg.vcardArray && reg.vcardArray[1]) {
+      var v = reg.vcardArray[1].find(function (x) { return x[0] === 'fn'; });
+      if (v) lines.push('> Registrar: ' + v[3]);
+    }
+    (data.events || []).forEach(function (ev) {
+      if (ev.eventAction === 'registration') lines.push('> Created: ' + ev.eventDate.split('T')[0]);
+    });
     await typeTerminal(term, lines);
-  } catch (e) {
-    term.textContent = '> ⚠ Could not fetch. Service may be rate-limited. Try again in a minute.';
-  }
-  btn.disabled = false;
+  } catch (e) { term.textContent = '> ERROR: ' + e.message; }
+  card.classList.remove('loading'); btn.disabled = false;
 });
 
-// Email Breach (XposedOrNot)
 document.getElementById('emailLookupBtn').addEventListener('click', async function (ev) {
   var email = document.getElementById('emailInput').value.trim();
   if (!email) return;
   var term = document.getElementById('emailTerminal');
+  var card = document.getElementById('app-email');
   var btn = ev.currentTarget;
-  btn.disabled = true;
+  card.classList.add('loading'); btn.disabled = true;
   term.textContent = '> Checking breaches...';
   try {
     var res = await fetchWithTimeout('https://api.xposedornot.com/v1/check-email/' + encodeURIComponent(email), {}, 6000);
-    if (res.status === 404) {
-      await typeTerminal(term, ['> No breaches found.']);
-    } else {
+    if (res.status === 404) await typeTerminal(term, ['> No breaches found. ✅']);
+    else {
       var data = await res.json();
       var lines = (data.breaches && data.breaches.length)
         ? ['> Found in ' + data.breaches.length + ' breaches:'].concat(data.breaches.slice(0, 3).map(function (b) { return '  - ' + b; }))
-        : ['> No breaches found.'];
+        : ['> No breaches found. ✅'];
       await typeTerminal(term, lines);
     }
-  } catch (e) {
-    term.textContent = '> ⚠ Could not fetch. Service may be rate-limited. Try again in a minute.';
-  }
-  btn.disabled = false;
+  } catch (e) { term.textContent = '> ERROR: ' + e.message; }
+  card.classList.remove('loading'); btn.disabled = false;
 });
 
-// Email OSINT (Kickbox)
 document.getElementById('emailOsintBtn').addEventListener('click', async function (ev) {
   var email = document.getElementById('emailOsintInput').value.trim();
   if (!email) return;
-  var term = document.getElementById('emailOsintTerminal');
+  var panel = document.getElementById('emailOsintResult');
+  var card = document.getElementById('app-email-osint');
   var btn = ev.currentTarget;
   document.getElementById('epieosBtn').href = 'https://epieos.com/?q=' + encodeURIComponent(email);
-  btn.disabled = true;
-  term.textContent = '> Analyzing...';
+  card.classList.add('loading'); btn.disabled = true;
+  panel.innerHTML = '<div class="result-row"><span class="result-label">Status</span><span class="result-value">Analyzing...</span></div>';
   try {
-    var data = await safeFetchJSON('https://open.kickbox.com/v1/disposable/' + encodeURIComponent(email), {}, 5000);
+    var res = await fetchWithTimeout('https://open.kickbox.com/v1/disposable/' + encodeURIComponent(email), {}, 5000);
+    if (!res.ok) throw new Error('API');
+    var data = await res.json();
     var isDisp = data.disposable === true;
-    await typeTerminal(term, [
-      '> Email: ' + email,
-      '> Disposable: ' + (isDisp ? 'YES' : 'NO'),
-      '> Use Epieos below for 600+ sites'
-    ]);
+    var badge = isDisp ? '<span class="badge badge-warn">Disposable</span>' : '<span class="badge badge-ok">Clean</span>';
+    panel.innerHTML =
+      '<div class="result-row"><span class="result-label">Email</span><span class="result-value">' + escapeHtml(email) + '</span></div>' +
+      '<div class="result-row"><span class="result-label">Disposable</span><span class="result-value">' + badge + '</span></div>' +
+      '<div class="result-row"><span class="result-label">Status</span><span class="result-value" style="color:var(--text-2)">Validated</span></div>';
   } catch (e) {
-    term.textContent = '> ⚠ Could not fetch. Service may be rate-limited. Try again in a minute.';
+    panel.innerHTML = '<div class="result-row"><span class="result-label">Error</span><span class="result-value" style="color:#ff5050">Analysis failed</span></div>';
   }
-  btn.disabled = false;
+  card.classList.remove('loading'); btn.disabled = false;
 });
 
-// MAC Address (maclookup.app)
 document.getElementById('macLookupBtn').addEventListener('click', async function (ev) {
   var mac = document.getElementById('macInput').value.trim();
   if (!mac) return;
   var term = document.getElementById('macTerminal');
+  var card = document.getElementById('app-mac');
   var btn = ev.currentTarget;
-  btn.disabled = true;
+  card.classList.add('loading'); btn.disabled = true;
   term.textContent = '> Querying...';
   try {
-    var data = await safeFetchJSON('https://api.maclookup.app/v2/macs/' + encodeURIComponent(mac), {}, 5000);
-    if (data.success && data.company) {
-      await typeTerminal(term, ['> Vendor: ' + data.company, '> Country: ' + (data.country || '—')]);
-    } else {
-      await typeTerminal(term, ['> Vendor: Not found']);
+    var res = await fetchWithTimeout('https://api.maclookup.app/v2/macs/' + encodeURIComponent(mac), {}, 5000);
+    if (res.ok) {
+      var data = await res.json();
+      if (data.success && data.company) {
+        await typeTerminal(term, ['> Vendor: ' + data.company, '> Block: ' + (data.macPrefix || '—'), '> Country: ' + (data.country || '—')]);
+        card.classList.remove('loading'); btn.disabled = false; return;
+      }
     }
+    throw new Error('not found');
   } catch (e) {
-    term.textContent = '> ⚠ Could not fetch. Service may be rate-limited. Try again in a minute.';
+    try {
+      var t = encodeURIComponent('https://api.macvendors.com/' + mac);
+      var r2 = await fetchWithTimeout('https://api.allorigins.win/raw?url=' + t, {}, 5000);
+      var vendor = await r2.text();
+      await typeTerminal(term, vendor && !/not found/i.test(vendor) ? ['> Vendor: ' + vendor] : ['> Vendor: Not found']);
+    } catch (e2) { term.textContent = '> ERROR: ' + e.message; }
   }
-  btn.disabled = false;
+  card.classList.remove('loading'); btn.disabled = false;
 });
 
-// URL Expander (allorigins)
 document.getElementById('urlLookupBtn').addEventListener('click', async function (ev) {
   var url = document.getElementById('urlInput').value.trim();
   if (!url) return;
   var term = document.getElementById('urlTerminal');
+  var card = document.getElementById('app-url');
   var btn = ev.currentTarget;
-  btn.disabled = true;
+  card.classList.add('loading'); btn.disabled = true;
   term.textContent = '> Expanding...';
   try {
-    var data = await safeFetchJSON('https://api.allorigins.win/get?url=' + encodeURIComponent(url), {}, 6000);
+    var res = await fetchWithTimeout('https://api.allorigins.win/get?url=' + encodeURIComponent(url), {}, 6000);
+    var data = await res.json();
     var final = data && data.status && data.status.url;
-    await typeTerminal(term, final ? ['> Final: ' + final] : ['> Could not expand.']);
-  } catch (e) {
-    term.textContent = '> ⚠ Could not fetch. Service may be rate-limited. Try again in a minute.';
-  }
-  btn.disabled = false;
+    await typeTerminal(term, final ? ['> Original: ' + url, '> Final: ' + final, '> HTTP: ' + (data.status.http_code || '?')] : ['> Could not expand.']);
+  } catch (e) { term.textContent = '> ERROR: ' + e.message; }
+  card.classList.remove('loading'); btn.disabled = false;
 });
 
-// Subdomain Checker (crt.sh)
 document.getElementById('subLookupBtn').addEventListener('click', async function (ev) {
   var domain = document.getElementById('subInput').value.trim();
   if (!domain) return;
   var term = document.getElementById('subTerminal');
+  var card = document.getElementById('app-sub');
   var btn = ev.currentTarget;
-  btn.disabled = true;
-  term.textContent = '> Querying crt.sh (may take up to 15s)...';
+  card.classList.add('loading'); btn.disabled = true;
+  term.textContent = '> Querying crt.sh...';
   try {
     var res = await fetchWithTimeout('https://crt.sh/?q=%25.' + encodeURIComponent(domain) + '&output=json', {}, 15000);
     var certs = await res.json();
@@ -937,24 +1549,22 @@ document.getElementById('subLookupBtn').addEventListener('click', async function
       });
     });
     var arr = Array.from(subs);
-    await typeTerminal(term, arr.length ? ['> Found ' + arr.length + ':'].concat(arr.slice(0, 8).map(function (s) { return '  ' + s; })) : ['> No subdomains.']);
-  } catch (e) {
-    term.textContent = '> ⚠ crt.sh timeout or rate-limited. Try again in a minute.';
-  }
-  btn.disabled = false;
+    await typeTerminal(term, arr.length ? ['> Found ' + arr.length + ' subdomains:'].concat(arr.slice(0, 8).map(function (s) { return '  ' + s; })) : ['> No subdomains found.']);
+  } catch (e) { term.textContent = '> ERROR: crt.sh timeout. Try again.'; }
+  card.classList.remove('loading'); btn.disabled = false;
 });
 
-// Site Builder (CMS Detection via proxy)
 document.getElementById('builderLookupBtn').addEventListener('click', async function (ev) {
   var host = document.getElementById('builderInput').value.trim();
   if (!host) return;
   var term = document.getElementById('builderTerminal');
+  var card = document.getElementById('app-builder');
   var btn = ev.currentTarget;
-  btn.disabled = true;
-  term.textContent = '> Fetching...';
+  card.classList.add('loading'); btn.disabled = true;
+  term.textContent = '> Fetching page...';
   try {
     if (!/^https?:\/\//i.test(host)) host = 'https://' + host;
-    var proxies = ['https://api.allorigins.win/raw?url=', 'https://corsproxy.io/?'];
+    var proxies = ['https://api.allorigins.win/raw?url=', 'https://corsproxy.io/?', 'https://cors.eu.org/'];
     var html = null;
     for (var i = 0; i < proxies.length; i++) {
       try {
@@ -964,49 +1574,53 @@ document.getElementById('builderLookupBtn').addEventListener('click', async func
     }
     if (!html) throw new Error('all proxies failed');
     var hits = [];
-    if (/wp-content|wordpress/i.test(html)) hits.push('WordPress');
-    if (/shopify/i.test(html)) hits.push('Shopify');
-    if (/__NEXT_DATA__/i.test(html)) hits.push('Next.js');
+    if (/wp-content|wp-includes|wordpress/i.test(html)) hits.push('WordPress');
+    if (/cdn\.shopify\.com|Shopify\.theme/i.test(html)) hits.push('Shopify');
+    if (/\/_next\/static|__NEXT_DATA__/i.test(html)) hits.push('Next.js');
     if (/__NUXT__/i.test(html)) hits.push('Nuxt');
-    if (/wixstatic/i.test(html)) hits.push('Wix');
-    if (/squarespace/i.test(html)) hits.push('Squarespace');
-    await typeTerminal(term, hits.length ? ['> Detected:'].concat(hits.map(function (h) { return '  • ' + h; })) : ['> No CMS detected.']);
-  } catch (e) {
-    term.textContent = '> ⚠ All proxies failed. Try again in a minute.';
-  }
-  btn.disabled = false;
+    if (/static\.wixstatic\.com/i.test(html)) hits.push('Wix');
+    if (/squarespace\.com/i.test(html)) hits.push('Squarespace');
+    if (/\/sites\/default\/files|Drupal\.settings/i.test(html)) hits.push('Drupal');
+    if (/joomla/i.test(html)) hits.push('Joomla');
+    if (/gtag\(|googletagmanager/i.test(html)) hits.push('Google Analytics');
+    await typeTerminal(term, hits.length ? ['> Detected ' + hits.length + ':'].concat(hits.map(function (h) { return '  • ' + h; })) : ['> No common CMS detected.']);
+  } catch (e) { term.textContent = '> ERROR: ' + e.message; }
+  card.classList.remove('loading'); btn.disabled = false;
 });
 
-// Bug Finder (Headers via hackertarget)
 document.getElementById('bugLookupBtn').addEventListener('click', async function (ev) {
   var host = document.getElementById('bugInput').value.trim();
   if (!host) return;
   var term = document.getElementById('bugTerminal');
+  var card = document.getElementById('app-bug');
   var btn = ev.currentTarget;
-  btn.disabled = true;
+  card.classList.add('loading'); btn.disabled = true;
   term.textContent = '> Scanning...';
+  var got = false;
   try {
     var res = await fetchWithTimeout('https://api.hackertarget.com/httpheaders/?q=' + encodeURIComponent(host), {}, 6000);
-    var text = await res.text();
-    if (text && !/error|invalid/i.test(text.slice(0, 80))) {
-      var lines = text.split('\n').filter(Boolean).slice(0, 10).map(function (l) { return '  ' + l; });
-      await typeTerminal(term, ['> Headers:'].concat(lines));
-    } else {
-      throw new Error('blocked');
+    if (res.ok) {
+      var text = await res.text();
+      if (text && !/error|invalid/i.test(text.slice(0, 80))) {
+        var lines = text.split('\n').filter(Boolean).slice(0, 10).map(function (l) { return '  ' + l; });
+        await typeTerminal(term, ['> Headers for ' + host + ':'].concat(lines));
+        got = true;
+      }
     }
-  } catch (e) {
-    term.textContent = '> ⚠ CORS blocked or rate-limited. Try securityheaders.com/?q=' + host;
+  } catch (e) {}
+  if (!got) {
+    await typeTerminal(term, ['> CORS blocked.', '> Try:', '  securityheaders.com/?q=' + host]);
   }
-  btn.disabled = false;
+  card.classList.remove('loading'); btn.disabled = false;
 });
 
-// Social Media OSINT
 document.getElementById('socialLookupBtn').addEventListener('click', async function (ev) {
   var input = document.getElementById('socialInput').value.trim();
   if (!input) return;
   var term = document.getElementById('socialTerminal');
+  var card = document.getElementById('app-social');
   var btn = ev.currentTarget;
-  btn.disabled = true;
+  card.classList.add('loading'); btn.disabled = true;
   var isEmail = input.indexOf('@') !== -1 && input.indexOf(' ') === -1;
   var handle = isEmail ? input.split('@')[0] : input.replace(/^@/, '');
   term.textContent = '> Checking ' + handle + '...';
@@ -1014,61 +1628,69 @@ document.getElementById('socialLookupBtn').addEventListener('click', async funct
 
   async function tryAPI(name, url, extract) {
     try {
-      var data = await safeFetchJSON(url, {}, 5000);
+      var r = await fetchWithTimeout(url, { headers: { 'Accept': 'application/json' } }, 5000);
+      if (!r.ok) { results.push({ name: name, url: url, status: 'notfound' }); return; }
+      var data = await r.json();
       var info = extract(data);
-      if (info) results.push({ name: name, url: info.url || url, status: 'ok' });
+      if (info) results.push({ name: name, url: info.url || url, status: 'ok', extra: info.extra });
       else results.push({ name: name, url: url, status: 'notfound' });
-    } catch (e) {
-      results.push({ name: name, url: url, status: 'error' });
-    }
+    } catch (e) { results.push({ name: name, url: url, status: 'error' }); }
   }
 
   if (!isEmail) {
     await tryAPI('GitHub', 'https://api.github.com/users/' + encodeURIComponent(handle), function (d) {
-      return d.login ? { url: d.html_url } : null;
+      return d.login ? { url: d.html_url, extra: d.public_repos + ' repos' } : null;
     });
     await tryAPI('Reddit', 'https://www.reddit.com/user/' + encodeURIComponent(handle) + '/about.json', function (d) {
-      return d.data && !d.data.is_suspended ? { url: 'https://reddit.com/user/' + handle } : null;
+      return d.data && !d.data.is_suspended && d.data.total_karma !== undefined ? { url: 'https://reddit.com/user/' + handle, extra: d.data.total_karma + ' karma' } : null;
     });
     await tryAPI('Dev.to', 'https://dev.to/api/users/by_username?url=' + encodeURIComponent(handle), function (d) {
-      return d.username ? { url: 'https://dev.to/' + d.username } : null;
+      return d.username ? { url: 'https://dev.to/' + d.username, extra: d.name } : null;
     });
+    await tryAPI('Hacker News', 'https://hacker-news.firebaseio.com/v0/user/' + encodeURIComponent(handle) + '.json', function (d) {
+      return d && d.id ? { url: 'https://news.ycombinator.com/user?id=' + handle, extra: d.karma + ' karma' } : null;
+    });
+    await tryAPI('GitLab', 'https://gitlab.com/api/v4/users?username=' + encodeURIComponent(handle), function (d) {
+      return Array.isArray(d) && d.length > 0 ? { url: 'https://gitlab.com/' + d[0].username, extra: d[0].name } : null;
+    });
+    await tryAPI('Codeberg', 'https://codeberg.org/api/v1/users/' + encodeURIComponent(handle), function (d) {
+      return d.login ? { url: 'https://codeberg.org/' + d.login, extra: d.full_name } : null;
+    });
+    await tryAPI('Chess.com', 'https://api.chess.com/pub/player/' + encodeURIComponent(handle), function (d) {
+      return d.username ? { url: d.url, extra: (d.followers || 0) + ' followers' } : null;
+    });
+    await tryAPI('Lichess', 'https://lichess.org/api/user/' + encodeURIComponent(handle), function (d) {
+      return d.username ? { url: 'https://lichess.org/@/' + d.username, extra: (d.count ? d.count.all + ' games' : '') } : null;
+    });
+
     ['X', 'Instagram', 'TikTok', 'YouTube', 'Twitch'].forEach(function (n) {
-      var u = { 'X': 'https://x.com/', 'Instagram': 'https://instagram.com/', 'TikTok': 'https://tiktok.com/@', 'YouTube': 'https://youtube.com/@', 'Twitch': 'https://twitch.tv/' }[n] + handle;
+      var u = {
+        'X': 'https://x.com/' + handle,
+        'Instagram': 'https://instagram.com/' + handle,
+        'TikTok': 'https://tiktok.com/@' + handle,
+        'YouTube': 'https://youtube.com/@' + handle,
+        'Twitch': 'https://twitch.tv/' + handle
+      }[n];
       results.push({ name: n, url: u, status: 'link' });
     });
   } else {
     results.push({ name: 'Epieos', url: 'https://epieos.com/?q=' + encodeURIComponent(input), status: 'link' });
     results.push({ name: 'HIBP', url: 'https://haveibeenpwned.com/account/' + encodeURIComponent(input), status: 'link' });
+    results.push({ name: 'Gravatar', url: 'https://gravatar.com/' + handle, status: 'link' });
   }
 
   var html = '';
   results.forEach(function (r) {
     var icon = r.status === 'ok' ? '✅' : r.status === 'notfound' ? '❌' : r.status === 'error' ? '⚠️' : '🔗';
-    html += '<div class="terminal-line"><a href="' + r.url + '" target="_blank" rel="noopener" style="color:#fff;text-decoration:none;">' + icon + ' ' + r.name + ' → ' + r.url + '</a></div>';
+    var cls = r.status === 'ok' ? 'status-ok' : 'status-unknown';
+    html += '<a href="' + r.url + '" target="_blank" rel="noopener" class="social-link-item">' +
+      '<span class="' + cls + '">' + icon + '</span>' +
+      '<span class="platform-name">' + escapeHtml(r.name) + '</span>' +
+      '<span class="platform-url">' + escapeHtml(r.url) + '</span></a>';
   });
   term.innerHTML = html;
-  btn.disabled = false;
+  card.classList.remove('loading'); btn.disabled = false;
 });
-
-/* ============================================================
-   ANIME BACKGROUND — waifu.im (minimal, no anime boys)
-   ============================================================ */
-(function() {
-  var bg = document.getElementById('animeBg');
-  async function nextImage() {
-    try {
-      var res = await fetch('https://api.waifu.im/search?included_tags=landscape&is_nsfw=false');
-      var data = await res.json();
-      var url = data.images[0].url;
-      bg.style.backgroundImage = 'url("' + url + '")';
-    } catch (e) {
-      // silent — keep the old image if fetch fails
-    }
-  }
-  nextImage();                    // load first image immediately
-  setInterval(nextImage, 10000);  // change every 10s
-})();
 </script>
 </body>
 </html>
