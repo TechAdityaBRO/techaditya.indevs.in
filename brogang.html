@@ -318,6 +318,26 @@
     background: rgba(167,139,250,0.1);
   }
 
+  /* UPGRADE: project link variant of .hpanel-tag */
+  .hpanel-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 1.25rem;
+    border: 1px solid rgba(232,121,249,0.6);
+    border-radius: 50px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: #fff;
+    background: rgba(232,121,249,0.15);
+    transition: all .3s;
+  }
+  .hpanel-link:hover {
+    background: rgba(232,121,249,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 0 24px rgba(232,121,249,0.4);
+  }
+
   .h-progress {
     position: fixed;
     bottom: 2rem;
@@ -392,6 +412,48 @@
   }
   .reveal-up.in { opacity: 1; transform: translateY(0); }
 
+  /* UPGRADE: links card grid */
+  .link-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+  .link-card {
+    display: block;
+    padding: 1.75rem 1.5rem;
+    border-radius: 16px;
+    border: 1px solid rgba(167,139,250,0.3);
+    background: rgba(167,139,250,0.06);
+    transition: all .3s var(--ease-smooth);
+    text-align: left;
+  }
+  .link-card:hover {
+    background: rgba(167,139,250,0.14);
+    transform: translateY(-3px);
+    border-color: rgba(167,139,250,0.6);
+    box-shadow: 0 10px 40px rgba(124,58,237,0.25);
+  }
+  .link-card.chatbot {
+    border-color: rgba(232,121,249,0.4);
+    background: rgba(232,121,249,0.08);
+  }
+  .link-card.chatbot:hover {
+    background: rgba(232,121,249,0.18);
+    border-color: rgba(232,121,249,0.7);
+    box-shadow: 0 10px 40px rgba(232,121,249,0.3);
+  }
+  .link-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    color: var(--violet-bright);
+  }
+  .link-card.chatbot .link-eyebrow { color: var(--magenta); }
+  .link-title { font-weight: 800; font-size: 1.15rem; margin-bottom: 0.35rem; }
+  .link-desc { color: var(--text-3); font-size: 0.85rem; }
+
   /* Footer */
   .footer {
     text-align: center;
@@ -441,6 +503,9 @@
       <a href="index.html">← Home</a>
       <a href="d1m.html">D1M</a>
       <a href="https://github.com/BRO-GANG" target="_blank" rel="noopener">GitHub ↗</a>
+      <!-- UPGRADE: nav links -->
+      <a href="https://brogang.techaditya.workers.dev" target="_blank" rel="noopener noreferrer">Legacy ↗</a>
+      <a href="https://YOUR-CHATBOT-URL" target="_blank" rel="noopener noreferrer">Bro Gang AI ↗</a>
     </div>
     <button class="sound-toggle" id="soundToggle" aria-label="Toggle sound">
       <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -501,24 +566,29 @@
       <h2 class="hpanel-title" data-letters>PGlove Browser</h2>
       <p class="hpanel-desc">Experimental desktop browser built with Tauri 2 (Rust + WebView2). Lightweight, fast, and unapologetically different.</p>
       <span class="hpanel-tag">Rust · Tauri</span>
+      <!-- UPGRADE: project link — replace # with real URL -->
+      <a class="hpanel-link" href="#" target="_blank" rel="noopener noreferrer">View project ↗</a>
     </div>
     <div class="hpanel">
       <div class="hpanel-num">02</div>
       <h2 class="hpanel-title" data-letters>Bro Gang AI CLI</h2>
       <p class="hpanel-desc">Free AI coding agent for your terminal. No API keys, no signup — powered by Llama 3.3 70B.</p>
       <span class="hpanel-tag">TypeScript · Llama</span>
+      <a class="hpanel-link" href="#" target="_blank" rel="noopener noreferrer">View project ↗</a>
     </div>
     <div class="hpanel">
       <div class="hpanel-num">03</div>
       <h2 class="hpanel-title" data-letters>Nexa Search</h2>
       <p class="hpanel-desc">Privacy-first search engine. No ads, no tracking pixels, no sold history. Just the signal.</p>
       <span class="hpanel-tag">JavaScript · Privacy</span>
+      <a class="hpanel-link" href="#" target="_blank" rel="noopener noreferrer">View project ↗</a>
     </div>
     <div class="hpanel">
       <div class="hpanel-num">04</div>
       <h2 class="hpanel-title" data-letters>Pro AI</h2>
       <p class="hpanel-desc">Powered by Gemini 2.5 Pro. Chat, ask, explore — AI for everyone.</p>
       <span class="hpanel-tag">AI · Gemini</span>
+      <a class="hpanel-link" href="#" target="_blank" rel="noopener noreferrer">View project ↗</a>
     </div>
   </div>
 </section>
@@ -549,10 +619,31 @@
   </div>
 </section>
 
+<!-- UPGRADE: Legacy site + AI chatbot -->
+<section class="stats-section" style="padding-top:0;">
+  <div class="reveal-up">
+    <div class="link-grid">
+      <a class="link-card" href="https://brogang.techaditya.workers.dev" target="_blank" rel="noopener noreferrer">
+        <div class="link-eyebrow">Legacy</div>
+        <div class="link-title">Original Bro Gang Site</div>
+        <div class="link-desc">Cloudflare Workers edition — the first ship ↗</div>
+      </a>
+      <a class="link-card chatbot" href="https://YOUR-CHATBOT-URL" target="_blank" rel="noopener noreferrer">
+        <div class="link-eyebrow">Live AI</div>
+        <div class="link-title">Bro Gang AI Chatbot</div>
+        <div class="link-desc">Talk to the gang — powered by Llama →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
 <div class="footer">
   © <span id="year"></span> BRO GANG Studios · Part of D1M × BRO GANG collaboration
   <br><br>
   <a href="index.html">← Back to home</a> · <a href="d1m.html">Visit D1M →</a>
+  <!-- UPGRADE: footer links -->
+  · <a href="https://brogang.techaditya.workers.dev" target="_blank" rel="noopener noreferrer">Legacy site</a>
+  · <a href="https://YOUR-CHATBOT-URL" target="_blank" rel="noopener noreferrer">Bro Gang AI</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
@@ -936,7 +1027,6 @@
 
       drawScene(p);
 
-      /* Play hero whoosh once when p crosses 0.4 */
       if (!heroSoundPlayed && p > 0.4) {
         Sound.heroScroll();
         heroSoundPlayed = true;
